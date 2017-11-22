@@ -1,0 +1,1 @@
+ffmpeg -i /link20130519-213956_Henry\ und\ seine\ Emotionen\ beim\ memory\ spielen.MTS -metadata title="Henry und seine Emotionen beim memory spielen" -metadata date="20130519-213956" -scodec copy -vcodec copy -acodec copy 20130519-213956_Henry\ und\ seine\ Emotionen\ beim\ memory\ spielen.mp4

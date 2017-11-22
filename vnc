@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# Startup/Stop script for vncservers for some users.
+#
+
+case "$1" in
+
+'start')
+   /usr/local/bin/vncserver -geometry 1440x900 :1
+   #/bin/su - sally -c "/usr/local/bin/vncserver :2"
+   #/bin/su - jim -c "/usr/local/bin/vncserver :3"
+   ;;
+
+'stop')
+   /usr/local/bin/vncserver -kill :1
+   #/bin/su - sally -c "/usr/local/bin/vncserver -kill :2"
+   #/bin/su - jim -c "/usr/local/bin/vncserver -kill :3"
+   ;;
+
+*)
+   echo "Usage: /etc/init.d/rc.vnc { start | stop }"
+   ;;
+
+esac

@@ -1,0 +1,1 @@
+/links/Gemeinsam/Burghalde/HeimNetz/nextcloud/letsencrypt-zinksrv.sh
