@@ -1,0 +1,9 @@
+vi command to cut every statement after 3rd word in every line 
+replaces 
+DROP TRIGGER ACCOUNTDEFAULTS_T NO CASCADE BEFORE INSERT ON ACCOUNTDEFAULTS REFERENCING NEW AS N FOR EACH ROW MODE DB2SQL SET N.ROWSTAMP = NEXTVAL FOR MAXSEQ
+with 
+DROP TRIGGER ACCOUNTDEFAULTS_T
+(deletes everthing after third word, 
+\1 is the caption for the first match, which is everthing between \( and \) 
+
+:%s/\(DROP TRIGGER [a-zA-Z_]*\).*/\1 
