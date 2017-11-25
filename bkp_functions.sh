@@ -349,7 +349,8 @@ java_env ()
 
 determineSystemByHostname ()
 {
-	HOSTNAME=`hostname`
+	HOSTNAME=`hostname -s`
+	SYSTEM=${HOSTNAME}
 	echo "HOSTNAME = ${HOSTNAME}"
 	if [ ${HOSTNAME} = "marion-pc" -o ${HOSTNAME} = "marion-pc.fritz.box" ] 
 	then
