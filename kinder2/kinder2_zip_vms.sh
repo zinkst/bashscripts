@@ -1,10 +1,10 @@
 #!/bin/bash
 DATESTRING=$(date +'%Y%m%d')
-src_dir="/local/ntfsdata/vhds"
+src_dir="/local/ntfs_vhd/vhds"
 bkp_dir="/links/sysbkp"
 usePigz=false
 
-src[0]=${src_dir}/W7-Games-Ultimate.vhd
+src[0]=${src_dir}/win10_pro_kinder2.vhd
 tgt[0]=${bkp_dir}/${DATESTRING}_W7-Games-Ultimate.vhd
 
 
