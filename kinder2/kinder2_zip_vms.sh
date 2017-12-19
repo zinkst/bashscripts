@@ -6,11 +6,13 @@ usePigz=false
 
 src[0]=${src_dir}/win10_pro_kinder2.vhd
 tgt[0]=${bkp_dir}/${DATESTRING}_win10_pro_kinder2.vhd
+src[1]=/links/vms/VB/Windows10/Windows10-boot.vdi
+tgt[1]=${bkp_dir}/${DATESTRING}_Windows10-boot.vdi
 
 
 
 execute_command=(false false false false false)
-index=(0)
+index=(0 1)
 
 compressCommand () 
 {
