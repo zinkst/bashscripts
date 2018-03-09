@@ -12,8 +12,8 @@ usePigz=false
 #src[1]=${src_dir}links/vms/windows8-virt/windows8-virt.vdi
 #tgt[1]=${bkp_dir}/${CORRECTHOST}_${DATESTRING}_windows8-virt.vdi
 
-src[0]=${src_dir}local/ntfsdata/win8pro.vhd
-tgt[0]=${bkp_dir}/${CORRECTHOST}_${DATESTRING}_win8pro.vhd
+src[0]=${src_dir}local/ntfsdata/marion-pc_win10pro.vhd
+tgt[0]=${bkp_dir}/${CORRECTHOST}_${DATESTRING}_marion-pc_win10pro.vhd
 
 execute_command=(false false)
 index=(0)
