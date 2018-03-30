@@ -7,7 +7,7 @@ RSYNC_PARAMS="-av --one-file-system --exclude-from /links/data/zinksrv/rsync_exc
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 CORRECTHOST="zinksrv"
-index="1 2 5 6 7 8"
+index="1 2 5 6 7 8 9"
 MINS_SINCE_LASTRUN=-1500
 USE_SSH=false
 CHECK_LASTRUN=false
@@ -42,6 +42,10 @@ Directories[8]="local/data/kinder2"
 TargetDir[8]="same"
 MountTestFile[8]=${TGT_ROOT}"doNotDelete"
 AllowDelete[8]=true
+Directories[9]="local/data/zink-pc3"
+TargetDir[9]="same"
+MountTestFile[9]=${TGT_ROOT}"doNotDelete"
+AllowDelete[9]=true
 
 
 . /links/bin/bkp_functions.sh
