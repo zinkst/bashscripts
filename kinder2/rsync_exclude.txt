@@ -1,0 +1,15 @@
+Backup
+lost+found
+vms/*.vhd
+vms/VB/W7-prof-32bit/Windows7.vdi
+vms/VB/w7-ultimate-64/W7-ultimate-64.vhd
+vms/VB/Win81/win8pro.vhd
+vms/VB/Win81-zinksrv-vm/win81_pro_zinksrv.vhd
+vms/VB/Fedora/Fedora.vdi
+vms/*/Snapshots/*
+*XP_Pro_de.vmdk
+*.cache/google-chrome/*
+*.cache/mozilla/firefox*
+*GoogleEarth/Cache/*
+*GoogleEarth/Temp/*
+*UHD Content/*
