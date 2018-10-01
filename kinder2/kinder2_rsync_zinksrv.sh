@@ -2,11 +2,11 @@
 # variables
 SRC_ROOT="/"
 SSH_HOST="zinksrv"
-SSH_TGT_ROOT="root@${SSH_HOST}:/local/data/kinder/"
+SSH_TGT_ROOT="root@${SSH_HOST}:/local/data/kinder2/"
 TGT_ROOT="/remote/zinksrv/nfs4/"
-LOG_ROOT="/links/sysbkp/rsync/"
-RSYNC_PARAMS="-av --one-file-system --exclude-from /links/sysbkp/rsync/rsync_exclude.txt"
+LOG_ROOT="/links/rsync_folder/"
 CORRECTHOST="kinder2"
+RSYNC_PARAMS="-av --one-file-system --exclude-from /links/bin/${CORRECTHOST}/rsync_exclude.txt"
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 MINS_SINCE_LASTRUN=-1500
@@ -19,8 +19,8 @@ index="1 2"
 Directories[1]="local/data/kinder2"
 TargetDir[1]="data/kinder2/data"
 MountTestFile[1]=${TGT_ROOT}"data/doNotDelete"
-Directories[2]="local/backup"
-TargetDir[2]="data/kinder2/backup"
+Directories[2]="local/backup/kinder2"
+TargetDir[2]="data/kinder2/backup/kinder2"
 MountTestFile[2]=${TGT_ROOT}"data/doNotDelete"
 
 
