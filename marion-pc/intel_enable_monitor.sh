@@ -2,7 +2,10 @@
 setDisplayVariables()
 {
   PANEL_ID="LVDS-1"
-  MONITOR_ID="DP-1"
+  PANEL_RESOLUTION="1600x900"
+  #MONITOR_ID="DP-1"
+  MONITOR_ID="HDMI-1"
+  MONITOR_RESOLUTION="1920x1080"
 }
   
 getConnectedMonitors()
@@ -15,7 +18,7 @@ getConnectedMonitors()
 option1()
 {
   echo ${opt1}
-  CMD="xrandr --output ${MONITOR_ID} --primary --mode 3840x2160 --output ${PANEL_ID} --off "
+  CMD="xrandr --output ${MONITOR_ID} --primary --mode ${MONITOR_RESOLUTION} --output ${PANEL_ID} --off "
    echo ${CMD}
    eval ${CMD}
 }
@@ -24,7 +27,7 @@ option1()
 option2()
 {  
   echo ${opt2}
-  CMD="xrandr --output ${MONITOR_ID} --off --output ${PANEL_ID} --mode 1600x900 --primary"
+  CMD="xrandr --output ${MONITOR_ID} --off --output ${PANEL_ID} --mode ${PANEL_RESOLUTION} --primary"
   echo ${CMD}
   eval ${CMD}
 }
@@ -32,7 +35,7 @@ option2()
 option3()
 {  
   echo ${opt3}
-  CMD="xrandr --output ${MONITOR_ID} --mode 3840x2160 --primary --output ${PANEL_ID} --mode 1600x900 --right-of ${MONITOR_ID}"
+  CMD="xrandr --output ${MONITOR_ID} --mode ${MONITOR_RESOLUTION} --primary --output ${PANEL_ID} --mode ${PANEL_RESOLUTION} --right-of ${MONITOR_ID}"
   echo ${CMD}
   eval ${CMD}
 }
@@ -40,7 +43,7 @@ option3()
 option4()
 {  
   echo ${opt2}
-  CMD="xrandr --output ${MONITOR_ID} --mode 1600x900 --primary --output ${PANEL_ID} --same-as ${MONITOR_ID}"
+  CMD="xrandr --output ${MONITOR_ID} --mode ${PANEL_RESOLUTION} --primary --output ${PANEL_ID} --same-as ${MONITOR_ID}"
   echo ${CMD}
   eval ${CMD}
 }
