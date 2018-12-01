@@ -29,8 +29,6 @@ function prepareNewNextcloud () {
     echo "${NEW_CLOUD_DIR} already exists please check versions" 
     exit -1 
   else
-    # echo "This script is untested currently nothing is executed, only commands are printed"
-    # echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
     cmd="rm ${CLOUD_ROOT_DIR}/${CLOUD_NAME}"
     echo $cmd
     [ "$1" = "-r" ] && eval $cmd
@@ -59,6 +57,7 @@ function startUpgrade() {
   echo $cmd
 }
 
+echo "Executed commands are only printed start with $0 -r to execute commands"
 stopServices
 prepareNewNextcloud $@
 startServices
