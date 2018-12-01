@@ -7,16 +7,21 @@ RSYNC_PARAMS="-av --one-file-system --exclude-from /links/data/zinksrv/rsync_exc
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 CORRECTHOST="zinksrv"
-index="2 3 4 5"
+index="1 2 3 4 5 6"
 MINS_SINCE_LASTRUN=-1500
 USE_SSH=false
 CHECK_LASTRUN=false
 
 
-Directories[1]="local/data/zinksrv"
+Directories[1]="local/data/zinksrv/Photos/"
 TargetDir[1]="same"
 MountTestFile[1]=${TGT_ROOT}"doNotDelete"
 AllowDelete[1]=true
+
+Directories[6]="local/data/zinksrv/FamilienVideos/"
+TargetDir[6]="same"
+MountTestFile[6]=${TGT_ROOT}"doNotDelete"
+AllowDelete[6]=true
 
 Directories[2]="local/data/marion-pc"
 TargetDir[2]="same"
@@ -33,20 +38,30 @@ TargetDir[4]="same"
 MountTestFile[4]=${TGT_ROOT}"doNotDelete"
 AllowDelete[4]=true
 
+Directories[5]="local/data/kinder2"
+TargetDir[5]="same"
+MountTestFile[5]=${TGT_ROOT}"doNotDelete"
+AllowDelete[5]=true
+
+Directories[6]="local/data/zink-pc3"
+TargetDir[6]="same"
+MountTestFile[6]=${TGT_ROOT}"doNotDelete"
+AllowDelete[6]=true
+
 Directories[5]="local/perfcache"
 TargetDir[5]="same"
 MountTestFile[5]=${TGT_ROOT}"doNotDelete"
 AllowDelete[5]=true
 
 
-Directories[6]="local/ntfs_c"
-TargetDir[6]="same"
-MountTestFile[6]=${TGT_ROOT}"doNotDelete"
-
-Directories[7]="local/ntfsdata"
+Directories[7]="local/ntfs_c"
 TargetDir[7]="same"
 MountTestFile[7]=${TGT_ROOT}"doNotDelete"
-AllowDelete[7]=true
+
+Directories[8]="local/ntfsdata"
+TargetDir[8]="same"
+MountTestFile[8]=${TGT_ROOT}"doNotDelete"
+AllowDelete[8]=true
 
 
 . /links/bin/bkp_functions.sh

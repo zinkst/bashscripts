@@ -23,8 +23,8 @@ MountTestFile[2]=${TGT_ROOT}"/doNotDelete"
 Directories[3]="local/ntfs_c"
 TargetDir[3]="same"
 MountTestFile[3]=${TGT_ROOT}"/doNotDelete"
-Directories[4]="local/data/sysbkp"
-TargetDir[4]="/sysbkp"
+Directories[4]="local/data/kinder2"
+TargetDir[4]="/zinksrv/data/kinder2"
 MountTestFile[4]=${TGT_ROOT}"/doNotDelete"
 Directories[5]="local/data/marion-pc"
 TargetDir[5]="/zinksrv/data/marion-pc"
@@ -32,10 +32,9 @@ MountTestFile[5]=${TGT_ROOT}"/doNotDelete"
 Directories[6]="local/data/kinder"
 TargetDir[6]="/zinksrv/data/kinder"
 MountTestFile[6]=${TGT_ROOT}"/doNotDelete"
-Directories[7]="local/data/zinks-tp"
-TargetDir[7]="/zinksrv/data/zinks-tp"
+TargetDir[7]="/zinksrv/data/zink-pc3"
 MountTestFile[7]=${TGT_ROOT}"/doNotDelete"
-#AllowDelete[7]=false
+
 
 
 . /links/bin/bkp_functions.sh
