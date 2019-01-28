@@ -14,7 +14,7 @@ USE_SSH=false
 CHECK_LASTRUN=false
 REMOTEMOUNTPOINT=${SRC_ROOT}
 TRY_MOUNT_TGT="true"
-index="1 2"
+index="1 2 3"
 
 Directories[1]="data/zinksrv/Photos/Sammlung"
 TargetDir[1]="local/data_hdd/bkp_zinksrv/Photos/Sammlung"
@@ -22,6 +22,9 @@ MountTestFile[1]=${SRC_ROOT}"data/doNotDelete"
 Directories[2]="data/zinksrv/FamilienVideos"
 TargetDir[2]="local/data_hdd/bkp_zinksrv/FamilienVideos"
 MountTestFile[2]=${SRC_ROOT}"data/doNotDelete"
+Directories[3]="data/zinksrv/Photos/Converted"
+TargetDir[3]="local/data_hdd/bkp_zinksrv/Photos/Converted"
+MountTestFile[3]=${SRC_ROOT}"data/doNotDelete"
 
 
 . /links/bin/bkp_functions.sh
