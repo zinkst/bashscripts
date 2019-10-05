@@ -75,5 +75,5 @@ then
 fi
 doRsyncWithTgtDirAndMountTestFile
 updateLastRunFile
-
+touch $TGT_ROOT/bkp_last_run
 

@@ -1,1 +1,0 @@
-/home/share/MediathekView/Starten_Linux.sh
