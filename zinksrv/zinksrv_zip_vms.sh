@@ -12,7 +12,8 @@ src[1]=${src_dir}/ddrive.vhd
 tgt[1]=${bkp_dir}/${DATESTRING}_ddrive.vhd
 
 src[2]=/links/vms/VB/Fedora/Fedora.vdi
-src[2]=/local/perfcache/vm-disks/Fedora.vdi
+#src[2]=/local/perfcache/vm-disks/Fedora.vdi
+src[2]=//local/data/zinksrv/vms/VB/Fedora/Fedora.vdi
 tgt[2]=${bkp_dir}/${DATESTRING}_Fedora.vdi
 
 src[3]=/local/ntfsdata/vhds/kinder_win10_pro_hdd.vhd
