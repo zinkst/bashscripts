@@ -12,7 +12,7 @@ CORRECTHOST="zinksrv"
 MINS_SINCE_LASTRUN=-1500
 CHECK_LASTRUN=false
 USE_SSH=false
-index="1 4 5 6 7"
+index="1 4 5 6 7 8"
 	
 Directories[1]="local/data/zinksrv"
 TargetDir[1]="/zinksrv/data/zinksrv"
@@ -26,14 +26,18 @@ MountTestFile[3]=${TGT_ROOT}"/doNotDelete"
 Directories[4]="local/data/kinder2"
 TargetDir[4]="/zinksrv/data/kinder2"
 MountTestFile[4]=${TGT_ROOT}"/doNotDelete"
-Directories[5]="local/data/marion-pc"
-TargetDir[5]="/zinksrv/data/marion-pc"
+Directories[5]="local/data/zink-w530"
+TargetDir[5]="/zinksrv/data/zink-w530"
 MountTestFile[5]=${TGT_ROOT}"/doNotDelete"
 Directories[6]="local/data/kinder"
 TargetDir[6]="/zinksrv/data/kinder"
 MountTestFile[6]=${TGT_ROOT}"/doNotDelete"
+Directories[7]="local/data/zink-pc3"
 TargetDir[7]="/zinksrv/data/zink-pc3"
 MountTestFile[7]=${TGT_ROOT}"/doNotDelete"
+Directories[8]="local/data/zink-e595"
+TargetDir[8]="/zinksrv/data/zink-e595"
+MountTestFile[8]=${TGT_ROOT}"/doNotDelete"
 
 
 
