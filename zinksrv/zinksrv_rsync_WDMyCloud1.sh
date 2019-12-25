@@ -12,7 +12,7 @@ CORRECTHOST="zinksrv"
 MINS_SINCE_LASTRUN=-1500
 CHECK_LASTRUN=false
 USE_SSH=false
-index="1 4 5 6 7"
+index="1 4 5 6 7 8"
 	
 Directories[1]="local/data/zinksrv"
 TargetDir[1]="/zinksrv/data/zinksrv"
@@ -35,6 +35,9 @@ MountTestFile[6]=${TGT_ROOT}"/doNotDelete"
 Directories[7]="local/data/zink-pc3"
 TargetDir[7]="/zinksrv/data/zink-pc3"
 MountTestFile[7]=${TGT_ROOT}"/doNotDelete"
+Directories[8]="local/data/zink-e595"
+TargetDir[8]="/zinksrv/data/zink-e595"
+MountTestFile[8]=${TGT_ROOT}"/doNotDelete"
 
 
 
