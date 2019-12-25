@@ -1,8 +1,8 @@
 #!/bin/bash
 setDisplayVariables()
 {
-  TV_ID="HDMI1"
-  MONITOR_ID="DP1"
+  TV_ID="HDMI-1"
+  MONITOR_ID="DP-1"
 }
   
 getConnectedMonitors()
