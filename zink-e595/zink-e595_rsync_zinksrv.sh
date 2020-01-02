@@ -14,14 +14,30 @@ USE_SSH=false
 CHECK_LASTRUN=false
 REMOTEMOUNTPOINT=${TGT_ROOT}
 TRY_MOUNT_TGT="true"
-index="1 2"
+index="1 2 3 4 5 6"
 
-Directories[1]="local/data/${CORRECTHOST}/persdata/Stefan-local"
-TargetDir[1]="data/${CORRECTHOST}/data/persdata/Stefan-local"
+Directories[1]="local/data/${CORRECTHOST}/lokal"
+TargetDir[1]="data/${CORRECTHOST}/data/lokal"
 MountTestFile[1]=${TGT_ROOT}"data/doNotDelete"
 Directories[2]="local/ssd-data/Photos"
 TargetDir[2]="data/${CORRECTHOST}/ssd-data/"
 MountTestFile[2]=${TGT_ROOT}"data/doNotDelete"
+Directories[3]="local/data/${CORRECTHOST}/homes"
+TargetDir[3]="data/${CORRECTHOST}/data/homes/"
+MountTestFile[3]=${TGT_ROOT}"data/doNotDelete"
+Directories[4]="local/data/${CORRECTHOST}/Musik"
+TargetDir[4]="data/zinksrv/Musik/"
+MountTestFile[4]=${TGT_ROOT}"data/doNotDelete"
+AllowDelete[4]=false
+Directories[5]="local/ssd-data/FamilienVideos/originale/2020"
+TargetDir[5]="data/zinksrv/FamilienVideos/originale/2020"
+MountTestFile[5]=${TGT_ROOT}"data/doNotDelete"
+AllowDelete[5]=true
+Directories[6]="local/ssd-data/Photos/2020"
+TargetDir[6]="data/zinksrv/Photos/Sammlung/2020"
+MountTestFile[6]=${TGT_ROOT}"data/doNotDelete"
+AllowDelete[6]=false
+
 
 . /links/bin/bkp_functions.sh
 
