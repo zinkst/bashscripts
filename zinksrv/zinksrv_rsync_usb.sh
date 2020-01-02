@@ -1,13 +1,13 @@
 #!/bin/bash
 # variables
 SRC_ROOT="/"
-TGT_ROOT="/run/media/zinks/BKP_ZINK/"
+TGT_ROOT="/run/media/marion/BKP_ZINK/"
 LOG_ROOT="/links/zinksrv/rsync_logs/"
 RSYNC_PARAMS="-av --one-file-system --exclude-from /links/data/zinksrv/rsync_exclude.txt"
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 CORRECTHOST="zinksrv"
-index="1 2 5 6 7 8 9"
+index="1 2 5 6 7 8 9 10"
 MINS_SINCE_LASTRUN=-1500
 USE_SSH=false
 CHECK_LASTRUN=false
@@ -26,7 +26,7 @@ Directories[4]="local/data2"
 TargetDir[4]="same"
 MountTestFile[4]=${TGT_ROOT}"doNotDelete"
 AllowDelete[4]=true
-Directories[5]="local/data/marion-pc"
+Directories[5]="local/data/zink-w530"
 TargetDir[5]="same"
 MountTestFile[5]=${TGT_ROOT}"doNotDelete"
 AllowDelete[5]=true
@@ -46,6 +46,10 @@ Directories[9]="local/data/zink-pc3"
 TargetDir[9]="same"
 MountTestFile[9]=${TGT_ROOT}"doNotDelete"
 AllowDelete[9]=true
+Directories[10]="local/data/zink-e595"
+TargetDir[10]="same"
+MountTestFile[10]=${TGT_ROOT}"doNotDelete"
+AllowDelete[10]=true
 
 
 . /links/bin/bkp_functions.sh
