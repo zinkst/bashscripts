@@ -6,11 +6,13 @@ usePigz=false
 
 src[0]=${src_dir}/win10.vhd
 tgt[0]=${bkp_dir}/${DATESTRING}_$(hostname -s)_win10.vhd
+src[1]=/local/ssd-data/VMs/Fedora/Fedora.vdi
+tgt[1]=${bkp_dir}/${DATESTRING}_$(hostname -s)_Fedora.vdi
 
 
 
 execute_command=(false false false false false)
-index=(0)
+index=(0 1)
 
 compressCommand () 
 {
