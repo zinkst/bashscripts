@@ -9,7 +9,7 @@ if [[ ! -v $1 ]]; then
   OUTPUTNAME=$1
 fi  
 echo ${OUTPUTNAME}
-rm -rf ${VIDEO_DIR}/output/*
+rm ${VIDEO_DIR}/output/videos.lst
 FIRSTFILENAME=$(find ${VIDEO_DIR}/input -type f -print -quit)
 find ${VIDEO_DIR}/input -type f -printf "%T+\t%p\n" | sort | awk '{print $2}' | xargs -I % echo file % >> ${VIDEO_DIR}/output/videos.lst 
 ORIGTIMESTAMP_UNIX=`stat -c %Y ${FIRSTFILENAME}`
@@ -17,6 +17,10 @@ ORIGTIMESTAMP=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%d_%H%M%S')
 #ORIGTIMESTAMP4FFMPEG=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%d %H%M%S')
 ORIGTIMESTAMP4ISO8601=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%dT%H%M%S')
 OUTPUTFILENAME=${VIDEO_DIR}output/${ORIGTIMESTAMP}_${OUTPUTNAME}.mp4
+if [ -f "${OUTPUTFILENAME}" ]; then
+  rm -f "${OUTPUTFILENAME}"
+fi  
+
 ffmpeg -f concat \
        -safe 0 \
        -i ${VIDEO_DIR}/output/videos.lst \
