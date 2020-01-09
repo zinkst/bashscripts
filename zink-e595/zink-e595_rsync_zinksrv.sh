@@ -14,13 +14,13 @@ USE_SSH=false
 CHECK_LASTRUN=false
 REMOTEMOUNTPOINT=${TGT_ROOT}
 TRY_MOUNT_TGT="true"
-index="1 2 3 4 5 6"
+index="1 2 3 4 5 6 7"
 
 Directories[1]="local/data/${CORRECTHOST}/lokal"
 TargetDir[1]="data/${CORRECTHOST}/data/lokal"
 MountTestFile[1]=${TGT_ROOT}"data/doNotDelete"
-Directories[2]="local/ssd-data/Photos"
-TargetDir[2]="data/${CORRECTHOST}/ssd-data/"
+Directories[2]="local/ssd-data/Photos/unsorted"
+TargetDir[2]="data/${CORRECTHOST}/ssd-data/Photos/unsorted"
 MountTestFile[2]=${TGT_ROOT}"data/doNotDelete"
 Directories[3]="local/data/${CORRECTHOST}/homes"
 TargetDir[3]="data/${CORRECTHOST}/data/homes/"
@@ -37,6 +37,10 @@ Directories[6]="local/ssd-data/Photos/2020"
 TargetDir[6]="data/zinksrv/Photos/Sammlung/2020"
 MountTestFile[6]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[6]=false
+Directories[7]="local/data/${CORRECTHOST}/Photos/Converted"
+TargetDir[7]="data/zinksrv/Photos/Converted"
+MountTestFile[7]=${TGT_ROOT}"data/doNotDelete"
+AllowDelete[7]=true
 
 
 . /links/bin/bkp_functions.sh
