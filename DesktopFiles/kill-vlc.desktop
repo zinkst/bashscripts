@@ -1,0 +1,6 @@
+[Desktop Entry]
+Exec=killall -9 vlc
+Icon=vlc-kb
+Name=kill-vlc
+Type=Application
+Terminal=true
