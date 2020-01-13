@@ -1,0 +1,31 @@
+[alias]
+	co = checkout
+  lol = log --graph --decorate --pretty=oneline --abbrev-commit
+  lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	ci = duet-commit
+	st = status
+[user]
+	name = Stefan Zink
+	email = Stefan.Zink@de.ibm.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[url "git@github.ibm.com:"]
+	insteadOf = https://github.ibm.com/
+[color "branch"]
+	upstream = cyan
+  remote =  red
+[color "interactive"]
+  prompt = cyan
+[core]
+	excludesfile = ~/.gitignore_global
+[duet "env"]
+	git-author-initials = sz
+	git-author-name = Stefan Zink
+	git-author-email = stefan.zink@de.ibm.com
+	mtime = 1578408441
+	git-committer-initials = 
+	git-committer-name = 
+	git-committer-email = 
