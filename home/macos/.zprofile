@@ -1,0 +1,5 @@
+#!/bin/bash
+# Get the aliases and functions
+if [ -f ~/.profile ]; then
+	source ~/.profile
+fi
