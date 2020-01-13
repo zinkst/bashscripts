@@ -1,0 +1,21 @@
+[alias]
+	co = checkout
+  	lol = log --graph --decorate --pretty=oneline --abbrev-commit
+  	lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	ci = commit
+	st = status
+[user]
+	name = Stefan Zink
+	email = Stefan.G.Zink+gh@gmail.com 
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[color "branch"]
+	upstream = cyan
+  remote =  red
+[color "interactive"]
+  prompt = cyan
+[core]
+	excludesfile = ~/.gitignore_global
