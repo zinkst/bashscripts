@@ -11,5 +11,5 @@ export CLICOLOR=1
 export LSCOLORS=gxfxcxdxbxegedabagaced
 #source /usr/local/opt/chruby/share/chruby/chruby.sh
 #source /usr/local/opt/chruby/share/chruby/auto.sh
-export PATH=$GOPATH/bin:$PATH:/usr/local/sbin
+export PATH=$GOPATH/bin:$PATH
 
