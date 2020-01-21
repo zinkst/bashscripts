@@ -13,6 +13,7 @@ echo ${OUTPUTNAME}
 rm ${VIDEO_DIR}/output/videos.lst
 find ${VIDEO_DIR}/input -type f -printf "%T+\t%p\n" | sort | awk '{$1=""; print substr($0,2)}' | xargs -I % echo file \'%\' >> ${VIDEO_DIR}/output/videos.lst 
 FIRSTFILENAME=$(find ${VIDEO_DIR}/input -type f -print -quit)
+TIMESTAMP=$(mediainfo --Inform="Video;%Encoded_Date%" $FIRSTFILENAME)
 FBNAME=$(basename "$FIRSTFILENAME" .mp4)
 if [[ $FBNAME=="VID_*" ]]; then
 	FBNAME="${FBNAME:4}"
