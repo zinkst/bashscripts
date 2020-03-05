@@ -1,8 +1,8 @@
 #!/bin/bash
 export CFG_SRC_DIR=/links/Gemeinsam/Burghalde/HeimNetz
 export CLOUD_NAME="nextcloud"
-export OLD_CLOUD_VER="15.0.7"
-export NEW_CLOUD_VER="16.0.5"
+export OLD_CLOUD_VER="16.0.5"
+export NEW_CLOUD_VER="17.0.3"
 export CLOUD_ROOT_DIR="/links/zinksrv/srv"
 export NEW_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}"
 export OLD_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${OLD_CLOUD_VER}"
