@@ -1,0 +1,21 @@
+[Desktop Entry]
+Name=sz-KeePassXC
+GenericName=Password Manager
+GenericName[da]=Adgangskodehåndtering
+GenericName[de]=Passwortverwaltung
+GenericName[es]=Gestor de contraseñas
+GenericName[fr]=Gestionnaire de mot de passe
+GenericName[ru]=менеджер паролей
+Comment=Community-driven port of the Windows application “KeePass Password Safe”
+Comment[da]=Fællesskabsdrevet port af Windows-programmet “KeePass Password Safe”
+Exec=startKeepassxc.sh %f
+TryExec=startKeepassxc.sh
+Icon=keepassxc
+StartupWMClass=keepassxc
+StartupNotify=true
+Terminal=false
+Type=Application
+Version=1.0
+Categories=Utility;Security;Qt;
+MimeType=application/x-keepass2;application/x-keepassxc;
+X-Desktop-File-Install-Version=0.24
