@@ -6,8 +6,6 @@
 
 getTimestamps()
 {
-  EXTENSION="${FBNAME##*.}"
-  echo "EXTENSION=${EXTENSION}"
   if [ "${EXTENSION}" == "MTS" ]; then
 	  TIMESTAMP=$(mediainfo --Inform="General;%Recorded_Date%" "${1}")
   else 
@@ -26,21 +24,10 @@ getTimestamps()
   #echo "ORIGTIMESTAMP_ISO8601=${ORIGTIMESTAMP_ISO8601}"
   #ORIGTIMESTAMP_UNIX=`stat -c %Y "${1}"`
   ORIGTIMESTAMP=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%d_%H%M%S')
-  ORIGTIMESTAMP4FILENAME=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%m%d')
+  DATESTAMP4FILENAME=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%m%d')
+  TIMETAMP4FILENAME=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%H%M')
   echo "ORIGTIMESTAMP=${ORIGTIMESTAMP}"
   #ORIGTIMESTAMP4FFMPEG=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%d %H%M%S')
-}
-
-processFile2() 
-{
-  FBNAME=$(basename "${1}")
-  echo FBNAME=$FBNAME
-  FBNAME_NOEXTENSION="${FBNAME%.*}"
-  IFS='_'
-  read -a splitarr <<< "$FBNAME_NOEXTENSION"
-  echo ${splitarr[-1]}
-  unset IFS  
-
 }
 
 processFile() 
@@ -48,6 +35,8 @@ processFile()
   FBNAME=$(basename "${1}")
   echo FBNAME=$FBNAME
   FBNAME_NOEXTENSION="${FBNAME%.*}"
+  EXTENSION="${FBNAME##*.}"
+  echo "EXTENSION=${EXTENSION}"
   IFS='_'
   read -a splitarr <<< "$FBNAME_NOEXTENSION"
   OUTPUTNAME="${splitarr[-1]}"
@@ -55,10 +44,19 @@ processFile()
   unset IFS
 
   getTimestamps "${1}"
-
-  OUTPUTEXTENSION="mkv"
-  OUTPUTFILENAME="${VIDEO_DIR}/output/${ORIGTIMESTAMP4FILENAME}_${OUTPUTNAME}.${OUTPUTEXTENSION}"
+  if [ "${EXTENSION}" == "MTS" ]; then
+	  OUTPUTEXTENSION="mkv"
+  else
+    OUTPUTEXTENSION=${EXTENSION}
+  fi
+  set -x
+  if [ $ADD_INDEX_TO_FILENAME ]; then
+    OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${PADDEDINDEX}_${OUTPUTNAME}_${TIMETAMP4FILENAME}.${OUTPUTEXTENSION}"
+  else
+    OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${OUTPUTNAME}_${TIMETAMP4FILENAME}.${OUTPUTEXTENSION}"
+  fi
   echo $OUTPUTFILENAME
+  set +x
   if [ -f "${OUTPUTFILENAME}" ]; then
     rm -f "${OUTPUTFILENAME}"
   fi  
@@ -78,6 +76,18 @@ processFile()
 }
 
 # main
+while getopts "i:" OPTNAME
+do
+  case "${OPTNAME}" in
+    "i")
+      ADD_INDEX_TO_FILENAME=true
+      PADDING=${OPTARG}
+      ;;
+  esac
+  #echo "OPTIND is now $OPTIND"
+done
+
+
 VIDEO_DIR=${VIDEO_DIR:-/links/FamilienVideos-ssd/temp}
 LIST_FILE=${VIDEO_DIR}/videos.lst
 rm ${LIST_FILE}
@@ -85,11 +95,15 @@ find ${VIDEO_DIR}/input -type f -printf  "%p\n"  | sort >> ${LIST_FILE}
 #find ${VIDEO_DIR}/input -type f -printf  "file '%p'\n"  | sort >> ${LIST_FILE}
 #find ${VIDEO_DIR}/input -type f -printf "%T+\t%p\n" | sort | awk '{$1=""; print substr($0,2)}' | xargs -I % echo file \'%\' >> ${LIST_FILE} 
 
+index=1
 while read -u 10 CURFILE
 do
   echo "---------------------------------------------------------------------"
   echo "Processing $CURFILE"
+  printf -v PADDEDINDEX "%0${PADDING}d" $index
   processFile "$CURFILE"
+  ((index++))
+  #echo PADDEDINDEX=$PADDEDINDEX
 done 10<"${LIST_FILE}"
 
 
