@@ -6,18 +6,17 @@
 
 getTimestamps()
 {
-  FBNAME=$(basename "$FIRSTFILENAME")
-  EXTENSION="${FBNAME##*.}"
-  echo ${EXTENSION}
   if [ "${EXTENSION}" == "MTS" ]; then
-	TIMESTAMP=$(mediainfo --Inform="General;%Recorded_Date%" "$FIRSTFILENAME")
+	  TIMESTAMP=$(mediainfo --Inform="General;%Recorded_Date%" "$FIRSTFILENAME")
   else 
-	TIMESTAMP=$(mediainfo --Inform="Video;%Encoded_Date%" "$FIRSTFILENAME")
-	#TIMESTAMP="UTC 2013-05-24 19:35:22"
+	  TIMESTAMP=$(mediainfo --Inform="Video;%Encoded_Date%" "$FIRSTFILENAME")
+	  #TIMESTAMP="UTC 2013-05-24 19:35:22"
   	TIMESTAMP=${TIMESTAMP:4}
-  fi	
-  
-  ## hardcode timestamp if not available
+  fi
+  if [ "${TIMESTAMP}" == "" ]; then
+    TIMESTAMP_UNIX=`stat -c %Y "${FIRSTFILENAME}"`
+    TIMESTAMP=$(date -d@"${TIMESTAMP_UNIX}" +'%Y-%m-%d %H:%M:%S')
+  fi 
   echo "MEDIATIMESTAMP=$TIMESTAMP" # UTC 2020-01-18 13:27:09
   ORIGTIMESTAMP_UNIX_UTC=$(TZ=UTC date +'%s' -d "${TIMESTAMP}")
   echo "ORIGTIMESTAMP_UNIX_UTC=${ORIGTIMESTAMP_UNIX_UTC}"
@@ -27,11 +26,11 @@ getTimestamps()
   #echo "ORIGTIMESTAMP_ISO8601=${ORIGTIMESTAMP_ISO8601}"
   if [[ $FBNAME=="VID_*" ]]; then
     FBNAME="${FBNAME:4}"
-  fi	
-  #ORIGTIMESTAMP_UNIX=`stat -c %Y "${FIRSTFILENAME}"`
+  fi
   ORIGTIMESTAMP=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%d_%H%M%S')
-  ORIGTIMESTAMP4FILENAME=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%m%d')
-  echo "ORIGTIMESTAMP=${ORIGTIMESTAMP}"
+  DATESTAMP4FILENAME=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%m%d')
+  TIMESTAMP4FILENAME=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%H%M')
+  #echo "ORIGTIMESTAMP=${ORIGTIMESTAMP}"
   #ORIGTIMESTAMP4FFMPEG=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%d %H%M%S')
 }
 
@@ -42,36 +41,57 @@ rm ${LIST_FILE}
 find ${VIDEO_DIR}/input -type f -printf  "file '%p'\n"  | sort >> ${LIST_FILE}
 FIRSTFILENAME=$(find ${VIDEO_DIR}/input -type f -print -quit)
 
-if [ -z $1 ]; then
-  FBNAME=$(basename "$FIRSTFILENAME")
+while getopts "o:n:a:" OPTNAME
+do
+  case "${OPTNAME}" in
+    "o")
+      OUTPUTEXTENSION=${OPTARG}
+      echo "Option ${OPTNAME} is specified OUTPUTEXTENSION=${OUTPUTEXTENSION}"
+      ;;
+    "n")
+      # use this value as title
+      OUTPUTNAME=${OPTARG} 
+      echo "Option ${OPTNAME} is specified OUTPUTNAME=${OUTPUTNAME}"
+      ;;
+    "a")
+      # append this value to title 
+      NAMEAPPENDIX=${OPTARG} 
+      echo "Option ${OPTNAME} is specified NAMEAPPENDIX=${NAMEAPPENDIX}"
+      ;;
+  esac
+  #echo "OPTIND is now $OPTIND"
+done
+FBNAME=$(basename "$FIRSTFILENAME")
+EXTENSION="${FBNAME##*.}"
+
+if [ -z "${OUTPUTNAME}"  ]; then
   FBNAME_NOEXTENSION="${FBNAME%.*}"
   IFS='_'
   read -a splitarr <<< "$FBNAME_NOEXTENSION"
   OUTPUTNAME="${splitarr[-1]}"
-  #echo "$FBNAME_NOEXTENSION => OUTPUTNAME="${OUTPUTNAME}""
   unset IFS
-else
-  OUTPUTNAME=$1
 fi  
 
+if [ -z ${OUTPUTEXTENSION} ]; then 
+   if [ "${EXTENSION}" == "MTS" ]; then
+	  OUTPUTEXTENSION="mkv"
+  else
+    OUTPUTEXTENSION=${EXTENSION}
+  fi
+fi
 
 getTimestamps
 
-OUTPUTEXTENSION="mkv"
-OUTPUTFILENAME="${VIDEO_DIR}/output/${ORIGTIMESTAMP4FILENAME}_${OUTPUTNAME}.${OUTPUTEXTENSION}"
+if [ -z $NAMEAPPENDIX ]; then
+  OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${OUTPUTNAME}_${TIMESTAMP4FILENAME}.${OUTPUTEXTENSION}"
+else
+  OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${OUTPUTNAME} ${NAMEAPPENDIX}_${TIMESTAMP4FILENAME}.${OUTPUTEXTENSION}"
+fi
+
 echo $OUTPUTFILENAME
 if [ -f "${OUTPUTFILENAME}" ]; then
   rm -f "${OUTPUTFILENAME}"
 fi  
-
-
-# cmd="ffmpeg -i \"${FIRSTFILENAME}\"  
-#             -metadata title=\"${OUTPUTNAME}\" \
-#             -metadata date=${ORIGTIMESTAMP} \
-#             -metadata creation_time=\"${ORIGTIMESTAMP_ISO8601}\" \
-#             -codec copy -map 0 \
-#             -avoid_negative_ts 1 \
-#             \"${OUTPUTFILENAME}\" " 
 
 cmd="ffmpeg -f concat \
             -safe 0 \
