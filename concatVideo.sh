@@ -10,13 +10,14 @@ getTimestamps()
 	  TIMESTAMP=$(mediainfo --Inform="General;%Recorded_Date%" "$FIRSTFILENAME")
   else 
 	  TIMESTAMP=$(mediainfo --Inform="Video;%Encoded_Date%" "$FIRSTFILENAME")
-	  #TIMESTAMP="UTC 2013-05-24 19:35:22"
   	TIMESTAMP=${TIMESTAMP:4}
   fi
   if [ "${TIMESTAMP}" == "" ]; then
     TIMESTAMP_UNIX=`stat -c %Y "${FIRSTFILENAME}"`
     TIMESTAMP=$(date -d@"${TIMESTAMP_UNIX}" +'%Y-%m-%d %H:%M:%S')
   fi 
+  # uncomment and adapt the following to overwrite timestamp
+  #TIMESTAMP="UTC 2019-12-28 10:54:00"
   echo "MEDIATIMESTAMP=$TIMESTAMP" # UTC 2020-01-18 13:27:09
   ORIGTIMESTAMP_UNIX_UTC=$(TZ=UTC date +'%s' -d "${TIMESTAMP}")
   echo "ORIGTIMESTAMP_UNIX_UTC=${ORIGTIMESTAMP_UNIX_UTC}"
@@ -101,6 +102,7 @@ cmd="ffmpeg -f concat \
             -metadata creation_time=\"${ORIGTIMESTAMP_ISO8601}\" \
             -codec copy -map 0 \
             -avoid_negative_ts 1 \
+            -ignore_unknown \
             \"${OUTPUTFILENAME}\" " 
 echo $cmd
 eval $cmd

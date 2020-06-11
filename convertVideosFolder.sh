@@ -67,6 +67,7 @@ processFile()
               -metadata creation_time=\"${ORIGTIMESTAMP_ISO8601}\" \
               -codec copy -map 0 \
               -avoid_negative_ts 1 \
+              -ignore_unknown \
               \"${OUTPUTFILENAME}\" " 
   echo $cmd
   eval $cmd
