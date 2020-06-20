@@ -13,6 +13,7 @@ function restore {
 }
 
 function setup_gnome {
+	gsettings set org.gnome.desktop.interface enable-hot-corners false
 	gsettings set org.gnome.desktop.background picture-options scaled
 	gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
 }

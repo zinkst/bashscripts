@@ -17,12 +17,17 @@ getTimestamps()
     TIMESTAMP=$(date -d@"${TIMESTAMP_UNIX}" +'%Y-%m-%d %H:%M:%S')
   fi 
   # uncomment and adapt the following to overwrite timestamp
-  #TIMESTAMP="UTC 2019-12-28 10:54:00"
-  echo "MEDIATIMESTAMP=$TIMESTAMP" # UTC 2020-01-18 13:27:09
+    #TIMESTAMP="UTC 2019-12-28 10:54:00"
+  if [ "${TIMESTAMP}" == "" ]; then
+    echo "no timestamp found .. exiting"
+    exit 1 
+  else
+    echo "MEDIATIMESTAMP=$TIMESTAMP" # UTC 2020-01-18 13:27:09
+  fi
   ORIGTIMESTAMP_UNIX_UTC=$(TZ=UTC date +'%s' -d "${TIMESTAMP}")
   echo "ORIGTIMESTAMP_UNIX_UTC=${ORIGTIMESTAMP_UNIX_UTC}"
   ORIGTIMESTAMP_UNIX=$(TZ="Europe/Berlin" date +'%s' -d@"${ORIGTIMESTAMP_UNIX_UTC}")
-  #echo "ORIGTIMESTAMP_UNIX=${ORIGTIMESTAMP_UNIX}"
+  echo "ORIGTIMESTAMP_UNIX=${ORIGTIMESTAMP_UNIX}"
   ORIGTIMESTAMP_ISO8601=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%dT%H%M%S')
   #echo "ORIGTIMESTAMP_ISO8601=${ORIGTIMESTAMP_ISO8601}"
   if [[ $FBNAME=="VID_*" ]]; then
@@ -35,6 +40,28 @@ getTimestamps()
   #ORIGTIMESTAMP4FFMPEG=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%d %H%M%S')
 }
 
+function getGPSInfo(){
+  GPSCOORDINATES_EXIF=$(exiftool -n -p '$GPSLatitude,$GPSLongitude' "$FIRSTFILENAME")
+  #echo GPSCOORDINATES_EXIF=$GPSCOORDINATES_EXIF
+  GPSCOORDINATES_FFPROBE=$(ffprobe -v quiet -print_format json -show_format -i "$FIRSTFILENAME" | jq -r '.format.tags.location')
+  GPSCOORDINATES_FFPROBE=${GPSCOORDINATES_FFPROBE::-1}
+  #echo GPSCOORDINATES_FFPROBE=$GPSCOORDINATES_FFPROBE 
+  GPSCOORDINATES=${GPSCOORDINATES_FFPROBE}
+  echo GPSCOORDINATES=$GPSCOORDINATES     
+}
+
+function getCamera() {
+  case $CAMERA in
+    marion )
+        CAMERA_MANUFACTURER="Samsung"
+        CAMERA_MODEL_NAME="Galaxy S9+"
+         ;;
+    stefan )
+        CAMERA_MANUFACTURER="Samsung"
+        CAMERA_MODEL_NAME="Galaxy XCover Pro"
+        ;;
+esac
+}
 
 VIDEO_DIR=${VIDEO_DIR:-/links/FamilienVideos-ssd/temp}
 LIST_FILE=${VIDEO_DIR}/videos.lst
@@ -42,7 +69,7 @@ rm ${LIST_FILE}
 find ${VIDEO_DIR}/input -type f -printf  "file '%p'\n"  | sort >> ${LIST_FILE}
 FIRSTFILENAME=$(find ${VIDEO_DIR}/input -type f -print -quit)
 
-while getopts "o:n:a:" OPTNAME
+while getopts "o:n:a:c:" OPTNAME
 do
   case "${OPTNAME}" in
     "o")
@@ -58,6 +85,11 @@ do
       # append this value to title 
       NAMEAPPENDIX=${OPTARG} 
       echo "Option ${OPTNAME} is specified NAMEAPPENDIX=${NAMEAPPENDIX}"
+      ;;
+    "c")
+      # append this value to title 
+      CAMERA=${OPTARG} 
+      echo "Option ${OPTNAME} is specified CAMERA=${NAMEAPPENDIX}"
       ;;
   esac
   #echo "OPTIND is now $OPTIND"
@@ -82,6 +114,8 @@ if [ -z ${OUTPUTEXTENSION} ]; then
 fi
 
 getTimestamps
+getGPSInfo
+getCamera
 
 if [ -z $NAMEAPPENDIX ]; then
   OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${OUTPUTNAME}_${TIMESTAMP4FILENAME}.${OUTPUTEXTENSION}"
@@ -94,21 +128,28 @@ if [ -f "${OUTPUTFILENAME}" ]; then
   rm -f "${OUTPUTFILENAME}"
 fi  
 
-cmd="ffmpeg -f concat \
+cmd="ffmpeg -y \
+            -loglevel panic \
+            -f concat \
             -safe 0 \
             -i ${LIST_FILE} \
             -metadata title=\"${OUTPUTNAME}\" \
             -metadata date=${ORIGTIMESTAMP} \
             -metadata creation_time=\"${ORIGTIMESTAMP_ISO8601}\" \
+            -metadata location=\"${GPSCOORDINATES}\" \
+            -metadata Make=\"${CAMERA_MANUFACTURER}\" \
+            -metadata \"Camera Model Name\"=\"${CAMERA_MODEL_NAME}\" \
             -codec copy -map 0 \
             -avoid_negative_ts 1 \
             -ignore_unknown \
+            -movflags use_metadata_tags \
             \"${OUTPUTFILENAME}\" " 
 echo $cmd
 eval $cmd
 
+echo touch -d @${ORIGTIMESTAMP_UNIX} "${OUTPUTFILENAME}"
 touch -d @${ORIGTIMESTAMP_UNIX} "${OUTPUTFILENAME}"
-mediainfo "${OUTPUTFILENAME}"
+#mediainfo "${OUTPUTFILENAME}"
 ls -l "${OUTPUTFILENAME}"
 #exiftool -s -time:all "${OUTPUTFILENAME}"
 

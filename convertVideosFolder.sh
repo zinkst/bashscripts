@@ -44,12 +44,13 @@ processFile()
   unset IFS
 
   getTimestamps "${1}"
-  if [ "${EXTENSION}" == "MTS" ]; then
-	  OUTPUTEXTENSION="mkv"
-  else
-    OUTPUTEXTENSION=${EXTENSION}
-  fi
-  set -x
+  if [ "${OUTPUTEXTENSION}" == "" ]; then
+    if [ "${EXTENSION}" == "MTS" ]; then
+      OUTPUTEXTENSION="mkv"
+    else
+      OUTPUTEXTENSION=${EXTENSION}
+    fi
+  fi  
   if [ $ADD_INDEX_TO_FILENAME ]; then
     OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${PADDEDINDEX}_${OUTPUTNAME}_${TIMETAMP4FILENAME}.${OUTPUTEXTENSION}"
   else
@@ -68,6 +69,7 @@ processFile()
               -codec copy -map 0 \
               -avoid_negative_ts 1 \
               -ignore_unknown \
+              -movflags use_metadata_tags \
               \"${OUTPUTFILENAME}\" " 
   echo $cmd
   eval $cmd
@@ -77,12 +79,16 @@ processFile()
 }
 
 # main
-while getopts "i:" OPTNAME
+while getopts "i:o:" OPTNAME
 do
   case "${OPTNAME}" in
     "i")
       ADD_INDEX_TO_FILENAME=true
       PADDING=${OPTARG}
+      ;;
+    "o")
+      OUTPUTEXTENSION=${OPTARG}
+      echo "Option ${OPTNAME} is specified OUTPUTEXTENSION=${OUTPUTEXTENSION}"
       ;;
   esac
   #echo "OPTIND is now $OPTIND"
