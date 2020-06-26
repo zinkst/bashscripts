@@ -91,7 +91,10 @@ function getVideoTitle() {
     OUTPUTNAME="${splitarr[-1]}"
     #echo "$FBNAME_NOEXTENSION => OUTPUTNAME="${OUTPUTNAME}""
     unset IFS
+  else
+    OUTPUTNAME=$TITLE
   fi
+  
 }
 
 

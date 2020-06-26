@@ -52,19 +52,20 @@ processFile()
       OUTPUTEXTENSION=${EXTENSION}
     fi
   fi  
-  if [ "${TITLE}" == "" ];
+  #temp fix new files already concatenated but not renamed
+  #if [ "${TITLE}" == "" ];
+  if [ "${TITLE}" == "$TITLE" ];
   then
     #TITLE was not set, we need to compute filename
     if [ $ADD_INDEX_TO_FILENAME ]; then
-      OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${PADDEDINDEX}_${OUTPUTNAME}_${TIMETAMP4FILENAME}.${OUTPUTEXTENSION}"
+      OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${PADDEDINDEX}_${OUTPUTNAME}_${TIMESTAMP4FILENAME}.${OUTPUTEXTENSION}"
     else
-      OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${OUTPUTNAME}_${TIMETAMP4FILENAME}.${OUTPUTEXTENSION}"
+      OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${OUTPUTNAME}_${TIMESTAMP4FILENAME}.${OUTPUTEXTENSION}"
     fi
   else
     # Title was already set use original filename 
     echo FBNAME=$FBNAME
     OUTPUTFILENAME="${VIDEO_DIR}/output/${FBNAME_NOEXTENSION}.${OUTPUTEXTENSION}"  
-    OUTPUTNAME=${TITLE}
   fi  
   cmd="ffmpeg -loglevel panic -y \
               -i \"${1}\" \
