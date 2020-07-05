@@ -83,18 +83,19 @@ function askContinue() {
 } 
 
 function getVideoTitle() {
-  TITLE=$(exiftool -Title -s -s -s "${1}")
-  if [ "${TITLE}" == "" ];
-  then
-    IFS='_'
-    read -a splitarr <<< "$FBNAME_NOEXTENSION"
-    OUTPUTNAME="${splitarr[-1]}"
-    #echo "$FBNAME_NOEXTENSION => OUTPUTNAME="${OUTPUTNAME}""
-    unset IFS
-  else
-    OUTPUTNAME=$TITLE
-  fi
-  
+  if [[ "${OUTPUTNAME}" == "" ]]; then
+    TITLE=$(exiftool -Title -s -s -s "${1}")
+    if [ "${TITLE}" == "" ];
+    then
+      IFS='_'
+      read -a splitarr <<< "$FBNAME_NOEXTENSION"
+      OUTPUTNAME="${splitarr[-1]}"
+      #echo "$FBNAME_NOEXTENSION => OUTPUTNAME="${OUTPUTNAME}""
+      unset IFS
+    else
+      OUTPUTNAME=$TITLE
+    fi
+  fi  
 }
 
 
@@ -106,4 +107,18 @@ function valuesSummary() {
   echo OUTPUTFILENAME=${OUTPUTFILENAME}
   echo OUTPUTNAME=${OUTPUTNAME}
   echo ORIGTIMESTAMP=${ORIGTIMESTAMP}
+}
+
+function displayVideoInfo() {
+  # get all known parameters
+  # mediainfo --Info-Parameters
+  mediainfo --Inform="General;%LOCATION% : %CAMERA_MODEL_NAME% : %CAMERA_MANUFACTURER_NAME% : %DATE% : %Movie% : %Encoded_Date%" "${1}"
+  # mediainfo --Inform="General;%CAMERA_MODEL_NAME%" "${1}"
+  # mediainfo --Inform="General;%CAMERA_MANUFACTURER_NAME%" "${1}"
+  # mediainfo --Inform="General;%DATE%" "${1}"
+  # mediainfo --Inform="General;%Movie%" "${1}"
+  # mediainfo --Inform="General;%Encoded_Date%" "${1}"
+  mediainfo --Inform="Video;%Width%x%Height%" "${1}"
+  # mediainfo --Inform="Video;%Width%" "${1}"
+  # mediainfo --Inform="Video;%Height%" "${1}"
 }

@@ -6,32 +6,45 @@
 
 source /links/bin/video_functions.sh
 
-while getopts "o:n:a:c:" OPTNAME
-do
-  case "${OPTNAME}" in
-    "o")
-      OUTPUTEXTENSION=${OPTARG}
-      echo "Option ${OPTNAME} is specified OUTPUTEXTENSION=${OUTPUTEXTENSION}"
-      ;;
-    "n")
-      # use this value as title
-      OUTPUTNAME=${OPTARG} 
-      echo "Option ${OPTNAME} is specified OUTPUTNAME=${OUTPUTNAME}"
-      ;;
-    "a")
-      # append this value to title 
-      NAMEAPPENDIX=${OPTARG} 
-      echo "Option ${OPTNAME} is specified NAMEAPPENDIX=${NAMEAPPENDIX}"
-      ;;
-    "c")
-      # append this value to title 
-      CAMERA=${OPTARG} 
-      echo "Option ${OPTNAME} is specified CAMERA=${CAMERA}"
-      ;;
-  esac
-  #echo "OPTIND is now $OPTIND"
-done
+function usage() {
+  echo "-o extension of video e.g.  mkv"
+  echo "-n \"Title of Video\""
+  echo "-a \"Appendix fo title\""
+  echo "-m \"Manufacturer of camera\""
+}
 
+
+
+if [[ $1 == "" ]]; then
+   usage;
+    exit;
+else
+  while getopts "o:n:a:c:" OPTNAME
+  do
+    case "${OPTNAME}" in
+      "o")
+        OUTPUTEXTENSION=${OPTARG}
+        echo "Option ${OPTNAME} is specified OUTPUTEXTENSION=${OUTPUTEXTENSION}"
+        ;;
+      "n")
+        # use this value as title
+        OUTPUTNAME=${OPTARG} 
+        echo "Option ${OPTNAME} is specified OUTPUTNAME=${OUTPUTNAME}"
+        ;;
+      "a")
+        # append this value to title 
+        NAMEAPPENDIX=${OPTARG} 
+        echo "Option ${OPTNAME} is specified NAMEAPPENDIX=${NAMEAPPENDIX}"
+        ;;
+      "c")
+        # append this value to title 
+        CAMERA=${OPTARG} 
+        echo "Option ${OPTNAME} is specified CAMERA=${CAMERA}"
+        ;;
+    esac
+    #echo "OPTIND is now $OPTIND"
+  done
+fi
 
 VIDEO_DIR=${VIDEO_DIR:-/links/FamilienVideos-ssd/temp}
 LIST_FILE=${VIDEO_DIR}/videos.lst
@@ -96,8 +109,8 @@ eval $cmd
 
 echo touch -d @${ORIGTIMESTAMP_UNIX} "${OUTPUTFILENAME}"
 touch -d @${ORIGTIMESTAMP_UNIX} "${OUTPUTFILENAME}"
-#mediainfo "${OUTPUTFILENAME}"
 ls -l "${OUTPUTFILENAME}"
+displayVideoInfo "${OUTPUTFILENAME}"
 #exiftool -s -time:all "${OUTPUTFILENAME}"
 
 ### old use exiftool

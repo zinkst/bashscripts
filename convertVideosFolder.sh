@@ -86,32 +86,48 @@ processFile()
   #askContinue
   eval $cmd
   touch -d @${ORIGTIMESTAMP_UNIX} "${OUTPUTFILENAME}"
-  #mediainfo "${OUTPUTFILENAME}"
+  displayVideoInfo "${OUTPUTFILENAME}"
   ls -l "${OUTPUTFILENAME}"
 }
 
-# main
-while getopts "i:o:c:" OPTNAME
-do
-  case "${OPTNAME}" in
-    "i")
-      ADD_INDEX_TO_FILENAME=true
-      PADDING=${OPTARG}
-      ;;
-    "o")
-      OUTPUTEXTENSION=${OPTARG}
-      echo "Option ${OPTNAME} is specified OUTPUTEXTENSION=${OUTPUTEXTENSION}"
-      ;;
-    "c")
-      # append this value to title 
-      CAMERA=${OPTARG} 
-      echo "Option ${OPTNAME} is specified CAMERA=${NAMEAPPENDIX}"
-      ;;
-  
-  esac
-  #echo "OPTIND is now $OPTIND"
-done
+function usage() {
+  echo "-o extension of video e.g.  mkv"
+  echo "-n \"Title of Video\""
+  echo "-i \"Add Padding to Filename\""
+  echo "-c \"Manufacturer of camera\""
+}
 
+
+# main
+if [[ $1 == "" ]]; then
+   usage;
+    exit;
+else
+  while getopts "i:o:c:n:" OPTNAME
+  do
+    case "${OPTNAME}" in
+      "i")
+        ADD_INDEX_TO_FILENAME=true
+        PADDING=${OPTARG}
+        ;;
+      "o")
+        OUTPUTEXTENSION=${OPTARG}
+        echo "Option ${OPTNAME} is specified OUTPUTEXTENSION=${OUTPUTEXTENSION}"
+        ;;
+      "c")
+        # append this value to title 
+        CAMERA=${OPTARG} 
+        echo "Option ${OPTNAME} is specified CAMERA=${NAMEAPPENDIX}"
+        ;;
+      "n")
+        # use this value as title
+        OUTPUTNAME=${OPTARG} 
+        echo "Option ${OPTNAME} is specified OUTPUTNAME=${OUTPUTNAME}"
+        ;;
+    esac
+    #echo "OPTIND is now $OPTIND"
+  done
+fi
 
 VIDEO_DIR=${VIDEO_DIR:-/links/FamilienVideos-ssd/temp}
 LIST_FILE=${VIDEO_DIR}/videos.lst
