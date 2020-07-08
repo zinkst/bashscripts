@@ -57,6 +57,10 @@ function getCamera() {
       case $CAMERA in
           s9 )
               CAMERA_MANUFACTURER="Samsung"
+              CAMERA_MODEL_NAME="Galaxy S9"
+              ;;
+          s9+ )
+              CAMERA_MANUFACTURER="Samsung"
               CAMERA_MODEL_NAME="Galaxy S9+"
               ;;
           xcover )
@@ -66,6 +70,14 @@ function getCamera() {
           sony )
               CAMERA_MANUFACTURER="Sony"
               CAMERA_MODEL_NAME="DSC RX-100"
+              ;;
+          note4 )
+              CAMERA_MANUFACTURER="Samsung"
+              CAMERA_MODEL_NAME="Galaxy Note 4"
+              ;;
+          s5 )
+              CAMERA_MANUFACTURER="Samsung"
+              CAMERA_MODEL_NAME="Galaxy S5"
               ;;
       esac
     fi  
@@ -95,7 +107,8 @@ function getVideoTitle() {
     else
       OUTPUTNAME=$TITLE
     fi
-  fi  
+  fi
+  set +x  
 }
 
 
@@ -121,4 +134,23 @@ function displayVideoInfo() {
   mediainfo --Inform="Video;%Width%x%Height%" "${1}"
   # mediainfo --Inform="Video;%Width%" "${1}"
   # mediainfo --Inform="Video;%Height%" "${1}"
+}
+
+function verifyOutputExtension() {
+  if [ -z ${OUTPUTEXTENSION} ]; then 
+    if [ "${EXTENSION}" == "MTS" ]; then
+      OUTPUTEXTENSION="mkv"
+    else
+      OUTPUTEXTENSION=${EXTENSION}
+    fi
+  fi
+  # most videoplayers do not autorotate based on Rotation flag when outpur format is not mp4
+  # https://stackoverflow.com/questions/54878068/ffmpeg-auto-rotates-video-when-only-copying-stream
+  # 0.000 or 90.000
+  ROTATION=$(mediainfo --Inform="Video;%Rotation%" "${1}")
+  if [ "$ROTATION" != "0.000" ]
+  then
+    echo "Video is rotated overwriting OUTPUTEXTENSION to mp4" 
+    OUTPUTEXTENSION="mp4"
+  fi  
 }

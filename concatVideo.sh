@@ -54,22 +54,8 @@ FIRSTFILENAME=$(find ${VIDEO_DIR}/input -type f -print -quit)
 FBNAME=$(basename "$FIRSTFILENAME")
 EXTENSION="${FBNAME##*.}"
 
-if [ -z "${OUTPUTNAME}"  ]; then
-  FBNAME_NOEXTENSION="${FBNAME%.*}"
-  IFS='_'
-  read -a splitarr <<< "$FBNAME_NOEXTENSION"
-  OUTPUTNAME="${splitarr[-1]}"
-  unset IFS
-fi  
-
-if [ -z ${OUTPUTEXTENSION} ]; then 
-   if [ "${EXTENSION}" == "MTS" ]; then
-	  OUTPUTEXTENSION="mkv"
-  else
-    OUTPUTEXTENSION=${EXTENSION}
-  fi
-fi
-
+verifyOutputExtension "${FIRSTFILENAME}"
+getVideoTitle "${FIRSTFILENAME}"
 getTimestamps "${FIRSTFILENAME}"
 getGPSInfo "${FIRSTFILENAME}"
 getCamera "${FIRSTFILENAME}"
@@ -89,6 +75,7 @@ cmd="ffmpeg -y \
             -loglevel panic \
             -f concat \
             -safe 0 \
+            -noautorotate \
             -i ${LIST_FILE} \
             -metadata title=\"${OUTPUTNAME}\" \
             -metadata date=${ORIGTIMESTAMP} \

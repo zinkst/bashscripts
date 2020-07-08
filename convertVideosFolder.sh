@@ -40,6 +40,7 @@ processFile()
   EXTENSION="${FBNAME##*.}"
   #echo "EXTENSION=${EXTENSION}"
 
+  verifyOutputExtension "${1}"
   getVideoTitle "${1}"
   getTimestamps "${1}"
   getGPSInfo "${1}"
