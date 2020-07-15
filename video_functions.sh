@@ -54,7 +54,7 @@ function getCamera() {
     CAMERA_MODEL_NAME=$(exiftool -ComAndroidModel -s -s -s "${1}")
     if [ "${CAMERA_MODEL_NAME}" == "" ];
     then
-      case $CAMERA in
+      case ${CONFIG[CAMERA]} in
           s9 )
               CAMERA_MANUFACTURER="Samsung"
               CAMERA_MODEL_NAME="Galaxy S9"
@@ -95,7 +95,7 @@ function askContinue() {
 } 
 
 function getVideoTitle() {
-  if [[ "${OUTPUTNAME}" == "" ]]; then
+  if [[ "${CONFIG[OUTPUTNAME]}" == "" ]]; then
     TITLE=$(exiftool -Title -s -s -s "${1}")
     if [ "${TITLE}" == "" ];
     then
@@ -107,8 +107,9 @@ function getVideoTitle() {
     else
       OUTPUTNAME=$TITLE
     fi
+  else
+    OUTPUTNAME=${CONFIG[OUTPUTNAME]}
   fi
-  set +x  
 }
 
 
@@ -127,30 +128,46 @@ function displayVideoInfo() {
   # mediainfo --Info-Parameters
   mediainfo --Inform="General;%LOCATION% : %CAMERA_MODEL_NAME% : %CAMERA_MANUFACTURER_NAME% : %DATE% : %Movie% : %Encoded_Date%" "${1}"
   # mediainfo --Inform="General;%CAMERA_MODEL_NAME%" "${1}"
-  # mediainfo --Inform="General;%CAMERA_MANUFACTURER_NAME%" "${1}"
-  # mediainfo --Inform="General;%DATE%" "${1}"
-  # mediainfo --Inform="General;%Movie%" "${1}"
-  # mediainfo --Inform="General;%Encoded_Date%" "${1}"
-  mediainfo --Inform="Video;%Width%x%Height%" "${1}"
-  # mediainfo --Inform="Video;%Width%" "${1}"
-  # mediainfo --Inform="Video;%Height%" "${1}"
+  mediainfo --Inform="Video;%Width%x%Height% : %Rotation%" "${1}"
+  # mediainfo --Inform="Video;%Rotation%" "${1}"
 }
 
 function verifyOutputExtension() {
-  if [ -z ${OUTPUTEXTENSION} ]; then 
+  SKIP=false
+  if [[ "${EXTENSION}" == "mkv" ]]; then 
+    SKIP=true
+  elif [ "${CONFIG[OUTPUTEXTENSION]}" == "" ]; then 
     if [ "${EXTENSION}" == "MTS" ]; then
       OUTPUTEXTENSION="mkv"
     else
       OUTPUTEXTENSION=${EXTENSION}
     fi
-  fi
-  # most videoplayers do not autorotate based on Rotation flag when outpur format is not mp4
+  else
+    OUTPUTEXTENSION=${CONFIG[OUTPUTEXTENSION]}
+  fi  
+  # most videoplayers do not autorotate based on Rotation flag when output format is not mp4
   # https://stackoverflow.com/questions/54878068/ffmpeg-auto-rotates-video-when-only-copying-stream
   # 0.000 or 90.000
   ROTATION=$(mediainfo --Inform="Video;%Rotation%" "${1}")
-  if [ "$ROTATION" != "0.000" ]
+  if [[ "$ROTATION" != "0.000" && "$ROTATION" != "" ]]
   then
     echo "Video is rotated overwriting OUTPUTEXTENSION to mp4" 
     OUTPUTEXTENSION="mp4"
+    SKIP=true
+  fi
+  echo "SKIP=$SKIP ; OUTPUTEXTENSION=$OUTPUTEXTENSION" 
+}
+
+function printInfoIfRotated() {
+  ROTATION=$(mediainfo --Inform="Video;%Rotation%" "${1}")
+  if [ "$ROTATION" != "0.000" ]
+  then
+    echo "Rotation: ${ROTATION}: ${1}"
   fi  
+}
+
+function resetValuesToConfig() {
+  OUTPUTEXTENSION=${CONFIG[OUTPUTEXTENSION]}
+  CAMERA=${CONFIG[CAMERA]}
+  OUTPUTNAME=${CONFIG[OUTPUTNAME]}
 }

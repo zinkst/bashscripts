@@ -14,6 +14,7 @@ function usage() {
 }
 
 
+declare -A CONFIG
 
 if [[ $1 == "" ]]; then
    usage;
@@ -23,23 +24,23 @@ else
   do
     case "${OPTNAME}" in
       "o")
-        OUTPUTEXTENSION=${OPTARG}
-        echo "Option ${OPTNAME} is specified OUTPUTEXTENSION=${OUTPUTEXTENSION}"
+        CONFIG[OUTPUTEXTENSION]=${OPTARG}
+        echo "Option ${OPTNAME} is specified CONFIG[OUTPUTEXTENSION]=${CONFIG[OUTPUTEXTENSION]}"
         ;;
       "n")
         # use this value as title
-        OUTPUTNAME=${OPTARG} 
-        echo "Option ${OPTNAME} is specified OUTPUTNAME=${OUTPUTNAME}"
+        CONFIG[OUTPUTNAME]=${OPTARG} 
+        echo "Option ${OPTNAME} is specified CONFIG[OUTPUTNAME]=${CONFIG[OUTPUTNAME]}"
         ;;
       "a")
         # append this value to title 
-        NAMEAPPENDIX=${OPTARG} 
-        echo "Option ${OPTNAME} is specified NAMEAPPENDIX=${NAMEAPPENDIX}"
+        CONFIG[NAMEAPPENDIX]=${OPTARG} 
+        echo "Option ${OPTNAME} is specified CONFIG[NAMEAPPENDIX]=${CONFIG[NAMEAPPENDIX]}"
         ;;
       "c")
         # append this value to title 
-        CAMERA=${OPTARG} 
-        echo "Option ${OPTNAME} is specified CAMERA=${CAMERA}"
+        CONFIG[CAMERA]=${OPTARG} 
+        echo "Option ${OPTNAME} is specified CONFIG[CAMERA]=${CONFIG[CAMERA]}"
         ;;
     esac
     #echo "OPTIND is now $OPTIND"
