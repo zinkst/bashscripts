@@ -39,23 +39,16 @@ processFile()
   FBNAME_NOEXTENSION="${FBNAME%.*}"
   EXTENSION="${FBNAME##*.}"
   #echo "EXTENSION=${EXTENSION}"
-
+  
+  resetValuesToConfig
   verifyOutputExtension "${1}"
   getVideoTitle "${1}"
   getTimestamps "${1}"
   getGPSInfo "${1}"
   getCamera "${1}"
 
-  if [ "${OUTPUTEXTENSION}" == "" ]; then
-    if [ "${EXTENSION}" == "MTS" ]; then
-      OUTPUTEXTENSION="mkv"
-    else
-      OUTPUTEXTENSION=${EXTENSION}
-    fi
-  fi  
   #temp fix new files already concatenated but not renamed
-  #if [ "${TITLE}" == "" ];
-  if [ "${TITLE}" == "$TITLE" ];
+  if [ "${TITLE}" == "" ];
   then
     #TITLE was not set, we need to compute filename
     if [ $ADD_INDEX_TO_FILENAME ]; then
@@ -67,26 +60,33 @@ processFile()
     # Title was already set use original filename 
     echo FBNAME=$FBNAME
     OUTPUTFILENAME="${VIDEO_DIR}/output/${FBNAME_NOEXTENSION}.${OUTPUTEXTENSION}"  
+  fi
+  if $SKIP ; 
+  then
+    cmd="cp -p \"${1}\" \"${OUTPUTFILENAME}\""
+    echo "Skipping Conversion copying File:" $cmd
+    eval $cmd
+  else
+    cmd="ffmpeg -loglevel panic -y \
+                -i \"${1}\" \
+                -metadata title=\"${OUTPUTNAME}\" \
+                -metadata date=${ORIGTIMESTAMP} \
+                -metadata creation_time=\"${ORIGTIMESTAMP_ISO8601}\" \
+                -metadata Make=\"${CAMERA_MANUFACTURER}\" \
+                -metadata \"Camera Manufacturer Name\"=\"${CAMERA_MANUFACTURER}\" \
+                -metadata \"Camera Model Name\"=\"${CAMERA_MODEL_NAME}\" \
+                -metadata location=\"${GPSCOORDINATES}\" \
+                -codec copy -map 0 \
+                -avoid_negative_ts 1 \
+                -ignore_unknown \
+                -movflags use_metadata_tags \
+                \"${OUTPUTFILENAME}\" " 
+    echo $cmd
+    valuesSummary
+    askContinue
+    eval $cmd
+    touch -d @${ORIGTIMESTAMP_UNIX} "${OUTPUTFILENAME}"
   fi  
-  cmd="ffmpeg -loglevel panic -y \
-              -i \"${1}\" \
-              -metadata title=\"${OUTPUTNAME}\" \
-              -metadata date=${ORIGTIMESTAMP} \
-              -metadata creation_time=\"${ORIGTIMESTAMP_ISO8601}\" \
-              -metadata Make=\"${CAMERA_MANUFACTURER}\" \
-              -metadata \"Camera Manufacturer Name\"=\"${CAMERA_MANUFACTURER}\" \
-              -metadata \"Camera Model Name\"=\"${CAMERA_MODEL_NAME}\" \
-              -metadata location=\"${GPSCOORDINATES}\" \
-              -codec copy -map 0 \
-              -avoid_negative_ts 1 \
-              -ignore_unknown \
-              -movflags use_metadata_tags \
-              \"${OUTPUTFILENAME}\" " 
-  echo $cmd
-  valuesSummary
-  #askContinue
-  eval $cmd
-  touch -d @${ORIGTIMESTAMP_UNIX} "${OUTPUTFILENAME}"
   displayVideoInfo "${OUTPUTFILENAME}"
   ls -l "${OUTPUTFILENAME}"
 }
@@ -96,34 +96,41 @@ function usage() {
   echo "-n \"Title of Video\""
   echo "-i \"Add Padding to Filename\""
   echo "-c \"Manufacturer of camera\""
+  echo "-s \"Source directoy: default:${VIDEO_DIR}/temp/input\""
 }
 
 
 # main
+declare -A CONFIG
+
 if [[ $1 == "" ]]; then
    usage;
     exit;
 else
-  while getopts "i:o:c:n:" OPTNAME
+  while getopts "i:o:c:n:s:" OPTNAME
   do
     case "${OPTNAME}" in
       "i")
-        ADD_INDEX_TO_FILENAME=true
+        CONFIG[ADD_INDEX_TO_FILENAME]=true
         PADDING=${OPTARG}
         ;;
       "o")
-        OUTPUTEXTENSION=${OPTARG}
-        echo "Option ${OPTNAME} is specified OUTPUTEXTENSION=${OUTPUTEXTENSION}"
+        CONFIG[OUTPUTEXTENSION]=${OPTARG}
+        echo "Option ${OPTNAME} is specified OUTPUTEXTENSION=${CONFIG[OUTPUTEXTENSION]}"
         ;;
       "c")
         # append this value to title 
-        CAMERA=${OPTARG} 
-        echo "Option ${OPTNAME} is specified CAMERA=${NAMEAPPENDIX}"
+        CONFIG[CAMERA]=${OPTARG} 
+        echo "Option ${OPTNAME} is specified CAMERA=${CONFIG[CAMERA]}"
         ;;
       "n")
         # use this value as title
-        OUTPUTNAME=${OPTARG} 
-        echo "Option ${OPTNAME} is specified OUTPUTNAME=${OUTPUTNAME}"
+        CONFIG[OUTPUTNAME]=${OPTARG} 
+        echo "Option ${OPTNAME} is specified OUTPUTNAME=${CONFIG[OUTPUTNAME]}"
+        ;;
+      "s")
+        CONFIG[SRCDIR]=${OPTARG} 
+        echo "Option ${OPTNAME} is specified SRCDIR=${CONFIG[SRCDIR]}"
         ;;
     esac
     #echo "OPTIND is now $OPTIND"
@@ -133,7 +140,12 @@ fi
 VIDEO_DIR=${VIDEO_DIR:-/links/FamilienVideos-ssd/temp}
 LIST_FILE=${VIDEO_DIR}/videos.lst
 rm ${LIST_FILE}
-find ${VIDEO_DIR}/input -type f -printf  "%p\n"  | sort >> ${LIST_FILE} 
+if [ "${CONFIG[SRCDIR]}" == "" ];
+then
+  find ${VIDEO_DIR}/input -type f -printf  "%p\n"  | sort >> ${LIST_FILE} 
+else
+  find ${CONFIG[SRCDIR]} -type f -printf  "%p\n"  | sort >> ${LIST_FILE} 
+fi
 #find ${VIDEO_DIR}/input -type f -printf  "file '%p'\n"  | sort >> ${LIST_FILE}
 #find ${VIDEO_DIR}/input -type f -printf "%T+\t%p\n" | sort | awk '{$1=""; print substr($0,2)}' | xargs -I % echo file \'%\' >> ${LIST_FILE} 
 
