@@ -83,7 +83,7 @@ processFile()
                 \"${OUTPUTFILENAME}\" " 
     echo $cmd
     valuesSummary
-    askContinue
+    #askContinue
     eval $cmd
     touch -d @${ORIGTIMESTAMP_UNIX} "${OUTPUTFILENAME}"
   fi  
@@ -129,8 +129,8 @@ else
         echo "Option ${OPTNAME} is specified OUTPUTNAME=${CONFIG[OUTPUTNAME]}"
         ;;
       "s")
-        CONFIG[SRCDIR]=${OPTARG} 
-        echo "Option ${OPTNAME} is specified SRCDIR=${CONFIG[SRCDIR]}"
+        CONFIG[SRCDIR]="${OPTARG}" 
+        echo "Option ${OPTNAME} is specified SRCDIR=\"${CONFIG[SRCDIR]}\""
         ;;
     esac
     #echo "OPTIND is now $OPTIND"
@@ -144,7 +144,7 @@ if [ "${CONFIG[SRCDIR]}" == "" ];
 then
   find ${VIDEO_DIR}/input -type f -printf  "%p\n"  | sort >> ${LIST_FILE} 
 else
-  find ${CONFIG[SRCDIR]} -type f -printf  "%p\n"  | sort >> ${LIST_FILE} 
+  find "${CONFIG[SRCDIR]}" -type f -printf  "%p\n"  | sort >> ${LIST_FILE} 
 fi
 #find ${VIDEO_DIR}/input -type f -printf  "file '%p'\n"  | sort >> ${LIST_FILE}
 #find ${VIDEO_DIR}/input -type f -printf "%T+\t%p\n" | sort | awk '{$1=""; print substr($0,2)}' | xargs -I % echo file \'%\' >> ${LIST_FILE} 

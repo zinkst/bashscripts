@@ -54,6 +54,7 @@ find ${VIDEO_DIR}/input -type f -printf  "file '%p'\n"  | sort >> ${LIST_FILE}
 FIRSTFILENAME=$(find ${VIDEO_DIR}/input -type f -print -quit)
 FBNAME=$(basename "$FIRSTFILENAME")
 EXTENSION="${FBNAME##*.}"
+FBNAME_NOEXTENSION="${FBNAME%.*}"
 
 verifyOutputExtension "${FIRSTFILENAME}"
 getVideoTitle "${FIRSTFILENAME}"
