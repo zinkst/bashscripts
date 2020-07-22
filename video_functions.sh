@@ -79,6 +79,9 @@ function getCamera() {
               CAMERA_MANUFACTURER="Samsung"
               CAMERA_MODEL_NAME="Galaxy S5"
               ;;
+          gopro )
+              CAMERA_MANUFACTURER="GoPro"
+              CAMERA_MODEL_NAME="Hero 3"
       esac
     fi  
   fi 
@@ -101,8 +104,11 @@ function getVideoTitle() {
     then
       IFS='_'
       read -a splitarr <<< "$FBNAME_NOEXTENSION"
-      OUTPUTNAME="${splitarr[-1]}"
-      #echo "$FBNAME_NOEXTENSION => OUTPUTNAME="${OUTPUTNAME}""
+      if [ "$splitarr" == "" ]; then
+        echo "WARNING title of Video could not be determined"
+      else  
+        OUTPUTNAME="${splitarr[-1]}"
+      fi  
       unset IFS
     else
       OUTPUTNAME=$TITLE
