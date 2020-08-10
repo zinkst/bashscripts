@@ -12,8 +12,8 @@ function backup {
 
 function restore {
   #dconf reset -f /org/gnome/
-	dconf load/org/gnome/ < ${BKP_DIR}/org_gnome.dconf
-	dconf load/org/gnome/shell/extensions/ < ${BKP_DIR}/org_gnome_shell_extensions.dconf
+	dconf load /org/gnome/ < ${BKP_DIR}/org_gnome.dconf
+	dconf load /org/gnome/shell/extensions/ < ${BKP_DIR}/org_gnome_shell_extensions.dconf
 	setup_gnome
 }
 
@@ -28,7 +28,7 @@ function setup_gnome {
 }
 
 # main
-while getopts "sbc" OPTNAME
+while getopts "sbr" OPTNAME
 do
   case "${OPTNAME}" in
     "s")
@@ -39,7 +39,7 @@ do
       echo "Option backup ${OPTNAME} is specified"
       backup
       ;;
-    "c")
+    "r")
       echo "Option restore ${OPTNAME} is specified"
       restore
       ;;
