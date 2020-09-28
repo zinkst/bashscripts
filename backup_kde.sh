@@ -11,6 +11,7 @@ function backup {
 function restore {
   #dconf load/org/gnome/ < ${BKP_DIR}/org_gnome.dconf
   setup_kde
+  cp ${BKP_DIR}/.config/plasma-org.kde.plasma.desktop-appletsrc ${HOME}/.config/ 
 }
 
 function setup_kde {
@@ -19,7 +20,7 @@ function setup_kde {
 }
 
 # main
-while getopts "sbc" OPTNAME
+while getopts "sbr" OPTNAME
 do
   case "${OPTNAME}" in
     "s")
@@ -30,7 +31,7 @@ do
       echo "Option backup ${OPTNAME} is specified"
       backup
       ;;
-    "c")
+    "r")
       echo "Option restore ${OPTNAME} is specified"
       restore
       ;;
