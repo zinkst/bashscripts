@@ -1,8 +1,8 @@
 [Desktop Entry]
 Categories=Utility;X-SuSE-SyncUtility;
 Type=Application
-#Exec=bash -c "sleep 10 && nextcloud"
-Exec=nextcloud
+Exec=bash -c "sleep 10 && nextcloud"
+#Exec=nextcloud
 Name=Nextcloud desktop sync client 
 Comment=Nextcloud desktop synchronization client
 GenericName=Folder Sync
