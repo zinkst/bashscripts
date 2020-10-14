@@ -13,6 +13,26 @@ getTimestamps()
   fi 
   # uncomment and adapt the following to overwrite timestamp
     #TIMESTAMP="UTC 2019-12-28 10:54:00"
+  setTimestampVariables  
+}
+
+getTimestampsFromFilename()
+{
+  IFS='_'
+  read -a splitarr <<< "$FBNAME_NOEXTENSION"
+  if [ "$splitarr" == "" ]; then
+      echo "WARNING timestamp of Video could not be determined"
+   else  
+      TIMESTAMP="${splitarr[0]}"
+   fi  
+   unset IFS
+   setTimestampVariables
+}
+
+
+setTimestampVariables() 
+{
+  echo TIMESTAMP=$TIMESTAMP
   if [ "${TIMESTAMP}" == "" ]; then
     echo "no timestamp found .. exiting"
     exit 1 
@@ -33,7 +53,7 @@ getTimestamps()
   DATESTAMP4FILENAME=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%m%d')
   TIMESTAMP4FILENAME=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%H%M')
   #echo "ORIGTIMESTAMP=${ORIGTIMESTAMP}"
-  #ORIGTIMESTAMP4FFMPEG=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%d %H%M%S')
+  ORIGTIMESTAMP4FFMPEG=$(date -d@"${ORIGTIMESTAMP_UNIX}" +'%Y%m%d %H%M%S')
 }
 
 function getGPSInfo(){
@@ -42,7 +62,13 @@ function getGPSInfo(){
   GPSCOORDINATES_FFPROBE=$(ffprobe -v quiet -print_format json -show_format -i "${1}" | jq -r '.format.tags.location')
   GPSCOORDINATES_FFPROBE=${GPSCOORDINATES_FFPROBE::-1}
   #echo GPSCOORDINATES_FFPROBE=$GPSCOORDINATES_FFPROBE 
-  GPSCOORDINATES=${GPSCOORDINATES_FFPROBE}
+  if [[ ${GPSCOORDINATES_FFPROBE} == "nul" && "${CONFIG[TIMESTAMP_METHOD]}" != "" ]];
+  then 
+    # hardcode to Burghalde if nothing is found we're processing wiles wthout metadata
+    GPSCOORDINATES="+48.6217+008.7801"
+  else  
+    GPSCOORDINATES=${GPSCOORDINATES_FFPROBE}
+  fi  
 }
 
 function getCamera() {
@@ -86,6 +112,10 @@ function getCamera() {
           gopro )
               CAMERA_MANUFACTURER="GoPro"
               CAMERA_MODEL_NAME="Hero 3"
+              ;;
+          minidv )
+              CAMERA_MANUFACTURER="Camcorder"
+              CAMERA_MODEL_NAME="MiniDV"
       esac
     fi  
   fi 
@@ -103,7 +133,7 @@ function askContinue() {
 
 function getVideoTitle() {
   if [[ "${CONFIG[OUTPUTNAME]}" == "" ]]; then
-    TITLE=$(exiftool -Title -s -s -s "${1}")
+    #TITLE=$(exiftool -Title -s -s -s "${1}")
     if [ "${TITLE}" == "" ];
     then
       IFS='_'
@@ -175,6 +205,21 @@ function printInfoIfRotated() {
     echo "Rotation: ${ROTATION}: ${1}"
   fi  
 }
+
+function setStreamCopyOption() {
+  case ${EXTENSION} in
+    mpg )
+        STREAM_COPY_OPTION="c:v libx264 -preset slow -crf 13 -c:a copy"  # mp2 to mkv (x264)
+        ;;
+    m4v )
+        STREAM_COPY_OPTION="c:v copy -c:a copy"  # m4v to mkv
+        ;;
+    *)
+        STREAM_COPY_OPTION="codec copy -map 0"  # mp4 to mkv
+  esac
+  echo "STREAM_COPY_OPTION:$STREAM_COPY_OPTION" 
+}
+
 
 function resetValuesToConfig() {
   OUTPUTEXTENSION=${CONFIG[OUTPUTEXTENSION]}
