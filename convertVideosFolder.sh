@@ -43,12 +43,18 @@ processFile()
   resetValuesToConfig
   verifyOutputExtension "${1}"
   getVideoTitle "${1}"
-  getTimestamps "${1}"
+  
+  if [ "${CONFIG[TIMESTAMP_METHOD]}" == "" ];
+  then  
+    getTimestamps "${1}"
+  else
+    getTimestampsFromFilename "${1}"
+  fi    
   getGPSInfo "${1}"
   getCamera "${1}"
 
   #temp fix new files already concatenated but not renamed
-  if [ "${TITLE}" == "" ];
+  if [[ "${TITLE}" == "" && "${CONFIG[TIMESTAMP_METHOD]}" == "" ]];
   then
     #TITLE was not set, we need to compute filename
     if [ $ADD_INDEX_TO_FILENAME ]; then
@@ -61,13 +67,16 @@ processFile()
     echo FBNAME=$FBNAME
     OUTPUTFILENAME="${VIDEO_DIR}/output/${FBNAME_NOEXTENSION}.${OUTPUTEXTENSION}"  
   fi
+  
+  # if already in correct format 
   if $SKIP ; 
   then
     cmd="cp -p \"${1}\" \"${OUTPUTFILENAME}\""
     echo "Skipping Conversion copying File:" $cmd
     eval $cmd
   else
-    cmd="ffmpeg -loglevel panic -y \
+    setStreamCopyOption
+    cmd="ffmpeg -loglevel info -y \
                 -i \"${1}\" \
                 -metadata title=\"${OUTPUTNAME}\" \
                 -metadata date=${ORIGTIMESTAMP} \
@@ -76,7 +85,7 @@ processFile()
                 -metadata \"Camera Manufacturer Name\"=\"${CAMERA_MANUFACTURER}\" \
                 -metadata \"Camera Model Name\"=\"${CAMERA_MODEL_NAME}\" \
                 -metadata location=\"${GPSCOORDINATES}\" \
-                -codec copy -map 0 \
+                -${STREAM_COPY_OPTION} \
                 -avoid_negative_ts 1 \
                 -ignore_unknown \
                 -movflags use_metadata_tags \
@@ -97,6 +106,7 @@ function usage() {
   echo "-i \"Add Padding to Filename\""
   echo "-c \"Manufacturer of camera\""
   echo "-s \"Source directoy: default:${VIDEO_DIR}/temp/input\""
+  echo "-t \"GetTimestamp from filename, not from Metadata or fileTimestamp\""
 }
 
 
@@ -107,7 +117,7 @@ if [[ $1 == "" ]]; then
    usage;
     exit;
 else
-  while getopts "i:o:c:n:s:" OPTNAME
+  while getopts "i:o:c:n:s:t" OPTNAME
   do
     case "${OPTNAME}" in
       "i")
@@ -131,6 +141,10 @@ else
       "s")
         CONFIG[SRCDIR]="${OPTARG}" 
         echo "Option ${OPTNAME} is specified SRCDIR=\"${CONFIG[SRCDIR]}\""
+        ;;
+      "t")
+        CONFIG[TIMESTAMP_METHOD]="FileNamePrefix" 
+        echo "Option ${OPTNAME} is specified TIMESTAMP_METHOD=\"${CONFIG[TIMESTAMP_METHOD]}\""
         ;;
     esac
     #echo "OPTIND is now $OPTIND"
@@ -160,12 +174,3 @@ do
   ((index++))
   #echo PADDEDINDEX=$PADDEDINDEX
 done 10<"${LIST_FILE}"
-
-
-#exiftool -s -time:all "${OUTPUTFILENAME}"
-
-### old use exiftool
-# DATETAGS=(CreateDate ModifyDate TrackCreateDate TrackModifyDate MediaCreateDate MediaModifyDate)
-# for t in "${DATETAGS[@]}"; do
-#     exiftool -overwrite_original -tagsFromFile ${FIRSTFILENAME} -${t} "${OUTPUTFILENAME}"
-# done    
