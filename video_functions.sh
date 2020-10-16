@@ -62,7 +62,8 @@ function getGPSInfo(){
   GPSCOORDINATES_FFPROBE=$(ffprobe -v quiet -print_format json -show_format -i "${1}" | jq -r '.format.tags.location')
   GPSCOORDINATES_FFPROBE=${GPSCOORDINATES_FFPROBE::-1}
   #echo GPSCOORDINATES_FFPROBE=$GPSCOORDINATES_FFPROBE 
-  if [[ ${GPSCOORDINATES_FFPROBE} == "nul" && "${CONFIG[TIMESTAMP_METHOD]}" != "" ]];
+#  if [[ ${GPSCOORDINATES_FFPROBE} == "nul" && "${CONFIG[TIMESTAMP_METHOD]}" != "" ]];
+  if [[ ${GPSCOORDINATES_FFPROBE} == "nul" ]];
   then 
     # hardcode to Burghalde if nothing is found we're processing wiles wthout metadata
     GPSCOORDINATES="+48.6217+008.7801"
@@ -113,6 +114,10 @@ function getCamera() {
               CAMERA_MANUFACTURER="GoPro"
               CAMERA_MODEL_NAME="Hero 3"
               ;;
+          eos )
+              CAMERA_MANUFACTURER="Canon"
+              CAMERA_MODEL_NAME="EOS500D"
+              ;;
           minidv )
               CAMERA_MANUFACTURER="Camcorder"
               CAMERA_MODEL_NAME="MiniDV"
@@ -133,7 +138,7 @@ function askContinue() {
 
 function getVideoTitle() {
   if [[ "${CONFIG[OUTPUTNAME]}" == "" ]]; then
-    #TITLE=$(exiftool -Title -s -s -s "${1}")
+    TITLE=$(exiftool -Title -s -s -s "${1}")
     if [ "${TITLE}" == "" ];
     then
       IFS='_'
