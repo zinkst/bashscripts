@@ -4,8 +4,8 @@ src_dir="/local/ntfsdata/vhds"
 bkp_dir="/links/sysbkp"
 usePigz=false
 
-src[0]=${src_dir}/W7-Games-Ultimate.vhd
-tgt[0]=${bkp_dir}/${DATESTRING}_W7-Games-Ultimate.vhd
+src[0]=${src_dir}/win10.vhd
+tgt[0]=${bkp_dir}/${DATESTRING}_$(hostname -s)_win10.vhd
 
 
 
