@@ -118,6 +118,10 @@ function getCamera() {
               CAMERA_MANUFACTURER="Canon"
               CAMERA_MODEL_NAME="EOS500D"
               ;;
+          super8 )
+              CAMERA_MANUFACTURER="Kamera"
+              CAMERA_MODEL_NAME="super8"
+              ;;
           minidv )
               CAMERA_MANUFACTURER="Camcorder"
               CAMERA_MODEL_NAME="MiniDV"

@@ -1,7 +1,7 @@
 #!/bin/bash
 index=(01 02 03 04 05 06 07 08 09 10 11 12)
 basedir="/local/ssd-data/Photos"
-year=2020
+year=$(date +%Y)
 
 for i in ${index[@]}
 do
