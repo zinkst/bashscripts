@@ -21,8 +21,9 @@ function initDirectory () {
 }
 
 function rotateFiles () {
-	rm ${BACKUP_DIR}/${BACKUP_FILE}.3
-	for i in $(seq 1 $NUM_BACKUPS); do
+	LAST_INDEX=$((NUM_BACKUPS+1))
+	rm ${BACKUP_DIR}/${BACKUP_FILE}.${LAST_INDEX}
+	for ((i=${NUM_BACKUPS};i>0;i-=1)) ; do
 		echo " processing index ${i}"
 		CMD="mv ${BACKUP_DIR}/${BACKUP_FILE}.${i} ${BACKUP_DIR}/${BACKUP_FILE}.$((i+1))"
 		run-cmd "${CMD}"
@@ -32,8 +33,10 @@ function rotateFiles () {
 }	
 
 function rotateDirs () {
-	rm -rf ${BACKUP_DIR}.${NUM_BACKUPS}
-	for i in $(seq $((NUM_BACKUPS-1)) 1 ); do
+	LAST_INDEX=$((NUM_BACKUPS+1))
+	CMD="rm -rf ${BACKUP_DIR}/${LAST_INDEX}/*"
+	run-cmd "${CMD}"
+	for ((i=${NUM_BACKUPS};i>0;i-=1)) ; do 	
 		echo " processing index ${i}"
 		CMD="mv ${BACKUP_DIR}/${i}/* ${BACKUP_DIR}/$((i+1))/"
 		run-cmd "${CMD}"
