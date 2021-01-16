@@ -56,6 +56,7 @@ function startUpgrade() {
 function enableMaintenanceMode() {
   cmd="sudo -u apache php ${CLOUD_ROOT_DIR}/nextcloud/occ maintenance:mode --on"
   echo $cmd
+  #sudo -u apache php /links/zinksrv/srv/nextcloud/occ maintenance:mode --on
 }
 
 echo "Executed commands are only printed start with $0 -r to execute commands"
