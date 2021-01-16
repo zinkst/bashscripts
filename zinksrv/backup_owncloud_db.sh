@@ -1,1 +1,0 @@
-/links/Gemeinsam/Burghalde/HeimNetz/nextcloud/backup_owncloud_db.sh

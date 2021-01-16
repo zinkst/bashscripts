@@ -1,5 +1,5 @@
 #!/bin/bash
-export BACKUP_DIR=/links/zinksrv/var/influx
+export BACKUP_DIR=/links/zinksrv/sysbkp/influx
 export NUM_BACKUPS=2
 
 source /links/bin/zinksrv/dbBackupFunctions.sh
@@ -32,6 +32,6 @@ backupInflux
 ls -lR ${BACKUP_DIR}
 if [ ${DO_SHUTDOWN} == "true" ]; then
 	 CMD="shutdown -h now"
-	 run-cmd ${CMD}
+	 run-cmd "${CMD}"
 fi    
 

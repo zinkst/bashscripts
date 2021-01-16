@@ -20,16 +20,33 @@ function initDirectory () {
 	fi	
 }
 
+function initDirWithBackupFiles () {
+	if [ ! -d "${BACKUP_DIR}" ]; then
+		CMD="mkdir -p "${BACKUP_DIR}""
+		run-cmd "${CMD}"
+	fi 
+	for i in  $(seq 1 $NUM_BACKUPS) ; do
+		echo " processing index ${i}"
+		if [ ! -f "${BACKUP_DIR}/${BACKUP_FILE}.${i}" ]; then
+			CMD="touch ${BACKUP_DIR}/${BACKUP_FILE}.${i}"
+			run-cmd "${CMD}"
+		fi	
+	done
+}	
+
+
 function rotateFiles () {
 	LAST_INDEX=$((NUM_BACKUPS+1))
-	rm ${BACKUP_DIR}/${BACKUP_FILE}.${LAST_INDEX}
+	if [ -f "${BACKUP_DIR}/${BACKUP_FILE}.${LAST_INDEX}" ]; then
+		rm ${BACKUP_DIR}/${BACKUP_FILE}.${LAST_INDEX}
+	fi	
 	for ((i=${NUM_BACKUPS};i>0;i-=1)) ; do
 		echo " processing index ${i}"
 		CMD="mv ${BACKUP_DIR}/${BACKUP_FILE}.${i} ${BACKUP_DIR}/${BACKUP_FILE}.$((i+1))"
 		run-cmd "${CMD}"
 	done
 	CMD="mv ${BACKUP_DIR}/${BACKUP_FILE} ${BACKUP_DIR}/${BACKUP_FILE}.1"
-	run-cmd ${CMD}
+	run-cmd "${CMD}"
 }	
 
 function rotateDirs () {
