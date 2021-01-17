@@ -54,13 +54,14 @@ processFile()
   getCamera "${1}"
 
   #temp fix new files already concatenated but not renamed
-  if [[ "${TITLE}" == "" && "${CONFIG[TIMESTAMP_METHOD]}" == "" ]];
+  if [[ "${TITLE}" != "" ]];
   then
     #TITLE was not set, we need to compute filename
     if [ $ADD_INDEX_TO_FILENAME ]; then
       OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${PADDEDINDEX}_${OUTPUTNAME}_${TIMESTAMP4FILENAME}.${OUTPUTEXTENSION}"
     else
       OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${OUTPUTNAME}_${TIMESTAMP4FILENAME}.${OUTPUTEXTENSION}"
+      OUTPUTFILENAME="${VIDEO_DIR}/output/${DATESTAMP4FILENAME}_${OUTPUTNAME}.${OUTPUTEXTENSION}"
     fi
   else
     # Title was already set use original filename 
