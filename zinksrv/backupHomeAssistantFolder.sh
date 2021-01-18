@@ -1,15 +1,15 @@
 #!/bin/bash
 # username and password are sroted in ${root}/.my.cnf in section mysqldump
-export NUM_BACKUPS=3
-export DB_NAME="nextcloud_db"
-export BACKUP_DIR=/links/zinksrv/sysbkp/mariadb
-export BACKUP_FILE=${DB_NAME}.sql.gz
+export NUM_BACKUPS=2
+export SRC_DIR="/links/zinksrv/srv/home-assist/home-assistant-config/"
+export BACKUP_DIR=/links/zinksrv/sysbkp/homeAssistant
+export BACKUP_FILE=homeAssitantDir.tgz
 source /links/bin/zinksrv/dbBackupFunctions.sh
 
 
-function backupMariadb () {
-   echo "creating new backup of Mariabdb ${DB_NAME}"
-   CMD="/usr/bin/mariadb-dump --defaults-extra-file=/links/zinksrv/var/mysql/.my.cnf --databases ${DB_NAME} --single-transaction --create-options | gzip -9 > ${BACKUP_DIR}/${BACKUP_FILE}"
+function backupHomeAssistant () {
+   echo "creating new backup of Home Assistant Dir ${SRC_DIR}"
+   CMD="tar -czf  ${BACKUP_DIR}/${BACKUP_FILE} --directory ${SRC_DIR} ."
    run-cmd "${CMD}"
 }	
 
@@ -28,7 +28,7 @@ done
 ls -l ${BACKUP_DIR}
 initDirWithBackupFiles
 rotateFiles
-backupMariadb
+backupHomeAssistant
 ls -l ${BACKUP_DIR}
 if [ ${DO_SHUTDOWN} == "true" ]; then
 	CMD="shutdown -h now"
