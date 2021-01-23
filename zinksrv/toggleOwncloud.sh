@@ -1,1 +1,0 @@
-/links/Gemeinsam/Burghalde/HeimNetz/owncloud/toggleOwncloud.sh
