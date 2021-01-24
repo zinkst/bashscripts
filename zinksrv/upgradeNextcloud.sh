@@ -1,8 +1,9 @@
 #!/bin/bash
-export CFG_SRC_DIR=/links/Gemeinsam/Burghalde/HeimNetz
+source /links/bin/dbBackupFunctions.sh
+
 export CLOUD_NAME="nextcloud"
-export OLD_CLOUD_VER="18.0.1"
-export NEW_CLOUD_VER="18.0.7"
+export OLD_CLOUD_VER="19.0.3"
+export NEW_CLOUD_VER="19.0.7"
 export CLOUD_ROOT_DIR="/links/zinksrv/srv"
 export NEW_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}"
 export OLD_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${OLD_CLOUD_VER}"
@@ -26,23 +27,17 @@ function prepareNewNextcloud () {
     exit -1 
   else
     cmd="rm ${CLOUD_ROOT_DIR}/${CLOUD_NAME}"
-    echo $cmd
-    [ "$1" = "-r" ] && eval $cmd
+    run-cmd "${cmd}"
     cmd="unzip ${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}.zip -d ${CLOUD_ROOT_DIR}/"
-    echo $cmd
-    [ "$1" = "-r" ] && eval $cmd
+    run-cmd "${cmd}"
     cmd="mv ${CLOUD_ROOT_DIR}/${CLOUD_NAME} ${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}"
-    echo $cmd
-    [ "$1" = "-r" ] && eval $cmd
+    run-cmd "${cmd}"
     cmd="ln -sf ${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER} ${CLOUD_ROOT_DIR}/${CLOUD_NAME}"
-    echo $cmd
-    [ "$1" = "-r" ] && eval $cmd
+    run-cmd "${cmd}"
     cmd="chown apache:apache ${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}/config"
-    echo $cmd
-    [ "$1" = "-r" ] && eval $cmd
+    run-cmd "${cmd}"
     cmd="cp -prv ${OLD_CLOUD_DIR}/config/ca-bundle.crt ${OLD_CLOUD_DIR}/config/config.php ${NEW_CLOUD_DIR}/config/"
-    echo $cmd
-    [ "$1" = "-r" ] && eval $cmd
+    run-cmd "${cmd}"
     ls -l ${CLOUD_ROOT_DIR}
   fi	
 		
@@ -50,14 +45,22 @@ function prepareNewNextcloud () {
 
 function startUpgrade() {
   cmd="sudo -u apache php ${NEW_CLOUD_DIR}/occ upgrade"
-  echo $cmd
+  run-cmd "${cmd}"
 }
 
 function enableMaintenanceMode() {
   cmd="sudo -u apache php ${CLOUD_ROOT_DIR}/nextcloud/occ maintenance:mode --on"
-  echo $cmd
+  run-cmd "${cmd}"
   #sudo -u apache php /links/zinksrv/srv/nextcloud/occ maintenance:mode --on
 }
+
+TEST_MODE="false"
+while getopts "t" Option
+do
+    case $Option in
+  		t    ) TEST_MODE="true";;
+    esac
+done
 
 echo "Executed commands are only printed start with $0 -r to execute commands"
 stopServices
