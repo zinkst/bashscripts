@@ -9,7 +9,7 @@ source /links/bin/zinksrv/dbBackupFunctions.sh
 
 function backupMariadb () {
    echo "creating new backup of Mariabdb ${DB_NAME}"
-   CMD="/usr/bin/mariadb-dump --defaults-extra-file=/links/zinksrv/var/mysql/.my.cnf --databases ${DB_NAME} --single-transaction --create-options | gzip -9 > ${BACKUP_DIR}/${BACKUP_FILE}"
+   CMD="/usr/bin/mariadb-dump --defaults-extra-file=/links/zinksrv/var/mysql/.my.cnf --databases ${DB_NAME} --single-transaction --create-options --default-character-set=utf8mb4 | gzip -9 > ${BACKUP_DIR}/${BACKUP_FILE}"
    run-cmd "${CMD}"
 }	
 
