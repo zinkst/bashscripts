@@ -1,6 +1,7 @@
 #!/bin/bash
 # enter secret into database
 #secret-tool store --label='Keepass' database Keepass.kdbx
+killall keepassxc
 secret-tool lookup database Keepass.kdbx > /dev/null
 if [ $? -eq 0 ]; then
   echo "lookup successful"
