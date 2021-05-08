@@ -1,25 +1,28 @@
 #!/bin/bash
-source /links/bin/dbBackupFunctions.sh
+source /links/bin/zinksrv/dbBackupFunctions.sh
 
 export CLOUD_NAME="nextcloud"
-export OLD_CLOUD_VER="19.0.3"
-export NEW_CLOUD_VER="19.0.7"
+export OLD_CLOUD_VER="20.0.5"
+export NEW_CLOUD_VER="21.0.1"
 export CLOUD_ROOT_DIR="/links/zinksrv/srv"
 export NEW_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}"
 export OLD_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${OLD_CLOUD_VER}"
 
 function stopServices () {
-	systemctl stop php-fpm && 	systemctl stop nginx &&	systemctl stop mariadb
+	cmd="systemctl stop php-fpm && 	systemctl stop nginx &&	systemctl stop mariadb"
+  run-cmd "${cmd}"
 }
 
 function startServices () {
-	systemctl start mariadb && 	systemctl start nginx && 	systemctl start php-fpm
+	cmd="systemctl start mariadb && 	systemctl start nginx && 	systemctl start php-fpm"
+  run-cmd "${cmd}"
 }
 	
 function prepareNewNextcloud () {
   if ! [ -f  ${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}.zip ]; 
   then 
-    wget https://download.nextcloud.com/server/releases/nextcloud-${NEW_CLOUD_VER}.zip -O ${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}.zip
+    cmd="wget https://download.nextcloud.com/server/releases/nextcloud-${NEW_CLOUD_VER}.zip -O ${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}.zip"
+    run-cmd "${cmd}"
   fi  
   if [ -d ${NEW_CLOUD_DIR}/config ]; 
   then
@@ -54,11 +57,11 @@ function enableMaintenanceMode() {
   #sudo -u apache php /links/zinksrv/srv/nextcloud/occ maintenance:mode --on
 }
 
-TEST_MODE="false"
-while getopts "t" Option
+TEST_MODE="true"
+while getopts "r" Option
 do
     case $Option in
-  		t    ) TEST_MODE="true";;
+  		r    ) TEST_MODE="false";;
     esac
 done
 
