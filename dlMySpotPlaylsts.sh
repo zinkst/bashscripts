@@ -3,7 +3,7 @@
 # pip install git+https://github.com/ritiek/spotify-downloader.git
 # pip install --upgrade pytube
 
-WRKDIR="/links/Musik/unsorted/Spotify"
+WRKDIR="/links/Musik/Spotify-Playlist-mp3s"
 
 PLName[1]="incorrect"
 PLUrl[1]="https://open.spotify.com/playlist/0ebhEOjfDxvvEQ7PwNGQpY?si=0Q8jKqg3SMK4zy1vxL0VdA&utm_source=native-share-menu"
@@ -36,12 +36,12 @@ PLUrl[14]="https://open.spotify.com/playlist/15OonYLtY1EnxANpJR3pLP?si=W-u8KHzPR
 
 #pushd ${WRKDIR}
 index="1 2 3 4 5 6 7 8 9 10 11 12 13 14"
-index="4 5 6 7 8 9 10 11 13 14"
+index="3"
 for ind in $index
 do
   spotdl --write-to ${WRKDIR}/${PLName[ind]}.lst -p ${PLUrl[ind]} 
   spotdl -l ${WRKDIR}/${PLName[ind]}.lst --write-m3u
-  cp ${WRKDIR}/${PLName[ind]}.lst ${WRKDIR}/${PLName[ind]}.txt
+  cp ${WRKDIR}/${PLName[ind]}.lst ${WRKDIR}/${PLName[ind]}.spotlst
   spotdl -f ${WRKDIR}/${PLName[ind]}/{artist}_{track-name}.{output-ext} -l ${WRKDIR}/${PLName[ind]}.lst --overwrite skip
-  # rm ${WRKDIR}/${PLName[ind]}.lst
-done;
+  rm ${WRKDIR}/${PLName[ind]}.lst
+done

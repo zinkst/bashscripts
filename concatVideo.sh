@@ -20,7 +20,7 @@ if [[ $1 == "" ]]; then
    usage;
     exit;
 else
-  while getopts "o:n:a:c:" OPTNAME
+  while getopts "o:n:a:c:t" OPTNAME
   do
     case "${OPTNAME}" in
       "o")
@@ -42,6 +42,10 @@ else
         CONFIG[CAMERA]=${OPTARG} 
         echo "Option ${OPTNAME} is specified CONFIG[CAMERA]=${CONFIG[CAMERA]}"
         ;;
+      "t")
+        CONFIG[TIMESTAMP_METHOD]="FileNamePrefix" 
+        echo "Option ${OPTNAME} is specified TIMESTAMP_METHOD=\"${CONFIG[TIMESTAMP_METHOD]}\""
+        ;;  
     esac
     #echo "OPTIND is now $OPTIND"
   done
@@ -58,7 +62,12 @@ FBNAME_NOEXTENSION="${FBNAME%.*}"
 
 verifyOutputExtension "${FIRSTFILENAME}"
 getVideoTitle "${FIRSTFILENAME}"
-getTimestamps "${FIRSTFILENAME}"
+if [ "${CONFIG[TIMESTAMP_METHOD]}" == "" ];
+then  
+  getTimestamps "${FIRSTFILENAME}"
+else
+  getTimestampsFromFilename "${FIRSTFILENAME}"
+fi    
 getGPSInfo "${FIRSTFILENAME}"
 getCamera "${FIRSTFILENAME}"
 
@@ -90,6 +99,11 @@ cmd="ffmpeg -y \
             -avoid_negative_ts 1 \
             -ignore_unknown \
             -movflags use_metadata_tags \
+            \"${OUTPUTFILENAME}\" " 
+cmd="ffmpeg -i \"${FIRSTFILENAME}\" \
+            -metadata title=\"${OUTPUTNAME}\" \
+            -metadata date=${ORIGTIMESTAMP} \
+            -metadata creation_time=\"${ORIGTIMESTAMP_ISO8601}\" \
             \"${OUTPUTFILENAME}\" " 
 echo $cmd
 valuesSummary
