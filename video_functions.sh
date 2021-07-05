@@ -12,7 +12,7 @@ getTimestamps()
     TIMESTAMP=$(date -d@"${TIMESTAMP_UNIX}" +'%Y-%m-%d %H:%M:%S')
   fi 
   # uncomment and adapt the following to overwrite timestamp
-    #TIMESTAMP="UTC 2019-12-28 10:54:00"
+  # TIMESTAMP="UTC 2021-06-15 09:52:00"
   setTimestampVariables  
 }
 
@@ -125,6 +125,15 @@ function getCamera() {
           minidv )
               CAMERA_MANUFACTURER="Camcorder"
               CAMERA_MODEL_NAME="MiniDV"
+              ;;
+          whatsapp )
+              CAMERA_MANUFACTURER="Messenger"
+              CAMERA_MODEL_NAME="Whatsapp"
+              ;;
+          apple )
+              CAMERA_MANUFACTURER="Apple"
+              CAMERA_MODEL_NAME="iPhone"
+              ;;
       esac
     fi  
   fi 
