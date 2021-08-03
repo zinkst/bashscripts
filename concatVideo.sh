@@ -100,11 +100,11 @@ cmd="ffmpeg -y \
             -ignore_unknown \
             -movflags use_metadata_tags \
             \"${OUTPUTFILENAME}\" " 
-cmd="ffmpeg -i \"${FIRSTFILENAME}\" \
-            -metadata title=\"${OUTPUTNAME}\" \
-            -metadata date=${ORIGTIMESTAMP} \
-            -metadata creation_time=\"${ORIGTIMESTAMP_ISO8601}\" \
-            \"${OUTPUTFILENAME}\" " 
+# cmd="ffmpeg -i \"${FIRSTFILENAME}\" \
+#             -metadata title=\"${OUTPUTNAME}\" \
+#             -metadata date=${ORIGTIMESTAMP} \
+#             -metadata creation_time=\"${ORIGTIMESTAMP_ISO8601}\" \
+#             \"${OUTPUTFILENAME}\" " 
 echo $cmd
 valuesSummary
 askContinue
