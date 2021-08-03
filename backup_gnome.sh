@@ -25,6 +25,11 @@ function setup_gnome {
 	gsettings set org.gnome.desktop.screensaver idle-activation-enabled false
 	gsettings set org.gnome.desktop.screensaver lock-enabled false
 	gsettings set org.gnome.desktop.interface show-battery-percentage true
+  gsettings set org.gnome.desktop.lockdown disable-lock-screen 'true'
+  gsettings set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
+  gsettings set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab', '<Alt>Above_Tab']"
+  gsettings set org.gnome.desktop.wm.keybindings switch-applications "[]"
+  gsettings set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
 }
 
 # main
