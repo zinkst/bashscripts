@@ -28,7 +28,7 @@ TargetDir[3]="same"
 MountTestFile[3]=${TGT_ROOT}"doNotDelete"
 AllowDelete[3]=true
 
-Directories[4]="local/data/kinder"
+Directories[4]="local/data/zink-e595"
 TargetDir[4]="same"
 MountTestFile[4]=${TGT_ROOT}"doNotDelete"
 AllowDelete[4]=true
