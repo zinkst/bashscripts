@@ -2,8 +2,8 @@
 source /links/bin/zinksrv/dbBackupFunctions.sh
 
 export CLOUD_NAME="nextcloud"
-export OLD_CLOUD_VER="20.0.5"
-export NEW_CLOUD_VER="21.0.1"
+export OLD_CLOUD_VER="21.0.1"
+export NEW_CLOUD_VER="22.2.2"
 export CLOUD_ROOT_DIR="/links/zinksrv/srv"
 export NEW_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}"
 export OLD_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${OLD_CLOUD_VER}"
