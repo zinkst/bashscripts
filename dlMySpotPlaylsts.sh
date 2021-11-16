@@ -35,8 +35,8 @@ PLName[14]="Tecno"
 PLUrl[14]="https://open.spotify.com/playlist/15OonYLtY1EnxANpJR3pLP?si=W-u8KHzPR7Ow6wHEdKiRvg&utm_source=native-share-menu"
 
 #pushd ${WRKDIR}
-index="1 2 3 4 5 6 7 8 9 10 11 12 13 14"
-index="3"
+index="2 4 5 6 7 8 9 10 11 12 13 14"
+#index="3"
 for ind in $index
 do
   spotdl --write-to ${WRKDIR}/${PLName[ind]}.lst -p ${PLUrl[ind]} 
