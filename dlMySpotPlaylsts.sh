@@ -1,4 +1,8 @@
 #!/bin/bash
+# changed to use current version of spotdl
+# see https://github.com/spotDL/spotify-downloader
+# 
+# deprecated
 # uses old spotdl see https://github.com/ritiek/spotify-downloader/issues
 # pip install git+https://github.com/ritiek/spotify-downloader.git
 # pip install --upgrade pytube
@@ -33,15 +37,32 @@ PLName[13]="Rock"
 PLUrl[13]="https://open.spotify.com/playlist/0nr1BGwrfz1aque1hngsqp?si=hpZTECogS_KbfeRRYSmrsQ&utm_source=native-share-menu"
 PLName[14]="Tecno"
 PLUrl[14]="https://open.spotify.com/playlist/15OonYLtY1EnxANpJR3pLP?si=W-u8KHzPR7Ow6wHEdKiRvg&utm_source=native-share-menu"
+PLName[15]="Disco"
+PLUrl[15]="https://open.spotify.com/playlist/5mQj9waMjVXB5pPJSKUzK7?si=8c2cde8be37a47b8"
 
 #pushd ${WRKDIR}
-index="2 4 5 6 7 8 9 10 11 12 13 14"
-#index="3"
+index="2 3 4 5 6 7 8 9 10 11 12 13 14 15"
+#index="5 6"
+pushd "${WRKDIR}"
 for ind in $index
 do
-  spotdl --write-to ${WRKDIR}/${PLName[ind]}.lst -p ${PLUrl[ind]} 
-  spotdl -l ${WRKDIR}/${PLName[ind]}.lst --write-m3u
-  cp ${WRKDIR}/${PLName[ind]}.lst ${WRKDIR}/${PLName[ind]}.spotlst
-  spotdl -f ${WRKDIR}/${PLName[ind]}/{artist}_{track-name}.{output-ext} -l ${WRKDIR}/${PLName[ind]}.lst --overwrite skip
-  rm ${WRKDIR}/${PLName[ind]}.lst
+  if [ ! -d "${WRKDIR}/${PLName[ind]}" ]; then
+    mkdir -p "${WRKDIR}/${PLName[ind]}"
+  fi  
+
+  ## spotdl-v2
+  # spotdl --write-to ${WRKDIR}/${PLName[ind]}.lst -p ${PLUrl[ind]} 
+  # spotdl -l ${WRKDIR}/${PLName[ind]}.lst --write-m3u
+  # cp ${WRKDIR}/${PLName[ind]}.lst ${WRKDIR}/${PLName[ind]}.spotlst
+  # spotdl -f ${WRKDIR}/${PLName[ind]}/{artist}_{track-name}.{output-ext} -l ${WRKDIR}/${PLName[ind]}.lst --overwrite skip
+  # rm ${WRKDIR}/${PLName[ind]}.lst
+  ###
+  pushd "${WRKDIR}/${PLName[ind]}"
+  echo "Extracting to dir: $(pwd)"
+  cmd="spotdl ${PLUrl[ind]} --path-template '{artist}_{title}.{ext}' --output-format mp3 --download-threads 8"
+  echo "$cmd"
+  spotdl ${PLUrl[ind]} --path-template '{artist}_{title}.{ext}' --output-format mp3 --download-threads 8
+  popd
 done
+popd
+reset
