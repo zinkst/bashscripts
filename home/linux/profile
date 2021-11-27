@@ -5,7 +5,7 @@
 # export GOPATH="${HOME}/workspace/" # Don't set this anymore default in ./config/env
 export GO111MODULE=on
 alias ic="ibmcloud"
-alias kc="kubectl"
+#alias kc="kubectl"
 alias git='LANG=en_US.UTF-8 git'
 export CLICOLOR=1
 export LSCOLORS=gxfxcxdxbxegedabagaced
