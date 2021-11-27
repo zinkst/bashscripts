@@ -37,7 +37,7 @@ PLName[13]="Rock"
 PLUrl[13]="https://open.spotify.com/playlist/0nr1BGwrfz1aque1hngsqp?si=hpZTECogS_KbfeRRYSmrsQ&utm_source=native-share-menu"
 PLName[14]="Tecno"
 PLUrl[14]="https://open.spotify.com/playlist/15OonYLtY1EnxANpJR3pLP?si=W-u8KHzPR7Ow6wHEdKiRvg&utm_source=native-share-menu"
-PLName[15]="Disco"
+PLName[15]="Synthpop"
 PLUrl[15]="https://open.spotify.com/playlist/5mQj9waMjVXB5pPJSKUzK7?si=8c2cde8be37a47b8"
 
 #pushd ${WRKDIR}
