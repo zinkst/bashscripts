@@ -106,6 +106,10 @@ function getCamera() {
               CAMERA_MANUFACTURER="Samsung"
               CAMERA_MODEL_NAME="Galaxy S5"
               ;;
+          s20fe )
+              CAMERA_MANUFACTURER="Samsung"
+              CAMERA_MODEL_NAME="Galaxy S20 FE 5G"
+              ;;
           m30s )
               CAMERA_MANUFACTURER="Samsung"
               CAMERA_MODEL_NAME="Galaxy M30s"

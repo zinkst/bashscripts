@@ -10,7 +10,7 @@ function usage() {
   echo "-o extension of video e.g.  mkv"
   echo "-n \"Title of Video\""
   echo "-a \"Appendix fo title\""
-  echo "-m \"Manufacturer of camera\""
+  echo "-c \"Manufacturer of camera\""
 }
 
 
