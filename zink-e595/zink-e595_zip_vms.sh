@@ -4,15 +4,17 @@ src_dir="/local/ntfs_c/vhds"
 bkp_dir="/links/sysbkp"
 usePigz=false
 
-src[0]=${src_dir}/win10.vhd
-tgt[0]=${bkp_dir}/${DATESTRING}_$(hostname -s)_win10.vhd
+src[0]=${src_dir}/win11.vhd
+tgt[0]=${bkp_dir}/${DATESTRING}_$(hostname -s)_win11.vhd
 src[1]=/local/ssd-data/VMs/Fedora/Fedora.vdi
 tgt[1]=${bkp_dir}/${DATESTRING}_$(hostname -s)_Fedora.vdi
+src[2]=${src_dir}/win10.vhd
+tgt[2]=${bkp_dir}/${DATESTRING}_$(hostname -s)_win10.vhd
 
 
 
 execute_command=(false false false false false)
-index=(0 1)
+index=(0 1 2)
 
 compressCommand () 
 {
