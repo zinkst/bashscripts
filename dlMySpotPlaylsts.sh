@@ -39,10 +39,12 @@ PLName[14]="Tecno"
 PLUrl[14]="https://open.spotify.com/playlist/15OonYLtY1EnxANpJR3pLP?si=W-u8KHzPR7Ow6wHEdKiRvg&utm_source=native-share-menu"
 PLName[15]="Synthpop"
 PLUrl[15]="https://open.spotify.com/playlist/5mQj9waMjVXB5pPJSKUzK7?si=8c2cde8be37a47b8"
+PLName[16]="NeueAlben"
+PLUrl[16]="https://open.spotify.com/playlist/3iEhEguPYewxmRlXoUT0rQ?si=74309203adc04a22"
 
 #pushd ${WRKDIR}
-index="2 3 4 5 6 7 8 9 10 11 12 13 14 15"
-#index="5 6"
+index="2 4 5 6 7 8 9 10 11 12 13 14 15"
+#index="3 16"
 pushd "${WRKDIR}"
 for ind in $index
 do
