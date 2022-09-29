@@ -31,7 +31,7 @@ function setup_gnome {
   gsettings set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab', '<Alt>Above_Tab']"
   gsettings set org.gnome.desktop.wm.keybindings switch-applications "[]"
   gsettings set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
-  gsettings set org.gnome.desktop.wm.preferences button-layout 'close,minimize,maximize:'
+  gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
   gsettings set org.gnome.mutter attach-modal-dialogs false
   if [ "$(whoami)" != "marion" ]; then
     gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
