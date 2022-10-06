@@ -29,7 +29,10 @@ checkFSMounted ()
   fi
   echo "MOUNTTESTFILE = ${MOUNTTESTFILE}"
   TARGETFSMOUNTED="false"
-  MOUNTEDBYBKPSCRIPT="false"
+  if [ ! -z $MOUNTEDBYBKPSCRIPT ] 
+  then
+    MOUNTEDBYBKPSCRIPT="false"
+  fi  
   if [ -f ${MOUNTTESTFILE} ] 
   then
     echo ${MOUNTTESTFILE} "exists we can continue" | tee -a ${LOG_ROOT}${LOGFILENAME}
