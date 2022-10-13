@@ -73,7 +73,7 @@ then
   echo " host ${HOSTNAME} not known, not doing backup"
 else
   echo "starting backup on $(date +%H:%M:%S)"
-  CMD="tar cpf ${TARGETFILENAME} --directory ${FILESYSTEMMOUNTPOINT} --use-compress-program=pigz --one-file-system --numeric-owner --exclude=proc/* --exclude=mnt/* --exclude=*/lost+found --exclude=tmp/* ."
+  CMD="tar --selinux --acls --xattrs -cpf ${TARGETFILENAME} --directory ${FILESYSTEMMOUNTPOINT} --use-compress-program=pigz --one-file-system --numeric-owner --exclude=proc/* --exclude=mnt/* --exclude=*/lost+found --exclude=tmp/* ."
   echo ${CMD}
   #`${CMD}`
   ($CMD)
