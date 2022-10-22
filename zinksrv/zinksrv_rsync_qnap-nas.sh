@@ -71,6 +71,4 @@ if [ "${MOUNTEDBYBKPSCRIPT}" == "true" ]; then
   echo "unmounting ${REMOTEMOUNTPOINT}"
   umount ${REMOTEMOUNTPOINT}
 fi
-sleep 10
-echo "Shutting down ${SSH_HOST}"  
-ssh WDMyCloud1 'shutdown -h now'
+
