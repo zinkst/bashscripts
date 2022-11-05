@@ -23,8 +23,8 @@ PLName[6]="Balladen"
 PLUrl[6]="https://open.spotify.com/playlist/05e1TJ3D0aXIzomAPIa6rW?si=csEnUXZ1QB6dAiy2q0wy0w&utm_source=native-share-menu"
 PLName[7]="Deutsch"
 PLUrl[7]="https://open.spotify.com/playlist/26qqmTQEnnMF7NtASGPgv4?si=vHS-wAZiQCGazgvCYl1nYQ&utm_source=native-share-menu"
-PLName[8]="Deutsch"
-PLUrl[8]="https://open.spotify.com/playlist/26qqmTQEnnMF7NtASGPgv4?si=vHS-wAZiQCGazgvCYl1nYQ&utm_source=native-share-menu"
+PLName[8]="Meine Lieblingssongs"
+PLUrl[8]="https://open.spotify.com/playlist/5KtUaYEKSuMl8N6suS8VT0?si=06e448c466a245f5"
 PLName[9]="Indie"
 PLUrl[9]="https://open.spotify.com/playlist/5A7KL1ZrqxqRhbGgmJa0uz?si=dBehOiUSTPKWpAlFy94n5Q&utm_source=native-share-menu"
 PLName[10]="Party"
@@ -44,7 +44,7 @@ PLUrl[16]="https://open.spotify.com/playlist/3iEhEguPYewxmRlXoUT0rQ?si=74309203a
 
 #pushd ${WRKDIR}
 index="2 4 5 6 7 8 9 10 11 12 13 14 15"
-#index="3 16"
+index="2 4 5 6 9 10 11 12 13 14 15"
 pushd "${WRKDIR}"
 for ind in $index
 do
