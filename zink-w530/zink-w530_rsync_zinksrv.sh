@@ -8,7 +8,7 @@ CORRECTHOST="zink-w530"
 # with CIFS there are permissions problems also when running as root
 SRC_ROOT="/"
 LOG_ROOT="${SRC_ROOT}/local/data/rsync/logs"
-RSYNC_PARAMS="-av --one-file-system --exclude-from ${SRC_ROOT}/local/data/rsync/exclude.txt"
+RSYNC_PARAMS="-av -A -X --one-file-system --exclude-from ${SRC_ROOT}/local/data/rsync/exclude.txt"
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 MINS_SINCE_LASTRUN=-1500
