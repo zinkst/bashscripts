@@ -2,10 +2,10 @@
 # variables
 SRC_ROOT="/"
 SSH_HOST="zinksrv"
-SSH_TGT_ROOT="root@${SSH_HOST}:/local/data/kinder/"
+SSH_TGT_ROOT="root@${SSH_HOST}:/local/data/zink-pc3/"
 TGT_ROOT="/remote/zinksrv/nfs4/"
 LOG_ROOT="/links/sysbkp/rsync/"
-RSYNC_PARAMS="-av -A -X --one-file-system --exclude-from /links/sysbkp/rsync/rsync_exclude.txt"
+RSYNC_PARAMS="-av -A -one-file-system --exclude-from /links/sysbkp/rsync/rsync_exclude.txt"
 CORRECTHOST="zink-pc3"
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
