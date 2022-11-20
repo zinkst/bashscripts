@@ -3,7 +3,7 @@
 SRC_ROOT="/"
 TGT_ROOT="/run/media/marion/BKP_ZINK_USB2/"
 LOG_ROOT="/links/zinksrv/rsync_logs/"
-RSYNC_PARAMS="-av -A -X --one-file-system --exclude-from /links/data/zinksrv/rsync_exclude.txt"
+RSYNC_PARAMS="-av -A --one-file-system --exclude-from /links/data/zinksrv/rsync_exclude.txt"
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 CORRECTHOST="zinksrv"
