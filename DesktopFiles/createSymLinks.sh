@@ -5,6 +5,7 @@ export TGT_DIR="${HOME}/.local/share/applications"
 pushd $SRC_DIR
 #files=$(find . -type f -exec echo " {}"\; | tr -d '\n' | cut -d '/' -f2)
 #find . -type f -printf "%p" | IFS=./ read -a files
+
 files=($(ls *.desktop))
 
 for i in "${files[@]}"; 
