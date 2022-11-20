@@ -5,7 +5,7 @@ TGT_ROOT="/remote/zinksrv/nfs4/data/"
 # with CIFS there are permissions problems also when running as root
 SRC_ROOT="/links/"
 LOG_ROOT="${SRC_ROOT}/marion-pc/rsync/"
-RSYNC_PARAMS="-av -A -X --one-file-system --exclude-from ${SRC_ROOT}marion-pc/rsync/exclude.txt"
+RSYNC_PARAMS="-av -A --one-file-system --exclude-from ${SRC_ROOT}marion-pc/rsync/exclude.txt"
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 MINS_SINCE_LASTRUN=-1500
