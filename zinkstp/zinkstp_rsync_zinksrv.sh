@@ -1,29 +1,26 @@
 #!/bin/bash
 # variables
 SRC_ROOT="/"
-SSH_HOST="WDMyCloud1"
-SSH_TGT_ROOT="root@${SSH_HOST}:/shares/Filer"
-TGT_ROOT="/remote/WDMyCloud1/Filer"
-LOG_ROOT="/links/rsync/"
-RSYNC_PARAMS="-av -A --one-file-system --exclude-from /links/rsync/exclude.txt"
+SSH_HOST="zinksrv"
+SSH_TGT_ROOT="root@${SSH_HOST}:/local/data/zink-ry4650g/"
+TGT_ROOT="/remote/zinksrv/"
+LOG_ROOT="/links/zinkstp/rsync/"
+RSYNC_PARAMS="-av -A --one-file-system --exclude-from /links/zinkstp/rsync/rsync_exclude.txt"
+CORRECTHOST="zinkstp"
 LOGFILENAME=$(basename "${0}" .sh)
-CORRECTHOST="zinks-tp"
-LASTRUN_FILENAME="$(basename ${0}).lastrun"
+LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 MINS_SINCE_LASTRUN=-1500
 USE_SSH=false
 CHECK_LASTRUN=false
-index="1 2"
+REMOTEMOUNTPOINT=${TGT_ROOT}
+TRY_MOUNT_TGT="true"
+index="1"
 
-
-Directories[1]="links/ssd_backup"
-TargetDir[1]="/zinks-tp/ssd_backup"
-MountTestFile[1]=${TGT_ROOT}"/doNotDelete"
-Directories[2]="links/persdata"
-TargetDir[2]="/zinks-tp/persdata"
-MountTestFile[2]=${TGT_ROOT}"/doNotDelete"
+Directories[1]="local/data/zinkstp/sysbkp"
+TargetDir[1]="data/zinkstp/sysbkp"
+MountTestFile[1]=${TGT_ROOT}"data/doNotDelete"
 
 . /links/bin/bkp_functions.sh
-
 
 # main routine
 setLogfileName ${LOGFILENAME}
@@ -46,3 +43,4 @@ else
 	doRsyncWithTgtDirAndMountTestFile
 fi	
 updateLastRunFile
+umount ${REMOTEMOUNTPOINT}
