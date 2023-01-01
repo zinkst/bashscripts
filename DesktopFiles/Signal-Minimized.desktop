@@ -11,3 +11,5 @@ Categories=Network;InstantMessaging;Chat;
 X-Desktop-File-Install-Version=0.26
 X-Flatpak-RenamedFrom=signal-desktop.desktop;
 X-Flatpak=org.signal.Signal
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=20
