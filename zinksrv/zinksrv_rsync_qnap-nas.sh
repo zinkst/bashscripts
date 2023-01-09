@@ -19,36 +19,44 @@ index="1 2 3 4 5 6"
 Directories[1]="local/data/zinksrv"
 TargetDir[1]="zinksrv/data/zinksrv"
 MountTestFile[1]="${TGT_ROOT}doNotDelete"
+
 Directories[2]="local/data/zink-pc3"
 TargetDir[2]="zinksrv/data/zink-pc3"
 MountTestFile[2]="${TGT_ROOT}doNotDelete"
+
 Directories[3]="local/data/zink-e595"
 TargetDir[3]="/zinksrv/data/zink-e595"
 MountTestFile[3]="${TGT_ROOT}doNotDelete"
+
 Directories[4]="local/data/kinder2"
 TargetDir[4]="zinksrv/data/kinder2"
 MountTestFile[4]="${TGT_ROOT}doNotDelete"
+
 Directories[5]="local/data/zink-w530"
 TargetDir[5]="zinksrv/data/zink-w530"
 MountTestFile[5]="${TGT_ROOT}doNotDelete"
+
 Directories[6]="local/data/zink-ry4650g"
 TargetDir[6]="zinksrv/data/zink-ry4650g"
 MountTestFile[6]="${TGT_ROOT}doNotDelete"
+
 Directories[7]="local/ntfsdata"
 TargetDir[7]="same"
 MountTestFile[7]="${TGT_ROOT}doNotDelete"
+
 Directories[8]="local/ntfs_c"
 TargetDir[8]="same"
 MountTestFile[8]="${TGT_ROOT}doNotDelete"
 
-
-
 . /links/bin/bkp_functions.sh
-
 
 # main routine
 setLogfileName ${LOGFILENAME}
-ether-wake 24:5E:BE:4C:C7:EE # wake up qnap-nas
+echo "give power to qnap-nas"
+curl http://hama-4fach-01/cm?cmnd=Power3%20On
+sleep 5
+echo "wake up qnap-nas"
+ether-wake 24:5E:BE:4C:C7:EE
 checkCorrectHost
 rsyncBkpParamCheck $@
 if [ ${CHECK_LASTRUN} == true ]
@@ -74,5 +82,8 @@ if [ "${MOUNTEDBYBKPSCRIPT}" == "true" ]; then
   echo "unmounting ${REMOTEMOUNTPOINT}"
   umount ${REMOTEMOUNTPOINT}
 fi
-# shutdown qnap-nas
+echo "shutdown qnap-nas"
 ssh -l admin ${SSH_HOST} 'poweroff'
+sleep 200
+echo "power off qnap-nas"
+curl http://hama-4fach-01/cm?cmnd=Power3%20Off
