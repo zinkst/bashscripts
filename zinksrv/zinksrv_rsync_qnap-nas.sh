@@ -2,7 +2,7 @@
 # variables
 SRC_ROOT="/"
 SSH_HOST="qnap-ts130"
-SSH_TGT_ROOT="root@${SSH_HOST}:/share/qnap-nas"
+#SSH_TGT_ROOT="root@${SSH_HOST}:/share/qnap-nas"
 TGT_ROOT="/remote/qnap-ts130/data/"
 LOG_ROOT="/links/zinksrv/rsync_logs/"
 RSYNC_PARAMS="-av -A --one-file-system --exclude-from /links/zinksrv/rsync_exclude.txt"
@@ -48,12 +48,14 @@ MountTestFile[8]="${TGT_ROOT}doNotDelete"
 
 # main routine
 setLogfileName ${LOGFILENAME}
+ether-wake 24:5E:BE:4C:C7:EE # wake up qnap-nas
 checkCorrectHost
 rsyncBkpParamCheck $@
 if [ ${CHECK_LASTRUN} == true ]
 then
 	checkLastRun
 fi
+sleep 7200 # wait 10 minutes until qnap is started
 if [ ${USE_SSH} == true ]
 then
   if ping -c 1 ${SSH_HOST} # &> /dev/null
@@ -71,4 +73,5 @@ if [ "${MOUNTEDBYBKPSCRIPT}" == "true" ]; then
   echo "unmounting ${REMOTEMOUNTPOINT}"
   umount ${REMOTEMOUNTPOINT}
 fi
-
+# shutdown qnap-nas
+ssh -l admin ${SSH_HOST} 'poweroff'
