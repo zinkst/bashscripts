@@ -55,7 +55,8 @@ if [ ${CHECK_LASTRUN} == true ]
 then
 	checkLastRun
 fi
-sleep 7200 # wait 10 minutes until qnap is started
+echo " wait 10 minutes until qnap is started"
+sleep 720 
 if [ ${USE_SSH} == true ]
 then
   if ping -c 1 ${SSH_HOST} # &> /dev/null
