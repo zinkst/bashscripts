@@ -3,7 +3,7 @@
 SRC_ROOT="/"
 SSH_HOST="qnap-ts130"
 SSH_TGT_ROOT="root@${SSH_HOST}:/share/qnap-nas"
-TGT_ROOT="/remote/qnap-nas/"
+TGT_ROOT="/remote/qnap-ts130/data/"
 LOG_ROOT="/links/zinksrv/rsync_logs/"
 RSYNC_PARAMS="-av -A --one-file-system --exclude-from /links/zinksrv/rsync_exclude.txt"
 LOGFILENAME=$(basename "${0}" .sh)
