@@ -14,8 +14,10 @@ setDateTimeString ()
 
 setLogfileName ()
 {
-  setDateTimeString
-  LOGFILENAME="${DATETIMESTRING}_${1}.log"
+  if [ ! -z ${1} ]; then
+    setDateTimeString
+    LOGFILENAME="${DATETIMESTRING}_${1}.log"
+  fi  
   echo ${LOGFILENAME} 
 }
 
@@ -120,7 +122,8 @@ doRsyncWithTgtDirAndMountTestFile ()
   APPENDLOGCMD="| tee -a ${LOG_ROOT}${LOGFILENAME}"
   if [ -z ${LOGFILENAME} ]; then
      APPENDLOGCMD=""
-  fi   
+  fi
+  echo APPENDLOGCMD="${APPENDLOGCMD}"   
   for ind in $index
   do
     if [ -n "${TargetDir[ind]}" ]
