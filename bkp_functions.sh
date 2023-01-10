@@ -120,7 +120,7 @@ doRsyncWithTgtDirAndMountTestFile ()
   ${TRY_MOUNT_TGT:+"false"}
   echo "doRsyncWithTgtDirAndMountTestFile called"
   APPENDLOGCMD="| tee -a ${LOG_ROOT}${LOGFILENAME}"
-  if [ -z ${LOGFILENAME} ]; then
+  if [ ${TEE_LOGS_TO_FILE} == "false" ]; then
      APPENDLOGCMD=""
   fi
   echo APPENDLOGCMD="${APPENDLOGCMD}"   
