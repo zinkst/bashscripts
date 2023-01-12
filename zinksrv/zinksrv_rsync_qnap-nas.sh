@@ -7,6 +7,7 @@ TGT_ROOT="/remote/qnap-ts130/data/"
 LOG_ROOT="/links/zinksrv/rsync_logs/"
 RSYNC_PARAMS="-av -A --one-file-system --exclude-from /links/zinksrv/rsync_exclude.txt"
 LOGFILENAME=$(basename "${0}" .sh)
+TEE_LOGS_TO_FILE=true
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 CORRECTHOST="zinksrv"
 MINS_SINCE_LASTRUN=-1500
@@ -53,8 +54,8 @@ MountTestFile[8]="${TGT_ROOT}doNotDelete"
 # main routine
 setLogfileName ${LOGFILENAME}
 echo "give power to qnap-nas"
-curl http://hama-4fach-01/cm?cmnd=Power3%20On
-sleep 5
+curl -s http://hama-4fach-01/cm?cmnd=Power3%20On
+sleep 30 
 echo "wake up qnap-nas"
 ether-wake 24:5E:BE:4C:C7:EE
 checkCorrectHost
@@ -86,4 +87,4 @@ echo "shutdown qnap-nas"
 ssh -l admin ${SSH_HOST} 'poweroff'
 sleep 200
 echo "power off qnap-nas"
-curl http://hama-4fach-01/cm?cmnd=Power3%20Off
+curl -s http://hama-4fach-01/cm?cmnd=Power3%20Off
