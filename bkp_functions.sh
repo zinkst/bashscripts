@@ -119,11 +119,6 @@ doRsyncWithTgtDirAndMountTestFile ()
 { 
   ${TRY_MOUNT_TGT:+"false"}
   echo "doRsyncWithTgtDirAndMountTestFile called"
-  APPENDLOGCMD="| tee -a ${LOG_ROOT}${LOGFILENAME}"
-  if [ ${TEE_LOGS_TO_FILE} == "false" ]; then
-     APPENDLOGCMD=""
-  fi
-  echo APPENDLOGCMD="${APPENDLOGCMD}"   
   for ind in $index
   do
     if [ -n "${TargetDir[ind]}" ]
@@ -154,11 +149,16 @@ doRsyncWithTgtDirAndMountTestFile ()
 			  RSYNC_PARAMS_USED=${RSYNC_PARAMS}	
 		  fi 	  		
 		  echo RSYNC_PARAMS_USED=${RSYNC_PARAMS_USED}
-		  echo "starting rsync of ${Directories[ind]}" ${APPENDLOGCMD}
-		  date >> ${LOG_ROOT}${LOGFILENAME}
-		  echo "rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]}" ${APPENDLOGCMD}
-		  rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]} ${APPENDLOGCMD}
-		  date >> ${LOG_ROOT}${LOGFILENAME}
+		  echo "starting rsync of ${Directories[ind]}" | tee -a ${LOG_ROOT}${LOGFILENAME}
+		  date >> "${LOG_ROOT}${LOGFILENAME}"
+		  if [ "${TEE_LOGS_TO_FILE}" == "false" ]; then
+		  	echo "rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]}/ "
+		  	rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]}/
+		  else
+		  	echo "rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]}/ " | tee -a "${LOG_ROOT}${LOGFILENAME}" 
+		  	rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]}/ | tee -a "${LOG_ROOT}${LOGFILENAME}"
+		  fi	
+		  date >> "${LOG_ROOT}${LOGFILENAME}"
 		fi
 	 else
 		echo "no target defined for index $ind"
