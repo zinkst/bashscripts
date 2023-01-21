@@ -2,19 +2,32 @@
 # Linux Start-Script fuer regulaeren Standalone-Betrieb.
 # Jameica wird hierbei mit GUI gestartet.
 
-. /links/bin/bkp_functions.sh
-determineDistribution
+function run() {
+  cd ${TARGET_DIR}/${PROGRAM}-${VERSION}
+  cmd="java -jar ${TARGET_DIR}/${PROGRAM}-${VERSION}/${PROGRAM}-linux64.jar"
+  echo $cmd
+  eval $cmd
+}
 
-java_env "open"
-#_JCONSOLE="-Dcom.sun.management.jmxremote"
-JAMEICA_DIR=/home/share/jameica
-cd ${JAMEICA_DIR}
-echo ${JAVA_HOME}
+function update() {
+  if [ ! -d ${TARGET_DIR}/${PROGRAM}-${VERSION} ]; then
+    echo "updating ${PROGRAM}"
+    if [ ! -f ${HOME}/Downloads/${PROGRAM}-${VERSION}-linux64.zip ]; then
+       wget -O ${HOME}/Downloads/${PROGRAM}-${VERSION}-linux64.zip https://www.willuhn.de/products/jameica/releases/current/jameica/jameica-linux64.zip
+    fi  
+    unzip ${HOME}/Downloads/${PROGRAM}-${VERSION}-linux64.zip -d ${TARGET_DIR}/${PROGRAM}-${VERSION}
+    cd ${TARGET_DIR}/${PROGRAM}-${VERSION}
+    shopt -s dotglob
+    mv jameica/* .
+    rmdir jameica
+  fi
+}
 
-bit=`arch |grep 64`
-if [ $? = 0 ]
- then  
-    LIBOVERLAY_SCROLLBAR=0 GDK_NATIVE_WINDOWS=1 SWT_GTK3=0 ${JAVA_HOME}/bin/java -Xmx512m $_JCONSOLE -jar jameica-linux64.jar $@
- else 
-    LIBOVERLAY_SCROLLBAR=0 GDK_NATIVE_WINDOWS=1 SWT_GTK3=0 ${JAVA_HOME}/bin/java -Xmx512m $_JCONSOLE -jar jameica-linux.jar $@
-fi
+# main
+export TARGET_DIR="/home/share"
+export VERSION=2.10.9
+export PROGRAM=jameica
+
+#main
+update
+run
