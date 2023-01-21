@@ -53,7 +53,7 @@ MountTestFile[8]="${TGT_ROOT}doNotDelete"
 
 # main routine
 setLogfileName ${LOGFILENAME}
-echo "give power to qnap-nas"
+echo "give power to qnap-nas and wait"
 curl -s http://hama-4fach-01/cm?cmnd=Power3%20On
 sleep 30 
 echo "wake up qnap-nas"
@@ -64,7 +64,7 @@ if [ ${CHECK_LASTRUN} == true ]
 then
 	checkLastRun
 fi
-echo " wait 10 minutes until qnap is started"
+echo "wait 10 minutes until qnap is started"
 sleep 720 
 if [ ${USE_SSH} == true ]
 then
