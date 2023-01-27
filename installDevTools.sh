@@ -73,7 +73,7 @@ function installDevToolsfromBinaryTGZ(){
   
   
   COMMAND[3]="fly"
-  COMMAND_VERSION[3]="7.6.0"
+  COMMAND_VERSION[3]="7.8.3"
   DOWNLOAD_URL[3]="https://github.com/concourse/concourse/releases/download/v${COMMAND_VERSION[3]}/fly-${COMMAND_VERSION[3]}-linux-amd64.tgz"
   BINARY_TARGET[3]="fly"
   
@@ -123,8 +123,13 @@ function installDevToolsfromBinary(){
   COMMAND_VERSION[7]="v0.17.0"
   DOWNLOAD_URL[7]="https://github.com/kubernetes-sigs/kind/releases/download/${COMMAND_VERSION[7]}/kind-linux-amd64"
 
+  COMMAND[8]="aviator"
+  COMMAND_VERSION[8]="v1.9.0"
+  DOWNLOAD_URL[8]="https://github.com/herrjulz/aviator/releases/download/${COMMAND_VERSION[8]}/aviator-linux-amd64"
+
+
   index=(0 1 2 3 4 5 6 7)
-  index=(5) 
+  index=(8) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
@@ -171,6 +176,22 @@ function installDetectSecrets() {
   pip show detect-secrets | grep Location
 }
 
+function installWebExRPM() {
+  RPM_URL="https://binaries.webex.com/WebexDesktop-CentOS-Official-Package/Webex.rpm"
+  RPM_DATE=$(date +'%Y%m%d')
+  RPM_NAME="webex"
+  if [ ! -f ${HOME}/Downloads/${RPM_DATE}-${RPM_NAME}.rpm ]; then 
+    wget -O ${HOME}/Downloads/${RPM_DATE}-${RPM_NAME}.rpm ${RPM_URL}
+  fi
+  RPM_VERSION=$(rpm -q --info ${HOME}/Downloads/${RPM_DATE}-${RPM_NAME}.rpm 2> /dev/null | grep "Version" | cut  -d ":" -f 2 | xargs)
+  if [ ! -f ${HOME}/Downloads/${RPM_NAME}-${RPM_VERSION}.rpm ]; then 
+    cp ${HOME}/Downloads/${RPM_DATE}-${RPM_NAME}.rpm ${HOME}/Downloads/${RPM_NAME}-${RPM_VERSION}.rpm
+  fi  
+  cmd="sudo dnf install ${HOME}/Downloads/${RPM_NAME}-${RPM_VERSION}.rpm"
+  echo $cmd
+  eval ${cmd}
+}
+
 # main
 export TARGET_DIR=${HOME}/.local/bin
 #hashMap
@@ -178,5 +199,6 @@ export TARGET_DIR=${HOME}/.local/bin
 #installDetectSecrets
 #installDevToolsfromBinary
 #installLegalyamlTools
-installDevToolsfromBinaryTGZ
+#installDevToolsfromBinaryTGZ
 #installGolangFromTGZ
+installWebExRPM
