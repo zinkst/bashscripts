@@ -4,8 +4,8 @@
 Version=1.0
 Type=Application
 Terminal=false
-Icon[de_DE]=/home/share/icons/jameica-icon-01.png
+Icon[de_DE]=/home/share/icons/jameica-icon.png
 Exec=jameica.sh
 Name[de_DE]=Jameica Hibiscus
-Name=PDF Split and Merge
-Icon=/home/share/icons/jameica-icon-01.png
+Name=Jameica Hibiscus
+Icon=/home/share/icons/jameica-icon.png
