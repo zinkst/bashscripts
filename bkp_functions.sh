@@ -152,11 +152,11 @@ doRsyncWithTgtDirAndMountTestFile ()
 		  echo "starting rsync of ${Directories[ind]}" | tee -a ${LOG_ROOT}${LOGFILENAME}
 		  date >> "${LOG_ROOT}${LOGFILENAME}"
 		  if [ "${TEE_LOGS_TO_FILE}" == "false" ]; then
-		  	echo "rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]}/ "
-		  	rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]}/
+		  	echo "rsync ${RSYNC_PARAMS_USED} \"${SRC_ROOT}${Directories[ind]}/\" \"${TGT_ROOT}${TargetDir[ind]}/\""
+		  	rsync ${RSYNC_PARAMS_USED} "${SRC_ROOT}${Directories[ind]}/" "${TGT_ROOT}${TargetDir[ind]}/"
 		  else
-		  	echo "rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]}/ " | tee -a "${LOG_ROOT}${LOGFILENAME}" 
-		  	rsync ${RSYNC_PARAMS_USED} ${SRC_ROOT}${Directories[ind]}/ ${TGT_ROOT}${TargetDir[ind]}/ | tee -a "${LOG_ROOT}${LOGFILENAME}"
+		  	echo "rsync ${RSYNC_PARAMS_USED} \"${SRC_ROOT}${Directories[ind]}/\" \"${TGT_ROOT}${TargetDir[ind]}/\" " | tee -a "${LOG_ROOT}${LOGFILENAME}" 
+		  	rsync ${RSYNC_PARAMS_USED} "${SRC_ROOT}${Directories[ind]}/" "${TGT_ROOT}${TargetDir[ind]}/" | tee -a "${LOG_ROOT}${LOGFILENAME}"
 		  fi	
 		  date >> "${LOG_ROOT}${LOGFILENAME}"
 		fi
