@@ -15,7 +15,7 @@ CHECK_LASTRUN=false
 USE_SSH=false
 TRY_MOUNT_TGT="true"
 REMOTEMOUNTPOINT=${TGT_ROOT}
-index="1 2 3 4 5 6"
+index="1 2 3 4 5 6 7" 
 	
 Directories[1]="local/data/zinksrv"
 TargetDir[1]="zinksrv/data/zinksrv"
@@ -41,13 +41,17 @@ Directories[6]="local/data/zink-ry4650g"
 TargetDir[6]="zinksrv/data/zink-ry4650g"
 MountTestFile[6]="${TGT_ROOT}doNotDelete"
 
-Directories[7]="local/ntfsdata"
+Directories[7]="local/data2"
 TargetDir[7]="same"
 MountTestFile[7]="${TGT_ROOT}doNotDelete"
 
 Directories[8]="local/ntfs_c"
 TargetDir[8]="same"
 MountTestFile[8]="${TGT_ROOT}doNotDelete"
+
+Directories[9]="local/ntfsdata"
+TargetDir[9]="same"
+MountTestFile[9]="${TGT_ROOT}doNotDelete"
 
 . /links/bin/bkp_functions.sh
 
