@@ -42,7 +42,7 @@ TargetDir[6]="zinksrv/data/zink-ry4650g"
 MountTestFile[6]="${TGT_ROOT}doNotDelete"
 
 Directories[7]="local/data2"
-TargetDir[7]="same"
+TargetDir[7]="zinksrv/data2"
 MountTestFile[7]="${TGT_ROOT}doNotDelete"
 
 Directories[8]="local/ntfs_c"
@@ -70,7 +70,7 @@ function checkInputParams() {
 	while getopts "tdnsc" OPTNAME
 	do
 		case "${OPTNAME}" in
-			t) export QNAP_TOGGLE_POWER=true;;
+			t) export QNAP_TOGGLE_POWER=false;;
 			c ) CHECK_LASTRUN=true;;
 			d ) RSYNC_DELETE=true;;
 			n ) RSYNC_PARAMS="${RSYNC_PARAMS} -n";;
@@ -81,6 +81,12 @@ function checkInputParams() {
 				usage 
 		esac
 	done
+ 	echo "@ = ${@}"
+	shift $((OPTIND-1))
+	if  [ $# -gt 0 ]
+	then
+		index=$1
+	fi
 
 }
 
@@ -94,25 +100,21 @@ function printParams() {
 }
 
 # main routine
-setLogfileName ${LOGFILENAME}
-QNAP_TOGGLE_POWER=false
+QNAP_TOGGLE_POWER=true
 checkInputParams $@
-if [ QNAP_TOGGLE_POWER == true ]; then
+printParams
+if [ ${QNAP_TOGGLE_POWER} == true ]; then
 	powerQnap.sh
-	# echo "give power to qnap-nas and wait"
-	# curl -s http://hama-4fach-01/cm?cmnd=Power3%20On
-	# sleep 30 
-	# echo "wake up qnap-nas"
-	# ether-wake 24:5E:BE:4C:C7:EE
+	echo "wait 10 minutes until qnap is started"
+	sleep 720 
 fi
-exit
+
+setLogfileName ${LOGFILENAME}
 checkCorrectHost
 if [ ${CHECK_LASTRUN} == true ]
 then
 	checkLastRun
 fi
-echo "wait 10 minutes until qnap is started"
-sleep 720 
 if [ ${USE_SSH} == true ]
 then
   if ping -c 1 ${SSH_HOST} # &> /dev/null
@@ -131,13 +133,7 @@ if [ "${MOUNTEDBYBKPSCRIPT}" == "true" ]; then
   umount ${REMOTEMOUNTPOINT}
 fi
 
-checkToggleQnap
 if [ checkToggleQnap == true ]; then
 	powerQnap.sh -s
-	# echo "give power to qnap-nas and wait"
-	# curl -s http://hama-4fach-01/cm?cmnd=Power3%20On
-	# sleep 30 
-	# echo "wake up qnap-nas"
-	# ether-wake 24:5E:BE:4C:C7:EE
 fi
 
