@@ -55,15 +55,58 @@ MountTestFile[9]="${TGT_ROOT}doNotDelete"
 
 . /links/bin/bkp_functions.sh
 
+usage() {
+  echo "options are:"
+  echo " -d: use --delete as additional rysnc parameter (deletes on target)"
+  echo " -n: use -n as additional rysnc parameter (does only a dry-run do not actually copy files)"
+  echo " -s: use ssh based rsync as target"
+  echo " -c: check when the script was last run and exit if it was within the last ${MINS_SINCE_LASTRUN} minutes"
+	echo " -t: toggle power of qnap nas"
+	printParams
+	exit -1
+}  
+
+function checkInputParams() {
+	while getopts "tdnsc" OPTNAME
+	do
+		case "${OPTNAME}" in
+			t) export QNAP_TOGGLE_POWER=true;;
+			c ) CHECK_LASTRUN=true;;
+			d ) RSYNC_DELETE=true;;
+			n ) RSYNC_PARAMS="${RSYNC_PARAMS} -n";;
+			s ) TGT_ROOT=${SSH_TGT_ROOT}
+				USE_SSH=true
+				;;	
+			*)
+				usage 
+		esac
+	done
+
+}
+
+function printParams() {
+	echo "TGT_ROOT = ${TGT_ROOT}"
+	echo "RSYNC_PARAMS=${RSYNC_PARAMS}"
+	echo "USE_SSH = ${USE_SSH}"
+	echo "CHECK_LASTRUN = ${CHECK_LASTRUN}"
+	echo "QNAP_TOGGLE_POWER=${QNAP_TOGGLE_POWER}"
+	echo "index = ${index}"
+}
+
 # main routine
 setLogfileName ${LOGFILENAME}
-echo "give power to qnap-nas and wait"
-curl -s http://hama-4fach-01/cm?cmnd=Power3%20On
-sleep 30 
-echo "wake up qnap-nas"
-ether-wake 24:5E:BE:4C:C7:EE
+QNAP_TOGGLE_POWER=false
+checkInputParams $@
+if [ QNAP_TOGGLE_POWER == true ]; then
+	powerQnap.sh
+	# echo "give power to qnap-nas and wait"
+	# curl -s http://hama-4fach-01/cm?cmnd=Power3%20On
+	# sleep 30 
+	# echo "wake up qnap-nas"
+	# ether-wake 24:5E:BE:4C:C7:EE
+fi
+exit
 checkCorrectHost
-rsyncBkpParamCheck $@
 if [ ${CHECK_LASTRUN} == true ]
 then
 	checkLastRun
@@ -87,8 +130,14 @@ if [ "${MOUNTEDBYBKPSCRIPT}" == "true" ]; then
   echo "unmounting ${REMOTEMOUNTPOINT}"
   umount ${REMOTEMOUNTPOINT}
 fi
-echo "shutdown qnap-nas"
-ssh -l admin ${SSH_HOST} 'poweroff'
-sleep 200
-echo "power off qnap-nas"
-curl -s http://hama-4fach-01/cm?cmnd=Power3%20Off
+
+checkToggleQnap
+if [ checkToggleQnap == true ]; then
+	powerQnap.sh -s
+	# echo "give power to qnap-nas and wait"
+	# curl -s http://hama-4fach-01/cm?cmnd=Power3%20On
+	# sleep 30 
+	# echo "wake up qnap-nas"
+	# ether-wake 24:5E:BE:4C:C7:EE
+fi
+
