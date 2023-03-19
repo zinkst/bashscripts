@@ -104,7 +104,7 @@ QNAP_TOGGLE_POWER=true
 checkInputParams $@
 printParams
 if [ ${QNAP_TOGGLE_POWER} == true ]; then
-	powerQnap.sh
+	/links/bin/powerQnap.sh
 	echo "wait 10 minutes until qnap is started"
 	sleep 720 
 fi
@@ -134,6 +134,6 @@ if [ "${MOUNTEDBYBKPSCRIPT}" == "true" ]; then
 fi
 
 if [ checkToggleQnap == true ]; then
-	powerQnap.sh -s
+	/links/bin/powerQnap.sh -s
 fi
 
