@@ -133,7 +133,7 @@ if [ "${MOUNTEDBYBKPSCRIPT}" == "true" ]; then
   umount ${REMOTEMOUNTPOINT}
 fi
 
-if [ checkToggleQnap == true ]; then
+if [ ${QNAP_TOGGLE_POWER} == true ]; then
 	/links/bin/powerQnap.sh -s
 fi
 
