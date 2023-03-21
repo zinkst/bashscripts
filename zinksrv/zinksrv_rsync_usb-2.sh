@@ -8,6 +8,7 @@ LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 CORRECTHOST="zinksrv"
 index="1 2 3 4 5 6 7"
+index="1 2 3 4"
 MINS_SINCE_LASTRUN=-1500
 USE_SSH=false
 CHECK_LASTRUN=false
@@ -23,12 +24,12 @@ TargetDir[2]="same"
 MountTestFile[2]="${TGT_ROOT}doNotDelete"
 AllowDelete[2]=true
 
-Directories[3]="local/data/Other-Systems"
+Directories[3]="local/data/zinksrv/Musik"
 TargetDir[3]="same"
 MountTestFile[3]="${TGT_ROOT}doNotDelete"
 AllowDelete[3]=true
 
-Directories[4]="local/data/zink-e595"
+Directories[4]="local/data/zinksrv/persdata"
 TargetDir[4]="same"
 MountTestFile[4]="${TGT_ROOT}doNotDelete"
 AllowDelete[4]=true
