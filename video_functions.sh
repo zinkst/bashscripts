@@ -5,14 +5,14 @@ getTimestamps()
 	  TIMESTAMP=$(mediainfo --Inform="General;%Recorded_Date%" "${1}")
   else 
 	  TIMESTAMP=$(mediainfo --Inform="Video;%Encoded_Date%" "${1}")
-  	TIMESTAMP=${TIMESTAMP:4}
+  	#TIMESTAMP=${TIMESTAMP:4}
   fi
   if [ "${TIMESTAMP}" == "" ]; then
     TIMESTAMP_UNIX=`stat -c %Y "${1}"`
     TIMESTAMP=$(date -d@"${TIMESTAMP_UNIX}" +'%Y-%m-%d %H:%M:%S')
   fi 
   # uncomment and adapt the following to overwrite timestamp
-  # TIMESTAMP="UTC 2021-06-15 09:52:00"
+  # TIMESTAMP="UTC 2024-04-30 08:15:00"
   setTimestampVariables  
 }
 
@@ -137,6 +137,10 @@ function getCamera() {
           apple )
               CAMERA_MANUFACTURER="Apple"
               CAMERA_MODEL_NAME="iPhone"
+              ;;
+          ss )
+              CAMERA_MANUFACTURER="Slideshow"
+              CAMERA_MODEL_NAME="generated"
               ;;
       esac
     fi  

@@ -134,13 +134,13 @@ doRsyncWithTgtDirAndMountTestFile ()
 		fi
 		if [ ${TARGETFSMOUNTED} == "true" ]
 		then
-		  if [ ${TargetDir[ind]} == "same" ]
+		  if [ "${TargetDir[ind]}" == "same" ]
 		  then
 			 TargetDir[ind]=${Directories[ind]}
 		  fi
 		  echo "AllowDelete[$ind]=${AllowDelete[ind]}"
 		  echo "RSYNC_DELETE=${RSYNC_DELETE}"
-		  if [[ ${RSYNC_DELETE} == "true"  &&  ! ${AllowDelete[ind]} == "false"  ]] 
+		  if [[ "${RSYNC_DELETE}" == "true"  &&  ! ${AllowDelete[ind]} == "false"  ]] 
 		  then
 			  echo "adding delete parameter to RSYNC_PARAMS"
 			  RSYNC_PARAMS_USED="${RSYNC_PARAMS} --delete"
