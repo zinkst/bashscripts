@@ -20,7 +20,7 @@ function restore {
 function setup_gnome {
 	gsettings set org.gnome.desktop.interface enable-hot-corners false
 	gsettings set org.gnome.desktop.background picture-options scaled
-	gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
+	# gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
 	gsettings set org.gnome.desktop.session idle-delay 600
 	gsettings set org.gnome.desktop.screensaver idle-activation-enabled false
 	gsettings set org.gnome.desktop.notifications show-in-lock-screen true
@@ -32,9 +32,11 @@ function setup_gnome {
   gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close'
   gsettings set org.gnome.desktop.lockdown disable-lock-screen 'true'
   gsettings set org.gnome.mutter attach-modal-dialogs false
+  gsettings set org.gnome.desktop.interface overlay-scrolling false
   if [ $(hostname -s) != "zinkstp" ]; then
     gsettings set org.gnome.desktop.screensaver lock-enabled false
-  fi  
+  fi
+
 }
 
 # main
