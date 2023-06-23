@@ -55,31 +55,59 @@ function installBinaryFromTGZ(){
 
 
 function installDevToolsfromBinaryTGZ(){
-  COMMAND_VERSION[0]="1.50.1"
+  COMMAND_VERSION[0]="1.51.1"
   COMMAND[0]="golangci-lint"
   DOWNLOAD_URL[0]="https://github.com/golangci/golangci-lint/releases/download/v${COMMAND_VERSION[0]}/golangci-lint-${COMMAND_VERSION[0]}-linux-amd64.tar.gz"
-  BINARY_TARGET[0]="golangci-lint-1.50.1-linux-amd64/golangci-lint"
+  BINARY_TARGET[0]="golangci-lint-${COMMAND_VERSION[0]}-linux-amd64/golangci-lint"
 
   COMMAND[1]="k9s"
-  COMMAND_VERSION[1]="0.26.7"
-  DOWNLOAD_URL[1]="https://github.com/derailed/k9s/releases/download/v${COMMAND_VERSION[1]}/k9s_Linux_x86_64.tar.gz"
+  COMMAND_VERSION[1]="0.27.3"
+  DOWNLOAD_URL[1]="https://github.com/derailed/k9s/releases/download/v${COMMAND_VERSION[1]}/k9s_Linux_amd64.tar.gz"
   BINARY_TARGET[1]="k9s"
-
+  
   COMMAND[2]="dyff"
   COMMAND_VERSION[2]="1.5.6"
   BINARY_TARGET[2]="dyff"
   DOWNLOAD_URL[2]="https://github.com/homeport/dyff/releases/download/v${COMMAND_VERSION[2]}/dyff_${COMMAND_VERSION[2]}_linux_amd64.tar.gz"
-
-  
   
   COMMAND[3]="fly"
-  COMMAND_VERSION[3]="7.8.3"
+  COMMAND_VERSION[3]="7.9.1"
   DOWNLOAD_URL[3]="https://github.com/concourse/concourse/releases/download/v${COMMAND_VERSION[3]}/fly-${COMMAND_VERSION[3]}-linux-amd64.tgz"
   BINARY_TARGET[3]="fly"
-  
 
-  index=(0 1 2 3)
-  index=(3) 
+  COMMAND[4]="helm"
+  COMMAND_VERSION[4]="3.10.3"
+  DOWNLOAD_URL[4]="https://get.helm.sh/helm-v${COMMAND_VERSION[4]}-linux-amd64.tar.gz"
+  BINARY_TARGET[4]="linux-amd64/helm"
+
+  # shift-report download URL doesn't work due to redirect
+  COMMAND[5]="shift-report"
+  COMMAND_VERSION[5]="0.5.0"
+  DOWNLOAD_URL[5]="https://github.ibm.com/ENCALADA/shift-report/releases/download/v${COMMAND_VERSION[5]}/shift-report_${COMMAND_VERSION[5]}_Linux_x86_64.tar.gz"
+  BINARY_TARGET[5]="shift-report"
+  
+  COMMAND[6]="havener"
+  COMMAND_VERSION[6]="2.0.8"
+  DOWNLOAD_URL[6]="https://github.com/homeport/havener/releases/download/v${COMMAND_VERSION[6]}/havener_${COMMAND_VERSION[6]}_linux_amd64.tar.gz"
+  BINARY_TARGET[6]="havener"
+  
+  COMMAND[7]="retry"
+  COMMAND_VERSION[7]="0.1.3"
+  DOWNLOAD_URL[7]="https://github.com/homeport/retry/releases/download/v${COMMAND_VERSION[7]}/retry_${COMMAND_VERSION[7]}_linux_amd64.tar.gz"
+  BINARY_TARGET[7]="retry"
+  
+  COMMAND[8]="stern"
+  COMMAND_VERSION[8]="1.25.0"
+  DOWNLOAD_URL[8]="https://github.com/stern/stern/releases/download/v${COMMAND_VERSION[8]}/stern_${COMMAND_VERSION[8]}_linux_amd64.tar.gz"
+  BINARY_TARGET[8]="stern"
+  
+  COMMAND[9]="kubectl-neat"
+  COMMAND_VERSION[9]="2.0.3"
+  DOWNLOAD_URL[9]="https://github.com/itaysk/kubectl-neat/releases/download/v${COMMAND_VERSION[9]}/kubectl-neat_linux_amd64.tar.gz"
+  BINARY_TARGET[9]="kubectl-neat"
+    
+  index=(0 1 2 3 4 5 6 7)
+  index=(9) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
@@ -120,16 +148,23 @@ function installDevToolsfromBinary(){
   DOWNLOAD_URL[6]="https://github.com/ahmetb/kubectx/raw/${COMMAND_VERSION[6]}/kubens"
 
   COMMAND[7]="kind"
-  COMMAND_VERSION[7]="v0.17.0"
+  COMMAND_VERSION[7]="v0.20.0"
   DOWNLOAD_URL[7]="https://github.com/kubernetes-sigs/kind/releases/download/${COMMAND_VERSION[7]}/kind-linux-amd64"
 
   COMMAND[8]="aviator"
   COMMAND_VERSION[8]="v1.9.0"
   DOWNLOAD_URL[8]="https://github.com/herrjulz/aviator/releases/download/${COMMAND_VERSION[8]}/aviator-linux-amd64"
 
+  COMMAND[9]="calicoctl"
+  COMMAND_VERSION[9]="3.24.5"
+  DOWNLOAD_URL[9]="https://github.com/projectcalico/calico/releases/download/v${COMMAND_VERSION[9]}/calicoctl-linux-amd64"
+
+  COMMAND[10]="kn"
+  COMMAND_VERSION[10]="1.9.2"
+  DOWNLOAD_URL[10]="https://github.com/knative/client/releases/download/knative-v${COMMAND_VERSION[10]}/kn-linux-amd64"
 
   index=(0 1 2 3 4 5 6 7)
-  index=(8) 
+  index=(7) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
@@ -139,14 +174,14 @@ function installDevToolsfromBinary(){
 
 function installGinkgo() {
 	pushd ${HOME}/go
-	go get -u github.com/onsi/ginkgo/ginkgo
-	go install github.com/onsi/ginkgo/ginkgo
-	mkdir -p ${TARGET_DIR}/ginkgo-versions/
-	mv ~/go/bin/ginkgo ${TARGET_DIR}/ginkgo-versions/ginkgo-2.5.1
-	ln -sf ${TARGET_DIR}/ginkgo-versions/ginkgo-2.5.1 ${TARGET_DIR}/ginkgo-v2
-	go install github.com/onsi/ginkgo/ginkgo@v1.16.5
-	mv ~/go/bin/ginkgo ${TARGET_DIR}/ginkgo-versions/ginkgo-v1.16.5
-	ln -sf ${TARGET_DIR}/ginkgo-versions/ginkgo-v1.16.5 ${TARGET_DIR}/ginkgo
+	GINKGO2_VERSION="2.9.0"
+  go install github.com/onsi/ginkgo/v2/ginkgo@v${GINKGO2_VERSION}
+  mkdir -p ${TARGET_DIR}/ginkgo-versions/
+	mv ~/go/bin/ginkgo ${TARGET_DIR}/ginkgo-versions/ginkgo-${GINKGO2_VERSION}
+	ln -sf ${TARGET_DIR}/ginkgo-versions/ginkgo-${GINKGO2_VERSION} ${TARGET_DIR}/ginkgo2
+	# go install github.com/onsi/ginkgo/ginkgo@v1.16.5
+	# mv ~/go/bin/ginkgo ${TARGET_DIR}/ginkgo-versions/ginkgo-v1.16.5
+	# ln -sf ${TARGET_DIR}/ginkgo-versions/ginkgo-v1.16.5 ${TARGET_DIR}/ginkgo1
   popd 
 }
 
@@ -197,8 +232,8 @@ export TARGET_DIR=${HOME}/.local/bin
 #hashMap
 #installGinkgo
 #installDetectSecrets
-#installDevToolsfromBinary
+installDevToolsfromBinary
 #installLegalyamlTools
 #installDevToolsfromBinaryTGZ
 #installGolangFromTGZ
-installWebExRPM
+#installWebExRPM
