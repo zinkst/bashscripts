@@ -1,0 +1,10 @@
+/home/$USER/.cache/*
+/home/$USER/**/cache/*
+/home/$USER/workdata
+/home/$USER/colProject
+/home/$USER/Nextcloud
+/home/$USER/mnt/*
+/home/$USER/.local/share/containers/*
+/home/$USER/.config/**/*ache*/*
+/home/$USER/.config/**/IndexedDB/*
+/home/$USER/.config/google-chrome/*

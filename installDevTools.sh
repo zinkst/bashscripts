@@ -105,9 +105,24 @@ function installDevToolsfromBinaryTGZ(){
   COMMAND_VERSION[9]="2.0.3"
   DOWNLOAD_URL[9]="https://github.com/itaysk/kubectl-neat/releases/download/v${COMMAND_VERSION[9]}/kubectl-neat_linux_amd64.tar.gz"
   BINARY_TARGET[9]="kubectl-neat"
-    
-  index=(0 1 2 3 4 5 6 7)
-  index=(9) 
+
+  COMMAND[10]="ko"
+  COMMAND_VERSION[10]="0.14.1"
+  DOWNLOAD_URL[10]="https://github.com/ko-build/ko/releases/download/v${COMMAND_VERSION[10]}/ko_Linux_x86_64.tar.gz"
+  BINARY_TARGET[10]="ko"
+
+  COMMAND[11]="yft"
+  COMMAND_VERSION[11]="1.0.6"
+  DOWNLOAD_URL[11]="https://github.com/homeport/yft/releases/download/v${COMMAND_VERSION[11]}/yft_${COMMAND_VERSION[11]}_linux_arm64.tar.gz"
+  BINARY_TARGET[11]="yft"
+
+  COMMAND[12]="pack"
+  COMMAND_VERSION[12]="0.29.0"
+  DOWNLOAD_URL[12]="https://github.com/buildpacks/pack/releases/download/v${COMMAND_VERSION[12]}/pack-v${COMMAND_VERSION[12]}-linux.tgz"
+  BINARY_TARGET[12]="pack"
+
+  index=(0 1 2 3 4 5 6 7 8 9 10 11 12)
+  index=(12) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
@@ -232,8 +247,8 @@ export TARGET_DIR=${HOME}/.local/bin
 #hashMap
 #installGinkgo
 #installDetectSecrets
-installDevToolsfromBinary
+#installDevToolsfromBinary
 #installLegalyamlTools
-#installDevToolsfromBinaryTGZ
+installDevToolsfromBinaryTGZ
 #installGolangFromTGZ
 #installWebExRPM
