@@ -43,7 +43,11 @@ function installLegalyamlTools() {
 function installBinaryFromTGZ(){
   ind=${1}
  	mkdir -p ${TARGET_DIR}/${COMMAND[ind]}-versions/temp-extract
-	wget -O ${TARGET_DIR}/${COMMAND[ind]}-versions/${COMMAND[ind]}-${COMMAND_VERSION[ind]}.tar.gz ${DOWNLOAD_URL[ind]} 
+	if [ ! -f "${TARGET_DIR}/${COMMAND[ind]}-versions/${COMMAND[ind]}-${COMMAND_VERSION[ind]}.tar.gz" ]; then
+    wget -O ${TARGET_DIR}/${COMMAND[ind]}-versions/${COMMAND[ind]}-${COMMAND_VERSION[ind]}.tar.gz ${DOWNLOAD_URL[ind]} 
+  else
+    echo "${TARGET_DIR}/${COMMAND[ind]}-versions/${COMMAND[ind]}-${COMMAND_VERSION[ind]}.tar.gz" already downloaded
+  fi
   cd ${TARGET_DIR}/${COMMAND[ind]}-versions/
   tar -xzf ${TARGET_DIR}/${COMMAND[ind]}-versions/${COMMAND[ind]}-${COMMAND_VERSION[ind]}.tar.gz -C temp-extract
 	cp temp-extract/${BINARY_TARGET[ind]} ${TARGET_DIR}/${COMMAND[ind]}-versions/${COMMAND[ind]}-${COMMAND_VERSION[ind]}
@@ -121,8 +125,14 @@ function installDevToolsfromBinaryTGZ(){
   DOWNLOAD_URL[12]="https://github.com/buildpacks/pack/releases/download/v${COMMAND_VERSION[12]}/pack-v${COMMAND_VERSION[12]}-linux.tgz"
   BINARY_TARGET[12]="pack"
 
-  index=(0 1 2 3 4 5 6 7 8 9 10 11 12)
-  index=(12) 
+  COMMAND[13]="pspblueprint"
+  COMMAND_VERSION[13]="0.2.0"
+  DOWNLOAD_URL[13]="https://github.ibm.com/ENCALADA/pspblueprint/releases/download/v${COMMAND_VERSION[13]}/pspblueprint_${COMMAND_VERSION[13]}_Linux_x86_64.tar.gz"
+  BINARY_TARGET[13]="pspblueprint"
+
+
+  index=(0 1 2 3 4 5 6 7 8 9 10 11 12 13)
+  index=(13) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
