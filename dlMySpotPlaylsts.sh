@@ -2,10 +2,6 @@
 # changed to use current version of spotdl
 # see https://github.com/spotDL/spotify-downloader
 # 
-# deprecated
-# uses old spotdl see https://github.com/ritiek/spotify-downloader/issues
-# pip install git+https://github.com/ritiek/spotify-downloader.git
-# pip install --upgrade pytube
 
 WRKDIR="/links/Musik/Spotify-Playlist-mp3s"
 
@@ -44,8 +40,7 @@ PLUrl[16]="https://open.spotify.com/playlist/3iEhEguPYewxmRlXoUT0rQ?si=74309203a
 
 #pushd ${WRKDIR}
 index="2 4 5 6 7 8 9 10 11 12 13 14 15"
-index="2 4 5 6 9 10 11 12 13 14 15"
-pushd "${WRKDIR}"
+#index="8"
 for ind in $index
 do
   if [ ! -d "${WRKDIR}/${PLName[ind]}" ]; then
@@ -61,10 +56,9 @@ do
   ###
   pushd "${WRKDIR}/${PLName[ind]}"
   echo "Extracting to dir: $(pwd)"
-  cmd="spotdl ${PLUrl[ind]} --path-template '{artist}_{title}.{ext}' --output-format mp3 --download-threads 8"
+  cmd="spotdl sync ${PLUrl[ind]} --save-file \"${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl\" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg"
   echo "$cmd"
-  spotdl ${PLUrl[ind]} --path-template '{artist}_{title}.{ext}' --output-format mp3 --download-threads 8
+  spotdl sync ${PLUrl[ind]} --save-file "${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg
+  #spotdl ${PLUrl[ind]} --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg
   popd
 done
-popd
-reset

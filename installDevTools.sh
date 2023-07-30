@@ -130,7 +130,6 @@ function installDevToolsfromBinaryTGZ(){
   DOWNLOAD_URL[13]="https://github.ibm.com/ENCALADA/pspblueprint/releases/download/v${COMMAND_VERSION[13]}/pspblueprint_${COMMAND_VERSION[13]}_Linux_x86_64.tar.gz"
   BINARY_TARGET[13]="pspblueprint"
 
-
   index=(0 1 2 3 4 5 6 7 8 9 10 11 12 13)
   index=(13) 
   for i in "${index[@]}"
@@ -188,8 +187,12 @@ function installDevToolsfromBinary(){
   COMMAND_VERSION[10]="1.9.2"
   DOWNLOAD_URL[10]="https://github.com/knative/client/releases/download/knative-v${COMMAND_VERSION[10]}/kn-linux-amd64"
 
+  COMMAND[11]="spotdl"
+  COMMAND_VERSION[11]="4.2.0"
+  DOWNLOAD_URL[11]="https://github.com/spotDL/spotify-downloader/releases/download/v${COMMAND_VERSION[11]}/spotdl-${COMMAND_VERSION[11]}-linux"
+
   index=(0 1 2 3 4 5 6 7)
-  index=(7) 
+  index=(11) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
@@ -257,8 +260,8 @@ export TARGET_DIR=${HOME}/.local/bin
 #hashMap
 #installGinkgo
 #installDetectSecrets
-#installDevToolsfromBinary
+installDevToolsfromBinary
 #installLegalyamlTools
-installDevToolsfromBinaryTGZ
+#installDevToolsfromBinaryTGZ
 #installGolangFromTGZ
 #installWebExRPM
