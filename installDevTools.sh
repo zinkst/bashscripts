@@ -191,6 +191,10 @@ function installDevToolsfromBinary(){
   COMMAND_VERSION[11]="4.2.0"
   DOWNLOAD_URL[11]="https://github.com/spotDL/spotify-downloader/releases/download/v${COMMAND_VERSION[11]}/spotdl-${COMMAND_VERSION[11]}-linux"
 
+  COMMAND[12]="hey"
+  COMMAND_VERSION[12]="0.1.4"
+  DOWNLOAD_URL[12]="https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64"
+
   index=(0 1 2 3 4 5 6 7)
   index=(11) 
   for i in "${index[@]}"
@@ -214,7 +218,7 @@ function installGinkgo() {
 }
 
 function installGolangFromTGZ(){
-  GO_VERSION="1.19.3"
+  GO_VERSION="1.20.6"
   if [ ! -f ${HOME}/Downloads/go${GO_VERSION}.linux-amd64.tar.gz ]; then 
     wget -O ${HOME}/Downloads/go${GO_VERSION}.linux-amd64.tar.gz https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
   fi
