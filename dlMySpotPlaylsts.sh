@@ -40,7 +40,7 @@ PLUrl[16]="https://open.spotify.com/playlist/3iEhEguPYewxmRlXoUT0rQ?si=74309203a
 
 #pushd ${WRKDIR}
 index="2 4 5 6 7 8 9 10 11 12 13 14 15"
-#index="8"
+index="8"
 for ind in $index
 do
   if [ ! -d "${WRKDIR}/${PLName[ind]}" ]; then
@@ -58,7 +58,11 @@ do
   echo "Extracting to dir: $(pwd)"
   cmd="spotdl sync ${PLUrl[ind]} --save-file \"${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl\" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg"
   echo "$cmd"
-  spotdl sync ${PLUrl[ind]} --save-file "${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg
+  #spotdl sync ${PLUrl[ind]} --save-file "${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg
   #spotdl ${PLUrl[ind]} --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg
   popd
 done
+
+
+synccmd="rsync --exclude="*spotdl*" --progress --delete -tU -r \"${WRKDIR}/\" \"/run/media/${USER}/VW_BUS/\""
+echo $synccmd
