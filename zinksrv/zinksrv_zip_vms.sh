@@ -1,32 +1,32 @@
 #!/bin/bash
 DATESTRING=$(date +'%Y%m%d')
-src_dir="/local/ntfsdata/vhds"
+src_dir="/local/ntfs_c/vhds"
 bkp_dir="/links/sysbkp"
 usePigz=true
 usePigz=false
 
-src[0]=/local/ntfs_c/vhds/win10_pro_ssd.vhd
-tgt[0]=${bkp_dir}/${DATESTRING}_win10_pro_ssd.vhd
+src[0]=/local/ntfs_c/vhds/win11.vhd
+tgt[0]=${bkp_dir}/${DATESTRING}_win11.vhd
 
-src[1]=${src_dir}/ddrive.vhd
-tgt[1]=${bkp_dir}/${DATESTRING}_ddrive.vhd
+# src[1]=${src_dir}/ddrive.vhd
+# tgt[1]=${bkp_dir}/${DATESTRING}_ddrive.vhd
 
-src[2]=/local/ntfsdata/vhds/kinder_win10_pro_hdd.vhd
-tgt[2]=${bkp_dir}/${DATESTRING}_kinder_win10_pro_hdd.vhd
+# src[2]=/local/ntfsdata/vhds/kinder_win10_pro_hdd.vhd
+# tgt[2]=${bkp_dir}/${DATESTRING}_kinder_win10_pro_hdd.vhd
 
-src[3]=/links/vms/VB/Win81-zinksrv-vm/win81_pro_zinksrv.vhd
-tgt[3]=${bkp_dir}/${DATESTRING}_win81_pro_zinksrv.vhd
+# src[3]=/links/vms/VB/Win81-zinksrv-vm/win81_pro_zinksrv.vhd
+# tgt[3]=${bkp_dir}/${DATESTRING}_win81_pro_zinksrv.vhd
 
-src[4]=/links/vms/VB/w7-ultimate-64/W7-ultimate-64.vhd
-tgt[4]=${bkp_dir}/${DATESTRING}_W7-ultimate-64.vhd
+# src[4]=/links/vms/VB/w7-ultimate-64/W7-ultimate-64.vhd
+# tgt[4]=${bkp_dir}/${DATESTRING}_W7-ultimate-64.vhd
 
-src[5]=${src_dir}/W7-Games-Ultimate.vhd
-tgt[5]=${bkp_dir}/${DATESTRING}_W7-Games-Ultimate.vhd
+# src[5]=${src_dir}/W7-Games-Ultimate.vhd
+# tgt[5]=${bkp_dir}/${DATESTRING}_W7-Games-Ultimate.vhd
 
 
 
 execute_command=(false false false false false)
-index=(0 1 2 )
+index=(0)
 
 compressCommand () 
 {
@@ -54,8 +54,8 @@ else
 	do
 		compressCommand $i
 		echo "${command}"
-		read -p "Execute command above (y/n)?" CONT
-		if [ "$CONT" == "y" ]; then
+		read -p "Execute command above (j/n)?" CONT
+		if [ "$CONT" != "n" ]; then
 			echo "trigger execution of ${command[$i]}";
 			execute_command[$i]=true
 		fi
