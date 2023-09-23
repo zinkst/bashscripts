@@ -128,10 +128,10 @@ else
 	doRsyncWithTgtDirAndMountTestFile
 fi	
 updateLastRunFile
-if [ "${MOUNTEDBYBKPSCRIPT}" == "true" ]; then 
-  echo "unmounting ${REMOTEMOUNTPOINT}"
-  umount ${REMOTEMOUNTPOINT}
-fi
+#if [ "${MOUNTEDBYBKPSCRIPT}" == "true" ]; then 
+echo "unmounting ${REMOTEMOUNTPOINT}"
+umount -l ${REMOTEMOUNTPOINT}
+#fi
 
 if [ ${QNAP_TOGGLE_POWER} == true ]; then
 	/links/bin/powerQnap.sh -s

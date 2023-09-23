@@ -1,44 +1,5 @@
 #!/bin/bash
 
-function stopAll() {
-    for svc in "${stopServicesSequence[@]}"
-    do
-        echo "==================================== stopping $svc ======================================================="
-        cmd="systemctl --no-pager stop $svc"
-        echo $cmd
-        eval $cmd
-    done
-}
-
-function disableAll() {
-    for svc in "${stopServicesSequence[@]}"
-    do
-        echo "==================================== disabling $svc ======================================================="
-        cmd="systemctl --no-pager disable $svc"
-        echo $cmd
-        eval $cmd
-    done
-}
-
-function enableAll() {
-    for svc in "${stopServicesSequence[@]}"
-    do
-        echo "==================================== enabling $svc ======================================================="
-        cmd="systemctl --no-pager enable $svc"
-        echo $cmd
-        eval $cmd
-    done
-}
-
-function statusAll() {
-    for svc in "${stopServicesSequence[@]}"
-    do
-        echo "==================================== stopping $svc ======================================================="
-        cmd="systemctl --no-pager status $svc"
-        echo $cmd
-        eval $cmd
-    done
-}
 
 function startAll() {
     startServices=(mariadb influxdb smb.service nfs-server.service grafana-server.service nginx php-fpm deCONZ.service home-assist.service node-red.service)
@@ -50,10 +11,48 @@ function startAll() {
         eval $cmd
     done
 }
+
+function toggleAll() {
+    OPERATION=${1}
+    stopServicesSequence=(php-fpm nginx grafana-server.service deCONZ.service home-assist.service node-red.service influxdb mariadb smb.service nfs-server.service )
+    for svc in "${stopServicesSequence[@]}"
+    do
+        echo "==================================== toggling operation ${OPERATION} for service $svc ======================================================="
+        cmd="systemctl --no-pager ${OPERATION} $svc"
+        echo $cmd
+        eval $cmd
+    done
+}
+
+function usage {
+    echo "no argument specified usage:"
+    echo "${0} [ -s | -o operation ]"
+    echo "operation : [stop | enable | disable | status ]" 
+}
+
 #main
-stopServicesSequence=(php-fpm nginx grafana-server.service deCONZ.service home-assist.service node-red.service influxdb mariadb smb.service nfs-server.service )
-# stopAll
-# disableAll
-enableAll
-statusAll
-# startAll
+
+# main
+if [[ $1 == "" ]]; then
+   usage;
+   exit 1;
+else
+    while getopts "o:s" OPTNAME
+    do
+        case "${OPTNAME}" in
+            "s")
+            echo "Operation selected ist start"
+            startAll
+            ;;
+            "o")
+            echo "Option o with value  ${OPTARG} is specified"
+            toggleAll ${OPTARG}
+            ;;
+            "*")
+            usage
+            exit 1
+            ;;
+        
+        esac
+    done
+fi
