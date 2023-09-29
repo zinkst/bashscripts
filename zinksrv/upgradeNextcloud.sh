@@ -2,8 +2,8 @@
 source /links/bin/zinksrv/dbBackupFunctions.sh
 
 export CLOUD_NAME="nextcloud"
-export OLD_CLOUD_VER="25.0.4"
-export NEW_CLOUD_VER="26.0.0"
+export OLD_CLOUD_VER="26.0.0"
+export NEW_CLOUD_VER="27.1.1"
 export CLOUD_ROOT_DIR="/links/zinksrv/srv"
 export NEW_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${NEW_CLOUD_VER}"
 export OLD_CLOUD_DIR="${CLOUD_ROOT_DIR}/${CLOUD_NAME}-${OLD_CLOUD_VER}"
@@ -65,6 +65,7 @@ do
     esac
 done
 
+if [ "$(id -u)" -ne 0 ]; then echo "Please run as root." >&2; exit 1; fi
 echo "Executed commands are only printed start with $0 -r to execute commands"
 stopServices
 prepareNewNextcloud $@
