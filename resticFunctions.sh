@@ -81,11 +81,13 @@ function mountQNAP() {
 	else
 		if [ ${QNAP_TOGGLE_POWER} == true ]; then
 			/links/bin/powerQnap.sh -i ${ETHERWAKE_INTERFACE}
-			echo "wait 10 minutes until qnap is started"
+			echo "$(date +'%y%m%d_%H%M%S') wait 10 minutes until qnap is started"
 			sleep 720 
 		fi
-		echo mounting "${TGT_ROOT}"
-		mount "${TGT_ROOT}"
+		echo "$(date +'%y%m%d_%H%M%S') mounting ${TGT_ROOT}"
+		cmd="mount ${TGT_ROOT}"
+		echo "$cmd"
+		eval "$cmd"
 		MOUNTED_BY_SCRIPT=true
 	fi
 }
@@ -93,7 +95,7 @@ function mountQNAP() {
 function unmountQNAP() {
 	if [ "${MOUNTED_BY_SCRIPT}" == "true" ]; then 
 		echo "unmounting ${TGT_ROOT}"
-		umount -l ${TGT_ROOT}
+		umount ${TGT_ROOT}
 		sleep 20
 		if [ ${QNAP_TOGGLE_POWER} == true ]; then
 			/links/bin/powerQnap.sh -s

@@ -1,6 +1,4 @@
 #!/bin/bash
-source /links/bin/bkp_functions.sh
-
 export SSH_HOST="qnap-ts130"
 
 usage() {
