@@ -189,7 +189,7 @@ rsyncBkpParamCheck ()
 	shift $((OPTIND-1))
 	if  [ $# -gt 0 ]
 	then
-		index=$1
+		index=$@
 	fi
 
 	echo "TGT_ROOT = ${TGT_ROOT}"
