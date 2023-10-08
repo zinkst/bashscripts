@@ -2,18 +2,18 @@
 set -euo pipefail
 # variables
 export SRC_ROOT="/"
-export TGT_ROOT="/remote/qnap-ts130/data/"
+export TGT_ROOT="/remote/qnap-ts130/data"
 export QNAP_TOGGLE_POWER=true
 export RESTIC_PATH="zinksrv_restic"
 export RESTIC_REPOSITORY="${TGT_ROOT}/${RESTIC_PATH}"
 export RESTIC_PASSWORD_FILE=/links/sysbkp/restic_pwd_file
-export LOG_ROOT="/links/zinksrv/sysbkp/restic_logs/${RESTIC_PATH}"
 export MOUNTED_BY_SCRIPT=false
 LOGFILENAME=$(basename "${0}" .sh)
+export LOG_ROOT="/links/zinksrv/sysbkp/restic_logs/${LOGFILENAME}/"
 CORRECTHOST="zinksrv"
 export ETHERWAKE_INTERFACE=enp5s0
 index="1 2 3 4 5 6 7" 
-#index="2"
+#index="3"
 
 Directories[1]="local/data/zinksrv"
 Directories[2]="local/data/zink-pc3"
@@ -51,15 +51,15 @@ function checkResticInputParams() {
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 checkResticInputParams $@
 printResticParams
-mountQNAP
 
 mkdir -p "${LOG_ROOT}"
 setLogfileName ${LOGFILENAME}
 checkCorrectHost
 echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
-
+ls -l ${LOG_ROOT}/..
+mountQNAP
 #initializeBackupStore
 doResticWithTgtDir
 ShowResticSnapshots
-
+df -h ${TGT_ROOT}
 unmountQNAP

@@ -96,7 +96,7 @@ function unmountQNAP() {
 	if [ "${MOUNTED_BY_SCRIPT}" == "true" ]; then 
 		echo "unmounting ${TGT_ROOT}"
 		umount ${TGT_ROOT}
-		sleep 20
+		sleep 30
 		if [ ${QNAP_TOGGLE_POWER} == true ]; then
 			/links/bin/powerQnap.sh -s
 		fi

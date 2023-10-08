@@ -5,11 +5,10 @@ export TGT_ROOT="/run/media/BKP_ZINK_USB_2-part1"
 export RESTIC_PATH="zinksrv_restic"
 export RESTIC_REPOSITORY="${TGT_ROOT}/${RESTIC_PATH}"
 export RESTIC_PASSWORD_FILE=/links/sysbkp/restic_pwd_file
-export LOG_ROOT="/links/zinksrv/sysbkp/restic_logs/${RESTIC_PATH}"
 LOGFILENAME=$(basename "${0}" .sh)
+export LOG_ROOT="/links/zinksrv/sysbkp/restic_logs/${LOGFILENAME}/"
 CORRECTHOST="zinksrv"
-index="1 2 3 4 5 6 7 8 9"
-index="2 4"
+index="1 2 3 4"
 
 
 Directories[1]="local/data/zinksrv/Photos"
