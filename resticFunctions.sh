@@ -58,6 +58,11 @@ function doResticWithTgtDirAndMountTest ()
 # 	#eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
 # }
 
+testServerPing ()
+{
+    ping -q -c 5 ${1}
+    return $?
+}
 
 function mountRestic (){
 	ind=${1}
@@ -79,11 +84,15 @@ function mountQNAP() {
 	if mountpoint -q "${TGT_ROOT}" ; then
       	echo "${TGT_ROOT} already mounted"
 	else
-		if [ ${QNAP_TOGGLE_POWER} == true ]; then
-			/links/bin/powerQnap.sh -i ${ETHERWAKE_INTERFACE}
-			echo "$(date +'%y%m%d_%H%M%S') wait 10 minutes until qnap is started"
-			sleep 720 
-		fi
+		if testServerPing qnap-ts130; then 
+			echo "qnap-ts130 is pingable"
+		else
+			if [ ${QNAP_TOGGLE_POWER} == true ]; then
+				/links/bin/powerQnap.sh -i ${ETHERWAKE_INTERFACE}
+				echo "$(date +'%y%m%d_%H%M%S') wait 10 minutes until qnap is started"
+				sleep 720 
+			fi
+		fi	
 		echo "$(date +'%y%m%d_%H%M%S') mounting ${TGT_ROOT}"
 		cmd="mount ${TGT_ROOT}"
 		echo "$cmd"

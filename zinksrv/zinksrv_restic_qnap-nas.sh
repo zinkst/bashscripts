@@ -56,10 +56,9 @@ mkdir -p "${LOG_ROOT}"
 setLogfileName ${LOGFILENAME}
 checkCorrectHost
 echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
-ls -l ${LOG_ROOT}/..
 mountQNAP
 #initializeBackupStore
 doResticWithTgtDir
 ShowResticSnapshots
-df -h ${TGT_ROOT}
+df -h ${TGT_ROOT} | tee -a ${LOG_ROOT}${LOGFILENAME}
 unmountQNAP
