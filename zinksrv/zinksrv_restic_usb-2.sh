@@ -24,5 +24,6 @@ mkdir -p "${LOG_ROOT}"
 setLogfileName ${LOGFILENAME}
 checkCorrectHost
 echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
-doResticWithTgtDirAndMountTestFile
+doResticWithTgtDirAndMountTest
 ShowResticSnapshots
+df -h ${TGT_ROOT}
