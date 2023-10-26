@@ -2,7 +2,7 @@
 set -euo pipefail
 # variables
 export SRC_ROOT="/"
-export TGT_ROOT="/remote/qnap-ts130/data"
+export TGT_ROOT="/remote/qnap-ts130/data_smb"
 export QNAP_TOGGLE_POWER=true
 export RESTIC_PATH="zinksrv_restic"
 export RESTIC_REPOSITORY="${TGT_ROOT}/${RESTIC_PATH}"
@@ -13,7 +13,6 @@ export LOG_ROOT="/links/zinksrv/sysbkp/restic_logs/${LOGFILENAME}/"
 CORRECTHOST="zinksrv"
 export ETHERWAKE_INTERFACE=enp5s0
 index="1 2 3 4 5 6 7" 
-#index="3"
 
 Directories[1]="local/data/zinksrv"
 Directories[2]="local/data/zink-pc3"
