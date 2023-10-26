@@ -14,7 +14,9 @@ powerOn() {
     ether-wake 24:5E:BE:4C:C7:EE
   else  
     echo "wake up qnap-nas with interface $1"
-    ether-wake -i $1 24:5E:BE:4C:C7:EE
+    cmd="ether-wake -i $1 24:5E:BE:4C:C7:EE"
+    echo "$cmd"
+    eval $cmd
   fi  
 }
 

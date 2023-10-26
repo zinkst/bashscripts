@@ -40,7 +40,7 @@ function doResticWithTgtDirAndMountTest ()
   	for ind in $index
 	do
 		tag=$(basename "${SRC_ROOT}${Directories[ind]}")
-        cmd="restic backup --exclude-caches --verbose=2 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
+        cmd="restic backup --exclude-caches --verbose=1 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
 		echo "$cmd"
 		eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
     done		
@@ -94,7 +94,7 @@ function mountQNAP() {
 			fi
 		fi	
 		echo "$(date +'%y%m%d_%H%M%S') mounting ${TGT_ROOT}"
-		cmd="mount ${TGT_ROOT}"
+		cmd="mount -v ${TGT_ROOT}"
 		echo "$cmd"
 		eval "$cmd"
 		MOUNTED_BY_SCRIPT=true
