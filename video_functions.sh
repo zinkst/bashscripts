@@ -3,6 +3,8 @@ getTimestamps()
 {
   if [ "${EXTENSION}" == "MTS" ]; then
 	  TIMESTAMP=$(mediainfo --Inform="General;%Recorded_Date%" "${1}")
+  elif [ "${EXTENSION}" == "MOV" ]; then
+	  TIMESTAMP=$(mediainfo --Inform="General;%com.apple.quicktime.creationdate%" "${1}")
   else 
 	  TIMESTAMP=$(mediainfo --Inform="Video;%Encoded_Date%" "${1}")
   	#TIMESTAMP=${TIMESTAMP:4}
