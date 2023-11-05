@@ -22,6 +22,16 @@ ShowResticSnapshots ()
   fi
 }
 
+function powerOnTasmotaPlug() {
+    POWER_STATE=$(curl -s http://${1}/cm?cmnd=${2} | jq '.POWER2')
+    if [ "${POWER_STATE}" != '"ON"' ]; then
+        echo "Power On ${1} ${2}"
+        curl -s http://${1}/cm?cmnd=${2}%20On && echo
+        echo "waiting 30 seconds" && sleep 30
+    else
+        echo "${1} ${2} already powered on"
+    fi
+}  
 
 function doResticWithTgtDir () 
 {
