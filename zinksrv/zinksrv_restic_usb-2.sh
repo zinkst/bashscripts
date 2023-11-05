@@ -2,6 +2,7 @@
 # variables
 export SRC_ROOT="/"
 export TGT_ROOT="/run/media/BKP_ZINK_USB_2-part1"
+export TGT_DEVICE="/dev/disk/by-id/wwn-0x50014ee204b797e8-part1"
 export RESTIC_PATH="zinksrv_restic"
 export RESTIC_REPOSITORY="${TGT_ROOT}/${RESTIC_PATH}"
 export RESTIC_PASSWORD_FILE=/links/sysbkp/restic_pwd_file
@@ -20,10 +21,22 @@ Directories[4]="local/data/zinksrv/persdata"
 . /links/bin/resticFunctions.sh
 
 #main
+if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 mkdir -p "${LOG_ROOT}"
 setLogfileName ${LOGFILENAME}
 checkCorrectHost
 echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
+
+powerOnTasmotaPlug "hama-4fach-01" "Power2"
+echo "mounting ${TGT_DEVICE}"
+udisksctl mount -b ${TGT_DEVICE}
+echo "waiting 10 seconds" && sleep 10
+echo "starting  backup"
 doResticWithTgtDirAndMountTest
 ShowResticSnapshots
 df -h ${TGT_ROOT}
+udisksctl unmount -b ${TGT_DEVICE}
+echo "waiting 10 seconds" && sleep 10
+# Power Off USB Backup
+curl -s http://hama-4fach-01/cm?cmnd=Power2%20Off && echo
+echo "finished"

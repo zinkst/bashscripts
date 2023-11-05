@@ -28,8 +28,17 @@ mkdir -p "${LOG_ROOT}"
 setLogfileName ${LOGFILENAME}
 checkCorrectHost
 echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
-#initializeBackupStore
+
+powerOnTasmotaPlug "hama-4fach-01" "Power2"
+echo "mounting ${TGT_DEVICE}"
+udisksctl mount -b ${TGT_DEVICE}
+echo "waiting 10 seconds" && sleep 10
+echo "starting  backup"
 doResticWithTgtDirAndMountTest
 ShowResticSnapshots
 df -h ${TGT_ROOT}
-#mountRestic 3
+udisksctl unmount -b ${TGT_DEVICE}
+echo "waiting 10 seconds" && sleep 10
+# Power Off USB Backup
+curl -s http://hama-4fach-01/cm?cmnd=Power2%20Off && echo
+echo "finished"

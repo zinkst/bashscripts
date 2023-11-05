@@ -1,14 +1,15 @@
 #!/bin/bash
 export SSH_HOST="qnap-ts130"
 
+source /links/bin/resticFunctions.sh
+
 usage() {
   echo "run ${0} without parameters will power on qnap $SSH_HOST"
   echo "run ${0} -s to power off qnap $SSH_HOST"
 }
 
 powerOn() {
-  curl -s http://hama-4fach-01/cm?cmnd=Power3%20On
-  sleep 30 
+  powerOnTasmotaPlug "hama-4fach-01" "Power3"
   if [ -z "${1}" ]; then
     echo "wake up qnap-nas with default interface"
     ether-wake 24:5E:BE:4C:C7:EE
