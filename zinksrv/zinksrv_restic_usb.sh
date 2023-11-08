@@ -2,6 +2,7 @@
 # variables
 export SRC_ROOT="/"
 export TGT_ROOT="/run/media/BKP_ZINK_USB"
+export TGT_DEVICE="/dev/disk/by-id/wwn-0x50014ee0aeb36c58-part1"
 export RESTIC_PATH="zinksrv_restic"
 export RESTIC_REPOSITORY="${TGT_ROOT}/${RESTIC_PATH}"
 export RESTIC_PASSWORD_FILE=/links/sysbkp/restic_pwd_file
@@ -24,6 +25,7 @@ Directories[9]="local/data/zink-pc4"
 . /links/bin/resticFunctions.sh
 
 # main
+if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 mkdir -p "${LOG_ROOT}"
 setLogfileName ${LOGFILENAME}
 checkCorrectHost
