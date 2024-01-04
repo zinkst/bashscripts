@@ -14,7 +14,8 @@ USE_SSH=false
 CHECK_LASTRUN=false
 REMOTEMOUNTPOINT=${TGT_ROOT}
 TRY_MOUNT_TGT="true"
-index="1 2 3 4 5 6 7 8 9"
+index="1 2 3 4 5 6 7 8 9 10"
+MEDIA_SYNC_YEAR=2024
 
 Directories[1]="local/data/${CORRECTHOST}/lokal"
 TargetDir[1]="data/${CORRECTHOST}/data/lokal"
@@ -29,16 +30,16 @@ Directories[4]="local/data/${CORRECTHOST}/Musik"
 TargetDir[4]="data/zinksrv/Musik/"
 MountTestFile[4]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[4]=false
-Directories[5]="local/data/${CORRECTHOST}/FamilienVideos/Familie-Zink-Videos/2023"
-TargetDir[5]="data/zinksrv/FamilienVideos/Familie-Zink-Videos/2023"
+Directories[5]="local/data/${CORRECTHOST}/FamilienVideos/Familie-Zink-Videos/${MEDIA_SYNC_YEAR}"
+TargetDir[5]="data/zinksrv/FamilienVideos/Familie-Zink-Videos/${MEDIA_SYNC_YEAR}"
 MountTestFile[5]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[5]=true
-Directories[6]="local/ssd-data/Photos/2023"
-TargetDir[6]="data/zinksrv/Photos/Sammlung/2023"
+Directories[6]="local/ssd-data/Photos/${MEDIA_SYNC_YEAR}"
+TargetDir[6]="data/zinksrv/Photos/Sammlung/${MEDIA_SYNC_YEAR}"
 MountTestFile[6]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[6]=false
-Directories[7]="local/data/${CORRECTHOST}/FamilienVideos/FamilienVideos für Handy/Videos 2023"
-TargetDir[7]="data/Not4Backup/shared/FamilienVideos für Handy/Videos 2023"
+Directories[7]="local/data/${CORRECTHOST}/FamilienVideos/FamilienVideos für Handy/Videos ${MEDIA_SYNC_YEAR}"
+TargetDir[7]="data/Not4Backup/shared/FamilienVideos für Handy/Videos ${MEDIA_SYNC_YEAR}"
 MountTestFile[7]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[7]=true
 Directories[8]="local/ssd-data/FamilienVideos/unsorted"
@@ -49,6 +50,10 @@ Directories[9]="local/data/${CORRECTHOST}/Photos/Converted/1920"
 TargetDir[9]="data/zinksrv/Photos/Converted/1920"
 MountTestFile[9]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[9]=true
+Directories[10]="local/data/${CORRECTHOST}/FamilienVideos/Favoriten-Familie-Zink-Videos/${MEDIA_SYNC_YEAR}"
+TargetDir[10]="data/zinksrv/FamilienVideos/Favoriten-Familie-Zink-Videos/${MEDIA_SYNC_YEAR}"
+MountTestFile[10]=${TGT_ROOT}"data/doNotDelete"
+AllowDelete[10]=true
 
 
 . /links/bin/bkp_functions.sh

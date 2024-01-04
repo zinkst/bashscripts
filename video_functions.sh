@@ -1,7 +1,7 @@
 #!/bin/bash
 getTimestamps()
 {
-  if [ "${EXTENSION}" == "MTS" ]; then
+  if [[ "${EXTENSION}" == "MTS" || "${EXTENSION}" == "MP4" ]]; then
 	  TIMESTAMP=$(mediainfo --Inform="General;%Recorded_Date%" "${1}")
   elif [ "${EXTENSION}" == "MOV" ]; then
 	  TIMESTAMP=$(mediainfo --Inform="General;%com.apple.quicktime.creationdate%" "${1}")
@@ -14,7 +14,7 @@ getTimestamps()
     TIMESTAMP=$(date -d@"${TIMESTAMP_UNIX}" +'%Y-%m-%d %H:%M:%S')
   fi 
   # uncomment and adapt the following to overwrite timestamp
-  # TIMESTAMP="UTC 2024-04-30 08:15:00"
+  #TIMESTAMP="UTC 2023-07-14 19:15:00"
   setTimestampVariables  
 }
 
@@ -112,6 +112,10 @@ function getCamera() {
               CAMERA_MANUFACTURER="Samsung"
               CAMERA_MODEL_NAME="Galaxy S20 FE 5G"
               ;;
+          a54 )
+              CAMERA_MANUFACTURER="Samsung"
+              CAMERA_MODEL_NAME="Galaxy A54 5G"
+              ;;
           m30s )
               CAMERA_MANUFACTURER="Samsung"
               CAMERA_MODEL_NAME="Galaxy M30s"
@@ -139,6 +143,10 @@ function getCamera() {
           apple )
               CAMERA_MANUFACTURER="Apple"
               CAMERA_MODEL_NAME="iPhone"
+              ;;
+          fp5 )
+              CAMERA_MANUFACTURER="Fairphone"
+              CAMERA_MODEL_NAME="Fairphone 5"
               ;;
           ss )
               CAMERA_MANUFACTURER="Slideshow"
