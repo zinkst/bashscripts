@@ -14,5 +14,7 @@ elif [ -L ${USB1_TGT_DEVICE} ]; then
     echo "found USB1 Device ${USB1_TGT_DEVICE}"
     /links/bin/zinksrv/zinksrv_restic_usb.sh
 else
-    echo "No USB Device found - exiting"
+    echo "No USB Device found - Powering Off USB Backup"
+    curl -s http://hama-4fach-01/cm?cmnd=Power2%20Off && echo
+    echo "finished"
 fi        
