@@ -34,7 +34,7 @@ echo "waiting 10 seconds" && sleep 10
 echo "starting  backup"
 doResticWithTgtDirAndMountTest
 ShowResticSnapshots
-df -h ${TGT_ROOT}
+df -h ${TGT_ROOT} | tee -a ${LOG_ROOT}${LOGFILENAME}
 udisksctl unmount -b ${TGT_DEVICE}
 echo "waiting 10 seconds" && sleep 10
 # Power Off USB Backup
