@@ -1,7 +1,8 @@
 #!/bin/bash
 
 function run() {
-  cmd="java -jar ${TARGET_DIR}/${PROGRAM}-${VERSION}-linux/${PROGRAM}-basic-${VERSION}.jar"
+  cmd="java -jar ${TARGET_DIR}/${PROGRAM}-${VERSION}-linux/lib/${PROGRAM}-basic-${VERSION}.jar"
+  cmd=${TARGET_DIR}/${PROGRAM}-${VERSION}-linux/bin/${PROGRAM}.sh
   echo $cmd
   eval $cmd
 }
@@ -18,7 +19,7 @@ function update() {
 
 # main
 export TARGET_DIR="/home/share"
-export VERSION=4.3.4
+export VERSION=5.2.0
 export PROGRAM=pdfsam
 
 #main
