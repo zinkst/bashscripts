@@ -65,7 +65,7 @@ function installDevToolsfromBinaryTGZ(){
   BINARY_TARGET[0]="golangci-lint-${COMMAND_VERSION[0]}-linux-amd64/golangci-lint"
 
   COMMAND[1]="k9s"
-  COMMAND_VERSION[1]="0.27.3"
+  COMMAND_VERSION[1]="0.30.8"
   DOWNLOAD_URL[1]="https://github.com/derailed/k9s/releases/download/v${COMMAND_VERSION[1]}/k9s_Linux_amd64.tar.gz"
   BINARY_TARGET[1]="k9s"
   
@@ -75,7 +75,7 @@ function installDevToolsfromBinaryTGZ(){
   DOWNLOAD_URL[2]="https://github.com/homeport/dyff/releases/download/v${COMMAND_VERSION[2]}/dyff_${COMMAND_VERSION[2]}_linux_amd64.tar.gz"
   
   COMMAND[3]="fly"
-  COMMAND_VERSION[3]="7.9.1"
+  COMMAND_VERSION[3]="7.10.0"
   DOWNLOAD_URL[3]="https://github.com/concourse/concourse/releases/download/v${COMMAND_VERSION[3]}/fly-${COMMAND_VERSION[3]}-linux-amd64.tgz"
   BINARY_TARGET[3]="fly"
 
@@ -117,11 +117,11 @@ function installDevToolsfromBinaryTGZ(){
 
   COMMAND[11]="yft"
   COMMAND_VERSION[11]="1.0.6"
-  DOWNLOAD_URL[11]="https://github.com/homeport/yft/releases/download/v${COMMAND_VERSION[11]}/yft_${COMMAND_VERSION[11]}_linux_arm64.tar.gz"
+  DOWNLOAD_URL[11]="https://github.com/homeport/yft/releases/download/v${COMMAND_VERSION[11]}/yft_${COMMAND_VERSION[11]}_linux_amd64.tar.gz"
   BINARY_TARGET[11]="yft"
 
   COMMAND[12]="pack"
-  COMMAND_VERSION[12]="0.29.0"
+  COMMAND_VERSION[12]="0.32.1"
   DOWNLOAD_URL[12]="https://github.com/buildpacks/pack/releases/download/v${COMMAND_VERSION[12]}/pack-v${COMMAND_VERSION[12]}-linux.tgz"
   BINARY_TARGET[12]="pack"
 
@@ -129,9 +129,31 @@ function installDevToolsfromBinaryTGZ(){
   COMMAND_VERSION[13]="0.2.0"
   DOWNLOAD_URL[13]="https://github.ibm.com/ENCALADA/pspblueprint/releases/download/v${COMMAND_VERSION[13]}/pspblueprint_${COMMAND_VERSION[13]}_Linux_x86_64.tar.gz"
   BINARY_TARGET[13]="pspblueprint"
+  
+  COMMAND[14]="tsh"
+  COMMAND_VERSION[14]="13.3.8"
+  DOWNLOAD_URL[14]="https://cdn.teleport.dev/teleport-v${COMMAND_VERSION[14]}-linux-amd64-bin.tar.gz"
+  BINARY_TARGET[14]="teleport/tsh"
+  
+  COMMAND[15]="teleport"
+  COMMAND_VERSION[15]="13.3.8"
+  DOWNLOAD_URL[15]="https://cdn.teleport.dev/teleport-v${COMMAND_VERSION[15]}-linux-amd64-bin.tar.gz"
+  BINARY_TARGET[15]="teleport/teleport"
+  
+  COMMAND[16]="tctl"
+  COMMAND_VERSION[16]="13.3.8"
+  DOWNLOAD_URL[16]="https://cdn.teleport.dev/teleport-v${COMMAND_VERSION[16]}-linux-amd64-bin.tar.gz"
+  BINARY_TARGET[16]="teleport/tctl"
+  
+  COMMAND[17]="gosec"
+  COMMAND_VERSION[17]="2.18.2"
+  DOWNLOAD_URL[17]="https://github.com/securego/gosec/releases/download/v${COMMAND_VERSION[17]}/gosec_${COMMAND_VERSION[17]}_linux_amd64.tar.gz"
+  BINARY_TARGET[17]="gosec"
+  
+  https://github.com/securego/gosec/releases/download/v2.18.2/gosec_2.18.2_linux_amd64.tar.gz
 
   index=(0 1 2 3 4 5 6 7 8 9 10 11 12 13)
-  index=(13) 
+  index=(1) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
@@ -152,7 +174,7 @@ function installDevToolsfromBinary(){
   DOWNLOAD_URL[1]="https://github.com/kubernetes-sigs/kubebuilder/releases/download/${COMMAND_VERSION[8]}/kubebuilder_linux_amd64"
   
   COMMAND[2]="kubectl"
-  COMMAND_VERSION[2]="v1.24.7"
+  COMMAND_VERSION[2]="v1.27.9"
   DOWNLOAD_URL[2]="https://storage.googleapis.com/kubernetes-release/release/${COMMAND_VERSION[2]}/bin/linux/amd64/kubectl"
 
   COMMAND[3]="spruce"
@@ -196,7 +218,7 @@ function installDevToolsfromBinary(){
   DOWNLOAD_URL[12]="https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64"
 
   index=(0 1 2 3 4 5 6 7)
-  index=(11) 
+  index=(2) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
@@ -206,7 +228,7 @@ function installDevToolsfromBinary(){
 
 function installGinkgo() {
 	pushd ${HOME}/go
-	GINKGO2_VERSION="2.9.0"
+	GINKGO2_VERSION="2.12.1"
   go install github.com/onsi/ginkgo/v2/ginkgo@v${GINKGO2_VERSION}
   mkdir -p ${TARGET_DIR}/ginkgo-versions/
 	mv ~/go/bin/ginkgo ${TARGET_DIR}/ginkgo-versions/ginkgo-${GINKGO2_VERSION}
