@@ -38,7 +38,7 @@ function doResticWithTgtDir ()
   	for ind in $index
 	do
 		tag=$(basename "${SRC_ROOT}${Directories[ind]}")
-        cmd="restic backup --exclude-caches --verbose=2 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
+        cmd="restic backup --exclude-caches --no-cache --verbose=2 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
 		echo "$cmd"
 		eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
     done		
@@ -50,7 +50,7 @@ function doResticWithTgtDirAndMountTest ()
   	for ind in $index
 	do
 		tag=$(basename "${SRC_ROOT}${Directories[ind]}")
-        cmd="restic backup --exclude-caches --verbose=1 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
+        cmd="restic backup --exclude-caches --no-cache --verbose=1 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
 		echo "$cmd"
 		eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
     done		
