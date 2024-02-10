@@ -4,7 +4,12 @@ function main() {
 }
 
 function create-pod() {
-  podman run -d --name="home-assistant" --mount type=bind,source="/local/data/$(hostname -s)/srv/home-assist/home-assistant-config",target=/config -v /etc/localtime:/etc/localtime:ro --net=host homeassistant/home-assistant:stable
+  podman run -d \
+    --name="home-assistant" \
+    --mount type=bind,source="/local/data/$(hostname -s)/srv/home-assist/home-assistant-config",target=/config \
+    -v /etc/localtime:/etc/localtime:ro \
+    --net=host \
+    homeassistant/home-assistant:stable
 }
 
 function pull-image() {
