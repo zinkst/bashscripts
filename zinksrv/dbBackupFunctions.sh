@@ -1,5 +1,17 @@
 #!/bin/bash
 
+function run-cmd () {
+  if [ ${TEST_MODE} == "false" ]; then
+		eval "${1}"
+	else
+	  echo "${1}"
+	fi	
+}
+
+###############################################
+# functions for backing up complete folders 
+# e.g. influx
+###############################################
 function initDirs () {
 	initDirectory "${BACKUP_DIR}/latest"
 	#CMD="mkdir -p ${BACKUP_DIR}/$((NUM_BACKUPS+1))" 
@@ -20,6 +32,22 @@ function initDirectory () {
 	fi	
 }
 
+function rotateDirs () {
+	LAST_INDEX=$((NUM_BACKUPS+1))
+	CMD="rm -rf ${BACKUP_DIR}/${LAST_INDEX}/*"
+	run-cmd "${CMD}"
+	for ((i=${NUM_BACKUPS};i>0;i-=1)) ; do 	
+		echo " processing index ${i}"
+		CMD="mv ${BACKUP_DIR}/${i}/* ${BACKUP_DIR}/$((i+1))/"
+		run-cmd "${CMD}"
+	done
+	CMD="mv ${BACKUP_DIR}/latest/* ${BACKUP_DIR}/1/"
+	run-cmd "${CMD}"
+}	
+
+###############################################
+# Functions for packing folders 
+###############################################
 function initDirWithBackupFiles () {
 	if [ ! -d "${BACKUP_DIR}" ]; then
 		CMD="mkdir -p "${BACKUP_DIR}""
@@ -33,7 +61,6 @@ function initDirWithBackupFiles () {
 		fi	
 	done
 }	
-
 
 function rotateFiles () {
 	LAST_INDEX=$((NUM_BACKUPS+1))
@@ -49,24 +76,54 @@ function rotateFiles () {
 	run-cmd "${CMD}"
 }	
 
-function rotateDirs () {
-	LAST_INDEX=$((NUM_BACKUPS+1))
-	CMD="rm -rf ${BACKUP_DIR}/${LAST_INDEX}/*"
-	run-cmd "${CMD}"
-	for ((i=${NUM_BACKUPS};i>0;i-=1)) ; do 	
-		echo " processing index ${i}"
-		CMD="mv ${BACKUP_DIR}/${i}/* ${BACKUP_DIR}/$((i+1))/"
-		run-cmd "${CMD}"
-	done
-	CMD="mv ${BACKUP_DIR}/latest/* ${BACKUP_DIR}/1/"
-	run-cmd "${CMD}"
-}	
 
-function run-cmd () {
-  if [ ${TEST_MODE} == "false" ]; then
-		eval "${1}"
-	else
-	  echo "${1}"
-	fi	
+function createBackupSystemdService() {
+if [ -f "/etc/systemd/system/backup-${SERVICE_NAME}.service" ]; then
+   echo "systemd service ${SERVICE_NAME} already exists"
+else	
+	
+cat << EOF > /etc/systemd/system/backup-${SERVICE_NAME}.service
+[Unit]
+Description=Backup ${SERVICE_NAME} data folder
+
+[Service]
+Type=simple
+ExecStart=/links/bin/zinksrv/backup-${SERVICE_NAME}.sh
+
+EOF
+fi
 }
 
+function createBackupSystemdTimer() {
+if [ -f "/etc/systemd/system/backup-${SERVICE_NAME}.timer" ]; then
+   echo "systemd timer ${SERVICE_NAME} already exists"
+else	
+	
+cat << EOF > /etc/systemd/system/backup-${SERVICE_NAME}.timer
+[Unit]
+Description=Timer for Backup ${SERVICE_NAME} data folder
+
+[Timer]
+OnCalendar=*-*-* 02:35:00
+Persistent=True
+Unit=backup-${SERVICE_NAME}.service
+
+[Install]
+WantedBy=basic.target
+EOF
+
+  systemctl enable backup-${SERVICE_NAME}.timer
+fi
+}
+
+function backupServiceFolder () {
+   echo "creating new backup of ${SERVICE_NAME} Dir ${SRC_DIR}"
+   CMD="tar -czf  ${BACKUP_DIR}/${BACKUP_FILE} --directory ${SRC_DIR} ."
+   run-cmd "${CMD}"
+}	
+
+function initServiceFolder() {
+  initDirWithBackupFiles
+  createBackupSystemdService
+  createBackupSystemdTimer
+}
