@@ -2,7 +2,7 @@
 
 
 function startAll() {
-    startServices=(mariadb influxdb smb.service nfs-server.service grafana-server.service nginx php-fpm deCONZ.service home-assist.service node-red.service)
+    startServices=(mariadb influxdb smb.service nfs-server.service grafana-server.service nginx php-fpm zigbee2mqtt.service home-assist.service node-red.service)
     for svc in "${startServices[@]}"
     do
         echo "==================================== starting $svc ======================================================="
@@ -14,7 +14,7 @@ function startAll() {
 
 function toggleAll() {
     OPERATION=${1}
-    stopServicesSequence=(php-fpm nginx grafana-server.service deCONZ.service home-assist.service node-red.service influxdb mariadb smb.service nfs-server.service )
+    stopServicesSequence=(php-fpm nginx grafana-server.service zigbee2mqtt.service home-assist.service node-red.service influxdb mariadb smb.service nfs-server.service )
     for svc in "${stopServicesSequence[@]}"
     do
         echo "==================================== toggling operation ${OPERATION} for service $svc ======================================================="

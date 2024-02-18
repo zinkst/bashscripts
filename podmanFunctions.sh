@@ -33,7 +33,10 @@ function update() {
   podman stop ${SERVICE_NAME} 
   podman rm ${SERVICE_NAME}
   createPod
-  systemctl start ${SERVICE_NAME}.service
+  echo "Waiting 20 seconds befrore restarting ${SERVICE_NAME}.service"
+  sleep 20
+  echo "Restarting ${SERVICE_NAME}.service"
+  systemctl restart ${SERVICE_NAME}.service
 }
 
 function install() {
