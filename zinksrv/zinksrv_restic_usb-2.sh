@@ -9,16 +9,14 @@ export RESTIC_PASSWORD_FILE=/links/sysbkp/restic_pwd_file
 LOGFILENAME=$(basename "${0}" .sh)
 export LOG_ROOT="/links/zinksrv/sysbkp/restic_logs/${LOGFILENAME}/"
 CORRECTHOST="zinksrv"
-index="1 2 3 4"
 
-
+index="1 2 3"
 Directories[1]="local/data/zinksrv/Photos"
-Directories[2]="local/data/zinksrv/FamilienVideos"
-Directories[3]="local/data/zinksrv/Musik"
-Directories[4]="local/data/zinksrv/persdata"
+Directories[2]="local/data/zinksrv/persdata"
+Directories[3]="local/data/zinksrv/FamilienVideos"
+Directories[4]="local/data/zinksrv/Musik"
 
-
-. /links/bin/resticFunctions.sh
+source /links/bin/resticFunctions.sh
 
 #main
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
@@ -31,8 +29,9 @@ powerOnTasmotaPlug "hama-4fach-01" "Power2"
 echo "mounting ${TGT_DEVICE}"
 udisksctl mount -b ${TGT_DEVICE}
 echo "waiting 10 seconds" && sleep 10
-echo "starting  backup"
-doResticWithTgtDirAndMountTest
+# echo "initializing Backup store" && initializeBackupStore
+echo "starting  backup" && doResticWithTgtDirAndMountTest
+doResticForgetKeepOnlyLastNSnapshots 2
 ShowResticSnapshots
 df -h ${TGT_ROOT} | tee -a ${LOG_ROOT}${LOGFILENAME}
 udisksctl unmount -b ${TGT_DEVICE}
