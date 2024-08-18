@@ -11,16 +11,16 @@ export MOUNTED_BY_SCRIPT=false
 LOGFILENAME=$(basename "${0}" .sh)
 export LOG_ROOT="/links/zinksrv/sysbkp/restic_logs/${LOGFILENAME}/"
 CORRECTHOST="zinksrv"
-export ETHERWAKE_INTERFACE=enp5s0
+export ETHERWAKE_INTERFACE=enp4s0
 index="1 2 3 4 5 6 7" 
 
 Directories[1]="local/data/zinksrv"
-Directories[2]="local/data/zink-pc3"
-Directories[3]="local/data/zink-e595"
-Directories[4]="local/data/kinder2"
-Directories[5]="local/data/zink-w530"
-Directories[6]="local/data/zink-pc4"
-Directories[7]="local/data2"
+Directories[2]="local/data/zink-e595"
+Directories[3]="local/data/kinder2"	  # Valentin 	
+Directories[4]="local/data/zink-pc4"  # Henry
+Directories[5]="local/data2"
+Directories[6]="local/data/zink-pc3"  # Laptop L530
+Directories[7]="local/data/zink-w530" # Georg
 Directories[8]="local/ntfs_c"
 Directories[9]="local/ntfsdata"
 
@@ -59,5 +59,6 @@ mountQNAP
 #initializeBackupStore
 doResticWithTgtDir
 ShowResticSnapshots
+doResticForgetKeepOnlyLastNSnapshots 12
 df -h ${TGT_ROOT} | tee -a ${LOG_ROOT}${LOGFILENAME}
 unmountQNAP

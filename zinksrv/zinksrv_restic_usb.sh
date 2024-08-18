@@ -35,8 +35,9 @@ powerOnTasmotaPlug "hama-4fach-01" "Power2"
 echo "mounting ${TGT_DEVICE}"
 udisksctl mount -b ${TGT_DEVICE}
 echo "waiting 10 seconds" && sleep 10
-echo "starting  backup"
-doResticWithTgtDirAndMountTest
+# echo "intializing Backup store" && initializeBackupStore
+echo "starting  backup" && doResticWithTgtDirAndMountTest
+doResticForgetKeepOnlyLastNSnapshots 8
 ShowResticSnapshots
 df -h ${TGT_ROOT} | tee -a ${LOG_ROOT}${LOGFILENAME}
 udisksctl unmount -b ${TGT_DEVICE}

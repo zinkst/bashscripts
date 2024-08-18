@@ -44,6 +44,18 @@ function doResticWithTgtDir ()
     done		
 }
 
+function doResticForgetKeepOnlyLastNSnapshots() 
+{
+  	numOfSnapshotsToKeep=${1}
+	for ind in $index
+	do
+		tag=$(basename "${SRC_ROOT}${Directories[ind]}")
+        cmd="restic forget --keep-last ${numOfSnapshotsToKeep} --prune --verbose=2 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
+		echo "$cmd"
+		eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
+    done		
+}
+
 function doResticWithTgtDirAndMountTest () 
 {
   if mountpoint -q "${TGT_ROOT}"; then
