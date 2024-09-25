@@ -1,0 +1,14 @@
+MARIADB:
+  ROOT_PASSWORD: <PASSWORD>
+  DATABASE_NAME: "nextcloud"
+  USER: "nextcloud"
+  USER_PASSWORD: <PASSWORD>
+REDIS:
+  PASSWORD: <PASSWORD>
+NEXTCLOUD:
+  DATA_DIR: /local/data/zink-e595/nextcloud_data
+  ROOT_DIR: /local/data/zink-e595/srv/nextcloud
+  ADMIN_USER: nextcloud_adm
+  ADMIN_PASSWORD: <PASSWORD>
+CADDY:
+  PROXY_DOMAIN: zinks.dnshome.de:9443
