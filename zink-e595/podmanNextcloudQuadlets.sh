@@ -18,7 +18,7 @@ set -euo pipefail
 function createDirs() {
   mkdir -p ${QUADLET_DIR}
   mkdir -p ${NEXTCLOUD_ROOT_DIR}
-  mkdir -p ${NEXTCLOUD_ROOT_DIR}/{db,caddy-proxy/data,caddy-web/data,html}
+  mkdir -p ${NEXTCLOUD_ROOT_DIR}/{db,,caddy/data,html}
   mkdir -p ${NEXTCLOUD_DATA_DIR}
   mkdir -p ${QUADLET_DIR}
 }
@@ -89,8 +89,31 @@ RequiredBy=nextcloud-app.service
 EOF
 }
 
-function CreateQuadletCaddyProxy() {
-  cat <<EOF > ${CADDYFILE_PROXY}
+function CreateQuadletCaddy() {
+  cat <<EOF > ${CADDYFILE}
+:80 {
+    root * /var/www/html
+    file_server
+    php_fastcgi nextcloud-app:9000
+    redir /.well-known/carddav /remote.php/dav/ 301
+    redir /.well-known/caldav /remote.php/dav/ 301
+    # .htaccess / data / config / ... shouldn't be accessible from outside
+    @forbidden {
+            path    /.htaccess
+            path    /data/*
+            path    /config/*
+            path    /db_structure
+            path    /.xml
+            path    /README
+            path    /3rdparty/*
+            path    /lib/*
+            path    /templates/*
+            path    /occ
+            path    /console.php
+    }
+    respond @forbidden 404
+}
+
 ${CADDY_PROXY_DOMAIN} {
     redir /.well-known/carddav /remote.php/dav/ 301
     redir /.well-known/caldav /remote.php/dav/ 301
@@ -100,81 +123,60 @@ ${CADDY_PROXY_DOMAIN} {
     }
 
     # Change below to host IP
-    reverse_proxy ${SERVER_IP}:8080
+    reverse_proxy ${SERVER_IP}:80
 }
 EOF
 
-  cat <<EOF > ${QUADLET_DIR}/nextcloud-proxy.container 
+  cat <<EOF > ${QUADLET_DIR}/caddy.container 
 [Unit]
-Description=Nextcloud Proxy
+Description=caddy
 Wants=network-online.target
 After=network-online.target
 
 [Container]
-Pod=nextcloud.pod
+# Pod=nextcloud.pod
 Label=app=nextcloud
 AutoUpdate=registry
-ContainerName=nextcloud-proxy
+ContainerName=caddy
 Image=docker.io/caddy:latest
 Network=nextcloud.network
 PublishPort=80:80
-PublishPort=443:443
-Volume=${CADDYFILE_PROXY}:/etc/caddy/Caddyfile:z
-Volume=${NEXTCLOUD_ROOT_DIR}/caddy-proxy/data:/data:Z
-AddCapability=CAP_AUDIT_WRITE
-EOF
-}
-
-function CreateQuadletCaddyWeb() {
-  cat <<EOF > ${CADDYFILE_WEB}
-:80 {
-
-        root * /var/www/html
-        file_server
-
-        php_fastcgi nextcloud-app:9000
-
-        redir /.well-known/carddav /remote.php/dav/ 301
-        redir /.well-known/caldav /remote.php/dav/ 301
-
-        # .htaccess / data / config / ... shouldn't be accessible from outside
-        @forbidden {
-                path    /.htaccess
-                path    /data/*
-                path    /config/*
-                path    /db_structure
-                path    /.xml
-                path    /README
-                path    /3rdparty/*
-                path    /lib/*
-                path    /templates/*
-                path    /occ
-                path    /console.php
-        }
-
-        respond @forbidden 404
-
-}
-EOF
-
-  cat <<EOF > ${QUADLET_DIR}/nextcloud-web.container 
-[Unit]
-Description=Nextcloud Web
-
-[Container]
-Pod=nextcloud.pod
-Label=app=nextcloud
-AutoUpdate=registry
-ContainerName=nextcloud-web
-Image=docker.io/caddy:latest
-Network=nextcloud.network
-Volume=${NEXTCLOUD_ROOT_DIR}/caddy-web/data:/data:Z
-Volume=${CADDYFILE_WEB}:/etc/caddy/Caddyfile:Z
+PublishPort=9443:443
+Volume=${CADDYFILE}:/etc/caddy/Caddyfile:z
+Volume=${NEXTCLOUD_ROOT_DIR}/caddy/data:/data:Z
 Volume=${NEXTCLOUD_ROOT_DIR}/html:/var/www/html:ro,z
-PublishPort=8080:80
+AddCapability=CAP_AUDIT_WRITE
+
 
 [Install]
-WantedBy=nextcloud-app.service default.target
+WantedBy=default.target
+EOF
+}
+
+function CreateNextcloudCronJobTimer() {
+  cat <<EOF > ${SYSTEMD_UNIT_DIR}/nextcloud-cron.service
+[Unit]
+Description=Nextcloud Cron Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=podman  exec -t -u www-data nextcloud-app php -f /var/www/html/cron.php
+
+[Install]
+WantedBy=default.target
+EOF
+
+  cat <<EOF > ${SYSTEMD_UNIT_DIR}/nextcloud-cron.timer
+[Unit]
+Description=Run  Nextcloud Cron Service every 30 minutes
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=30min
+
+[Install]
+WantedBy=timers.target
 EOF
 }
 
@@ -240,27 +242,33 @@ function postInstall() {
   systemctl --user daemon-reload
   systemctl --user enable --now podman-auto-update.timer
   systemctl --user start nextcloud-pod.service
+  systemctl --user start caddy.service
+  systemctl --user enable --now nextcloud-cron.timer
   systemctl --user --no-pager status nextcloud-pod.service
   loginctl enable-linger $USER
 }
 
 function configureNextcloud() {
   alias occ='podman exec -it -u www-data nextcloud-app php occ'
-  ${BASH_ALIASES[occ]} config:system:set trusted_domains 1 --value=${SERVER_IP}              # Change to match host IP
-  # occ config:system:set trusted_domains 2 --value=${CADDY_PROXY_DOMAIN}     # Change to match FQDN
-  # occ config:system:set trusted_proxies 0 --value=${SERVER_IP}              # Change to match host IP
+  ${BASH_ALIASES[occ]} config:system:set trusted_domains 1 --value=${SERVER_IP}
+  ${BASH_ALIASES[occ]} config:system:set trusted_domains 2 --value=${CADDY_PROXY_DOMAIN}
+  ${BASH_ALIASES[occ]} config:system:set trusted_proxies 0 --value=${SERVER_IP}
+  
+  OC_PASS=$(yq -r '.USERS.stefan.password' ${CONFIG_YAML})
+  podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Stefan Zink" --group="burghalde" stefan 
+  OC_PASS=$(yq -r '.USERS.marion.password' ${CONFIG_YAML})
+  podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Marion Zink" --group="burghalde" marion 
 }
 
 function setEnvVars() {
   export QUADLET_DIR=${HOME}/.config/containers/systemd/
+  export SYSTEMD_UNIT_DIR=${HOME}/.config/systemd/user/
   export CONFIG_YAML="${HOME}/Gemeinsam/Burghalde/HeimNetz/Nextcloud-quadlet/config-$(hostname -s).yml"
   NEXTCLOUD_ROOT_DIR="$(yq -r '.NEXTCLOUD.ROOT_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_DATA_DIR="$(yq -r '.NEXTCLOUD.DATA_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_ADMIN_USER="$(yq -r '.NEXTCLOUD.ADMIN_USER' ${CONFIG_YAML})"
   NEXTCLOUD_ADMIN_PASSWORD="$(yq -r '.NEXTCLOUD.ADMIN_PASSWORD' ${CONFIG_YAML})"
-  export CADDYFILE_PROXY=${NEXTCLOUD_ROOT_DIR}/caddy-proxy/caddyfile-proxy
-  export CADDYFILE_WEB=${NEXTCLOUD_ROOT_DIR}/caddy-web/caddyfile-web
-  #export CONFIG_YAML=${NEXTCLOUD_ROOT_DIR}/config.yml
+  export CADDYFILE=${NEXTCLOUD_ROOT_DIR}/caddy/caddyfile
   MARIADB_DATABASE_NAME="$(yq -r '.MARIADB.DATABASE_NAME' ${CONFIG_YAML})"
   MARIADB_USER="$(yq -r '.MARIADB.USER' ${CONFIG_YAML})"
   MARIADB_USER_PASSWORD="$(yq -r '.MARIADB.USER_PASSWORD' ${CONFIG_YAML})"
@@ -282,26 +290,19 @@ function printEnvVars() {
   echo SERVER_IP=${SERVER_IP}
 }
 
-# main
-# TEST_MODE="true"
-# while getopts "r" Option
-# do
-#     case $Option in
-#   		r    ) TEST_MODE="false";;
-#     esac
-# done
-
 setEnvVars
 printEnvVars
-createDirs
-createPrereqs
-CreateUnitNextcloudPod
-CreateUnitNextcloudNetwork
-CreateQuadletNextcloudRedis
-CreateQuadletCaddyWeb
-CreateQuadletCaddyProxy
-CreateQuadletNextcloudDb
-CreateQuadletNextcloudApp
-postInstall
-sleep 50
-configureNextcloud
+# createDirs
+# createPrereqs
+# CreateUnitNextcloudPod
+# CreateUnitNextcloudNetwork
+# CreateQuadletNextcloudRedis
+# CreateQuadletCaddyWeb
+# CreateQuadletCaddyProxy
+# CreateQuadletCaddy
+# CreateQuadletNextcloudDb
+# CreateQuadletNextcloudApp
+# postInstall
+# sleep 50
+# configureNextcloud
+# CreateNextcloudCronJobTimer
