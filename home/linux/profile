@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# User specific environment and startup programs
+
+# export GOPATH="${HOME}/workspace/" # Don't set this anymore default in ./config/env
+export GO111MODULE=on
+alias ic="ibmcloud"
+#alias kc="kubectl"
+alias git='LANG=en_US.UTF-8 git'
+export CLICOLOR=1
+export LSCOLORS=gxfxcxdxbxegedabagaced
+#source /usr/local/opt/chruby/share/chruby/chruby.sh
+#source /usr/local/opt/chruby/share/chruby/auto.sh
+export PATH=${HOME}/workspace/go/bin:${HOME}/.local/bin:$PATH
+alias occ='podman exec -it -u www-data nextcloud-app php occ'

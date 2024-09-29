@@ -173,28 +173,10 @@ Description=Run  Nextcloud Cron Service every 30 minutes
 
 [Timer]
 OnBootSec=3min
-OnUnitActiveSec=30min
+OnUnitActiveSec=5min
 
 [Install]
 WantedBy=timers.target
-EOF
-}
-
-function CreateQuadletNextcloudRedis() {
-  cat <<EOF > ${QUADLET_DIR}/nextcloud-redis.container 
-[Unit]
-Description=Nextcloud Redis
-
-[Container]
-Pod=nextcloud.pod
-Label=app=nextcloud
-AutoUpdate=registry
-ContainerName=nextcloud-redis
-Image=docker.io/library/redis:alpine
-Network=nextcloud.network
-
-[Install]
-WantedBy=nextcloud-app.service default.target
 EOF
 }
 
@@ -239,13 +221,15 @@ EOF
 }
 
 function postInstall() {
-  systemctl --user daemon-reload
-  systemctl --user enable --now podman-auto-update.timer
-  systemctl --user start nextcloud-pod.service
-  systemctl --user start caddy.service
-  systemctl --user enable --now nextcloud-cron.timer
-  systemctl --user --no-pager status nextcloud-pod.service
-  loginctl enable-linger $USER
+  ${SYSTEMCTL_CMD} daemon-reload
+  ${SYSTEMCTL_CMD} enable --now podman-auto-update.timer
+  ${SYSTEMCTL_CMD} start nextcloud-pod.service
+  ${SYSTEMCTL_CMD} start caddy.service
+  ${SYSTEMCTL_CMD} enable --now nextcloud-cron.timer
+  ${SYSTEMCTL_CMD} --no-pager status nextcloud-pod.service
+  if [[ $(id -u) -ne 0 ]] ; then 
+    loginctl enable-linger $USER
+  fi 
 }
 
 function configureNextcloud() {
@@ -258,12 +242,46 @@ function configureNextcloud() {
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Stefan Zink" --group="burghalde" stefan 
   OC_PASS=$(yq -r '.USERS.marion.password' ${CONFIG_YAML})
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Marion Zink" --group="burghalde" marion 
+  OC_PASS=$(yq -r '.USERS.georg.password' ${CONFIG_YAML})
+  podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Georg Zink" --group="burghalde" georg 
+}
+
+function uninstallNextcloud() {
+  ${SYSTEMCTL_CMD} disable --now podman-auto-update.timer
+  ${SYSTEMCTL_CMD} stop nextcloud-pod.service
+  ${SYSTEMCTL_CMD} stop caddy.service
+  if [[ $(id -u) -ne 0 ]] ; then 
+    loginctl disable-linger $USER
+  fi 
+  for  i in ${!QUADLETS[@]}; do
+        echo "removing quadlet ${QUADLETS[$i]}"
+        cmd="rm ${QUADLET_DIR}/${QUADLETS[$i]}"
+        echo "${cmd}"
+        eval "${cmd}"
+  done
+  ${SYSTEMCTL_CMD} disable --now nextcloud-cron.timer
+  rm ${SYSTEMD_UNIT_DIR}/nextcloud-cron.timer
+  rm ${SYSTEMD_UNIT_DIR}/nextcloud-cron.service
+  podman secret rm mysql-password
+  podman secret rm mysql-root-password
+  podman secret rm nextcloud-admin-password
+
 }
 
 function setEnvVars() {
-  export QUADLET_DIR=${HOME}/.config/containers/systemd/
-  export SYSTEMD_UNIT_DIR=${HOME}/.config/systemd/user/
-  export CONFIG_YAML="${HOME}/Gemeinsam/Burghalde/HeimNetz/Nextcloud-quadlet/config-$(hostname -s).yml"
+  if [[ $(id -u) -eq 0 ]] ; then 
+    echo "running as USER root" 
+    export QUADLET_DIR=/etc/containers/systemd
+    export SYSTEMD_UNIT_DIR=/etc/systemd
+    export SYSTEMCTL_CMD="systemctl"
+  else  
+    echo "running as USER ${USER}" 
+    export QUADLET_DIR=${HOME}/.config/containers/systemd
+    export SYSTEMD_UNIT_DIR=${HOME}/.config/systemd/user
+    export SYSTEMCTL_CMD="systemctl --user"
+  fi
+ 
+  export CONFIG_YAML="/links/Gemeinsam/Burghalde/HeimNetz/Nextcloud-quadlet/config-$(hostname -s).yml"
   NEXTCLOUD_ROOT_DIR="$(yq -r '.NEXTCLOUD.ROOT_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_DATA_DIR="$(yq -r '.NEXTCLOUD.DATA_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_ADMIN_USER="$(yq -r '.NEXTCLOUD.ADMIN_USER' ${CONFIG_YAML})"
@@ -275,34 +293,77 @@ function setEnvVars() {
   MARIADB_ROOT_PASSWORD="$(yq -r '.MARIADB.ROOT_PASSWORD' ${CONFIG_YAML})"
   CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' ${CONFIG_YAML})"
   SERVER_IP=$(hostname -I | awk '{print $1}')
+  QUADLETS=(
+    nextcloud-app.container
+    nextcloud-db.container
+    nextcloud-redis.container
+    nextcloud.pod
+    nextcloud.nextwork
+  )
 }
 
 function printEnvVars() {
   echo CONFIG_YAML=${CONFIG_YAML}
+  echo QUADLET_DIR=${QUADLET_DIR}
+  echo SYSTEMD_UNIT_DIR=${SYSTEMD_UNIT_DIR}
+  echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
   echo NEXTCLOUD_ROOT_DIR=${NEXTCLOUD_ROOT_DIR}
   echo NEXTCLOUD_DATA_DIR=${NEXTCLOUD_DATA_DIR}
   echo NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
   echo MARIADB_DATABASE_NAME=${MARIADB_DATABASE_NAME}
   echo MARIADB_USER=${MARIADB_USER}
   echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
-  echo CADDYFILE_PROXY=${CADDYFILE_PROXY}
-  echo CADDYFILE_WEB=${CADDYFILE_WEB}
+  echo CADDYFILE=${CADDYFILE}
   echo SERVER_IP=${SERVER_IP}
 }
 
+function installNextcloud() {
+  createDirs
+  createPrereqs
+  CreateUnitNextcloudPod
+  CreateUnitNextcloudNetwork
+  CreateQuadletNextcloudRedis
+  CreateQuadletCaddy
+  CreateQuadletNextcloudDb
+  CreateQuadletNextcloudApp
+  CreateNextcloudCronJobTimer
+  postInstall
+}
+
+
+function usage() {
+  echo "##################"
+  echo "No parameter defined use"
+  echo "run ${0} -i to install Nextcloud "
+  echo "run ${0} -u to uninstall Nextcloud "
+}
+
+# main
 setEnvVars
 printEnvVars
-# createDirs
-# createPrereqs
-# CreateUnitNextcloudPod
-# CreateUnitNextcloudNetwork
-# CreateQuadletNextcloudRedis
-# CreateQuadletCaddyWeb
-# CreateQuadletCaddyProxy
-# CreateQuadletCaddy
-# CreateQuadletNextcloudDb
-# CreateQuadletNextcloudApp
-# postInstall
-# sleep 50
-# configureNextcloud
-# CreateNextcloudCronJobTimer
+while getopts "iu" OPTNAME; do
+  case "${OPTNAME}" in
+    i )
+      echo "installing Nextcloud Option ${OPTNAME} is specified"
+      installNextcloud
+      ;;
+    u )
+      echo "uninstalling Nextcloud Option ${OPTNAME} is specified"
+      uninstallNextcloud
+      ;;
+    c )
+      echo "uninstalling Nextcloud Option ${OPTNAME} is specified"
+      configureNextcloud
+      ;;
+    * )
+      echo "unknown parameter specified"
+      usage
+      exit 1
+      ;;
+  esac
+done
+if [ $OPTIND -eq 1 ]; then 
+  echo "No options were passed"; 
+  usage
+fi
+
