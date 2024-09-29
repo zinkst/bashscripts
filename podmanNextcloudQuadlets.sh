@@ -237,7 +237,7 @@ function configureNextcloud() {
   ${BASH_ALIASES[occ]} config:system:set trusted_domains 1 --value=${SERVER_IP}
   ${BASH_ALIASES[occ]} config:system:set trusted_domains 2 --value=${CADDY_PROXY_DOMAIN}
   ${BASH_ALIASES[occ]} config:system:set trusted_proxies 0 --value=${SERVER_IP}
-  
+  ${BASH_ALIASES[occ]} app:enable files_external
   OC_PASS=$(yq -r '.USERS.stefan.password' ${CONFIG_YAML})
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Stefan Zink" --group="burghalde" stefan 
   OC_PASS=$(yq -r '.USERS.marion.password' ${CONFIG_YAML})
@@ -298,7 +298,7 @@ function setEnvVars() {
     nextcloud-db.container
     nextcloud-redis.container
     nextcloud.pod
-    nextcloud.nextwork
+    nextcloud.network
   )
 }
 
