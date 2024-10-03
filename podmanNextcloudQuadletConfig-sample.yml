@@ -1,0 +1,23 @@
+MARIADB:
+  ROOT_PASSWORD: "<YOUR_PASSWORD>"
+  DATABASE_NAME: "nextcloud"
+  USER: "nextcloud"
+  USER_PASSWORD: Z93+mariadbuser
+REDIS:
+  PASSWORD: "<YOUR_PASSWORD>"
+NEXTCLOUD:
+  DATA_DIR: /local/data/zink-e595/nextcloud_data
+  ROOT_DIR: /local/data/zink-e595/srv/nextcloud
+  ADMIN_USER: nextcloud_adm
+  ADMIN_PASSWORD: "<YOUR_PASSWORD>"
+  EXTERNAL_DATA_DIR: /local/data/nextcloud-ext-data
+CADDY:
+  INSTALL: "true"
+  PROXY_DOMAIN: <YOUR_DOMAIN>
+USERS:
+  user1:
+    password: "<YOUR_PASSWORD>"
+    group: group
+  user2:
+    password: "<YOUR_PASSWORD>"
+    group: group
