@@ -14,7 +14,6 @@ set -euo pipefail
 # 	fi	
 # }
 
-
 function createDirs() {
   mkdir -p ${QUADLET_DIR}
   mkdir -p ${NEXTCLOUD_ROOT_DIR}
@@ -48,6 +47,7 @@ Image=docker.io/library/nextcloud:fpm-alpine
 Network=nextcloud.network
 Volume=${NEXTCLOUD_DATA_DIR}:/var/www/html/data:Z
 Volume=${NEXTCLOUD_ROOT_DIR}/html:/var/www/html/:Z
+Volume=${NEXTCLOUD_EXTERNAL_DATA_DIR}:${NEXTCLOUD_EXTERNAL_DATA_DIR}:Z
 Environment=MYSQL_HOST=nextcloud-db
 Environment=MYSQL_DATABASE=${MARIADB_DATABASE_NAME}
 Environment=MYSQL_USER=${MARIADB_USER}
@@ -224,12 +224,16 @@ function postInstall() {
   ${SYSTEMCTL_CMD} daemon-reload
   ${SYSTEMCTL_CMD} enable --now podman-auto-update.timer
   ${SYSTEMCTL_CMD} start nextcloud-pod.service
-  ${SYSTEMCTL_CMD} start caddy.service
+  if [ ${INSTALL_CADDY} == "true" ]; then
+    ${SYSTEMCTL_CMD} start caddy.service
+  fi  
   ${SYSTEMCTL_CMD} enable --now nextcloud-cron.timer
   ${SYSTEMCTL_CMD} --no-pager status nextcloud-pod.service
   if [[ $(id -u) -ne 0 ]] ; then 
     loginctl enable-linger $USER
   fi 
+
+  # sudo chown -R 100998:100997 ${NEXTCLOUD_ROOT_DIR}/db
 }
 
 function configureNextcloud() {
@@ -249,7 +253,6 @@ function configureNextcloud() {
 function uninstallNextcloud() {
   ${SYSTEMCTL_CMD} disable --now podman-auto-update.timer
   ${SYSTEMCTL_CMD} stop nextcloud-pod.service
-  ${SYSTEMCTL_CMD} stop caddy.service
   if [[ $(id -u) -ne 0 ]] ; then 
     loginctl disable-linger $USER
   fi 
@@ -260,6 +263,10 @@ function uninstallNextcloud() {
         eval "${cmd}"
   done
   ${SYSTEMCTL_CMD} disable --now nextcloud-cron.timer
+  if [ ${INSTALL_CADDY} == "true" ]; then
+    ${SYSTEMCTL_CMD} stop caddy.service
+    rm ${QUADLET_DIR}/caddy.container
+  fi  
   rm ${SYSTEMD_UNIT_DIR}/nextcloud-cron.timer
   rm ${SYSTEMD_UNIT_DIR}/nextcloud-cron.service
   podman secret rm mysql-password
@@ -272,7 +279,7 @@ function setEnvVars() {
   if [[ $(id -u) -eq 0 ]] ; then 
     echo "running as USER root" 
     export QUADLET_DIR=/etc/containers/systemd
-    export SYSTEMD_UNIT_DIR=/etc/systemd
+    export SYSTEMD_UNIT_DIR=/etc/systemd/system
     export SYSTEMCTL_CMD="systemctl"
   else  
     echo "running as USER ${USER}" 
@@ -280,18 +287,20 @@ function setEnvVars() {
     export SYSTEMD_UNIT_DIR=${HOME}/.config/systemd/user
     export SYSTEMCTL_CMD="systemctl --user"
   fi
- 
-  export CONFIG_YAML="/links/Gemeinsam/Burghalde/HeimNetz/Nextcloud-quadlet/config-$(hostname -s).yml"
   NEXTCLOUD_ROOT_DIR="$(yq -r '.NEXTCLOUD.ROOT_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_DATA_DIR="$(yq -r '.NEXTCLOUD.DATA_DIR' ${CONFIG_YAML})"
+  NEXTCLOUD_EXTERNAL_DATA_DIR="$(yq -r '.NEXTCLOUD.EXTERNAL_DATA_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_ADMIN_USER="$(yq -r '.NEXTCLOUD.ADMIN_USER' ${CONFIG_YAML})"
   NEXTCLOUD_ADMIN_PASSWORD="$(yq -r '.NEXTCLOUD.ADMIN_PASSWORD' ${CONFIG_YAML})"
-  export CADDYFILE=${NEXTCLOUD_ROOT_DIR}/caddy/caddyfile
   MARIADB_DATABASE_NAME="$(yq -r '.MARIADB.DATABASE_NAME' ${CONFIG_YAML})"
   MARIADB_USER="$(yq -r '.MARIADB.USER' ${CONFIG_YAML})"
   MARIADB_USER_PASSWORD="$(yq -r '.MARIADB.USER_PASSWORD' ${CONFIG_YAML})"
   MARIADB_ROOT_PASSWORD="$(yq -r '.MARIADB.ROOT_PASSWORD' ${CONFIG_YAML})"
-  CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' ${CONFIG_YAML})"
+  INSTALL_CADDY="$(yq -r '.CADDY.INSTALL' ${CONFIG_YAML})"
+  if [ ${INSTALL_CADDY} == "true" ]; then
+    CADDYFILE=${NEXTCLOUD_ROOT_DIR}/caddy/caddyfile
+    CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' ${CONFIG_YAML})"
+  fi  
   SERVER_IP=$(hostname -I | awk '{print $1}')
   QUADLETS=(
     nextcloud-app.container
@@ -302,6 +311,23 @@ function setEnvVars() {
   )
 }
 
+
+function showStatus() {
+  SERVICES=(
+    nextcloud-app
+    nextcloud-db
+    nextcloud-redis
+  )
+  if [ ${INSTALL_CADDY} == "true" ]; then
+    SERVICES+=("caddy")
+  fi  
+  for  i in ${!SERVICES[@]}; do
+        echo "###################################################"
+        echo "Show status for service ${SERVICES[$i]}"
+        ${SYSTEMCTL_CMD} --no-pager is-active  ${SERVICES[$i]}
+  done
+}
+
 function printEnvVars() {
   echo CONFIG_YAML=${CONFIG_YAML}
   echo QUADLET_DIR=${QUADLET_DIR}
@@ -309,11 +335,15 @@ function printEnvVars() {
   echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
   echo NEXTCLOUD_ROOT_DIR=${NEXTCLOUD_ROOT_DIR}
   echo NEXTCLOUD_DATA_DIR=${NEXTCLOUD_DATA_DIR}
+  echo NEXTCLOUD_EXTERNAL_DATA_DIR=${NEXTCLOUD_EXTERNAL_DATA_DIR}
   echo NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
   echo MARIADB_DATABASE_NAME=${MARIADB_DATABASE_NAME}
   echo MARIADB_USER=${MARIADB_USER}
-  echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
-  echo CADDYFILE=${CADDYFILE}
+  echo INSTALL_CADDY=${INSTALL_CADDY}
+  if [ ${INSTALL_CADDY} == "true" ]; then
+    echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
+    echo CADDYFILE=${CADDYFILE}
+  fi  
   echo SERVER_IP=${SERVER_IP}
 }
 
@@ -323,47 +353,88 @@ function installNextcloud() {
   CreateUnitNextcloudPod
   CreateUnitNextcloudNetwork
   CreateQuadletNextcloudRedis
-  CreateQuadletCaddy
   CreateQuadletNextcloudDb
   CreateQuadletNextcloudApp
   CreateNextcloudCronJobTimer
+  if [ ${INSTALL_CADDY} == "true" ]; then
+    CreateQuadletCaddy
+  fi  
   postInstall
+  showStatus
 }
 
 
 function usage() {
   echo "##################"
-  echo "No parameter defined use"
-  echo "run ${0} -i to install Nextcloud "
-  echo "run ${0} -u to uninstall Nextcloud "
+  echo "Parameters available"
+  echo "-c <path-to-config-file> (required) "
+  echo "-i to install Nextcloud"
+  echo "-u to uninstall Nextcloud"
+  echo "-s to show status of Nextcloud services"
 }
 
-# main
+function checkpCLIParams() {
+  while getopts "iusc:" OPTNAME; do
+    case "${OPTNAME}" in
+      i )
+        echo "Runmode Option ${OPTNAME} is specified"
+        RUN_MODE="INSTALL"
+        ;;
+      u )
+        echo "Runmode Option ${OPTNAME} is specified"
+        RUN_MODE="UNINSTALL"
+        ;;
+      s )
+        echo "Runmode Option ${OPTNAME} is specified"
+        RUN_MODE="STATUS"
+        ;;
+      c )
+        echo "config file used is ${OPTARG} is specified"
+        CONFIG_YAML=${OPTARG}
+        ;;
+      * )
+        echo "unknown parameter specified"
+        usage
+        exit 1
+        ;;
+    esac
+  done
+  if [ $OPTIND -eq 1 ]; then 
+    echo "No options were passed"; 
+    usage
+    exit 1
+  fi
+
+  if [ -z ${CONFIG_YAML+x}] || [ ! -f ${CONFIG_YAML} ]; then 
+    echo "Config file does not exist Please specify an existing config file witch -c"; 
+    usage
+  fi
+  if [ -z ${RUN_MODE+x}]; then
+     echo "No Runmode mode specified specify either -c or -u"
+     usage
+     exit 1
+  fi   
+}
+
+# main start here
+checkpCLIParams $*
 setEnvVars
 printEnvVars
-while getopts "iu" OPTNAME; do
-  case "${OPTNAME}" in
-    i )
-      echo "installing Nextcloud Option ${OPTNAME} is specified"
-      installNextcloud
-      ;;
-    u )
-      echo "uninstalling Nextcloud Option ${OPTNAME} is specified"
-      uninstallNextcloud
-      ;;
-    c )
-      echo "uninstalling Nextcloud Option ${OPTNAME} is specified"
-      configureNextcloud
-      ;;
-    * )
-      echo "unknown parameter specified"
-      usage
-      exit 1
-      ;;
-  esac
-done
-if [ $OPTIND -eq 1 ]; then 
-  echo "No options were passed"; 
-  usage
-fi
+case "${RUN_MODE}" in 
+   "INSTALL" )
+     echo "installing nextcloud"
+     installNextcloud ;;
+   "UNINSTALL")
+     echo "uninstalling nextcloud"
+     uninstallNextcloud ;;
+   "STATUS")
+     echo "showing status nextcloud"
+     showStatus ;;
+   * )
+     echo "Invalid Installation mode specified specifed us either -c or -u parameter"
+     usage; 
+     exit 1
+     ;;
+ esac    
+
 
