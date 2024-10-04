@@ -14,7 +14,7 @@ getTimestamps()
     TIMESTAMP=$(date -d@"${TIMESTAMP_UNIX}" +'%Y-%m-%d %H:%M:%S')
   fi 
   # uncomment and adapt the following to overwrite timestamp
-  #TIMESTAMP="UTC 2023-07-14 19:15:00"
+  #TIMESTAMP="UTC 2024-09-23 09:15:00"
   setTimestampVariables  
 }
 
