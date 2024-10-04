@@ -17,7 +17,7 @@ set -euo pipefail
 function createDirs() {
   mkdir -p ${QUADLET_DIR}
   mkdir -p ${NEXTCLOUD_ROOT_DIR}
-  mkdir -p ${NEXTCLOUD_ROOT_DIR}/{db,,caddy/data,html}
+  mkdir -p ${NEXTCLOUD_ROOT_DIR}/{db,html}
   mkdir -p ${NEXTCLOUD_DATA_DIR}
   mkdir -p ${QUADLET_DIR}
 }
@@ -44,7 +44,7 @@ AutoUpdate=registry
 Pod=nextcloud.pod
 ContainerName=nextcloud-app
 Image=docker.io/library/nextcloud:fpm-alpine
-Network=nextcloud.network
+Network=${NETWORK_NAME}
 Volume=${NEXTCLOUD_DATA_DIR}:/var/www/html/data:Z
 Volume=${NEXTCLOUD_ROOT_DIR}/html:/var/www/html/:Z
 Volume=${NEXTCLOUD_EXTERNAL_DATA_DIR}:${NEXTCLOUD_EXTERNAL_DATA_DIR}:Z
@@ -73,7 +73,7 @@ Label=app=nextcloud
 AutoUpdate=registry
 ContainerName=nextcloud-db
 Image=docker.io/library/mariadb:10.6
-Network=nextcloud.network
+Network=${NETWORK_NAME}
 Volume=${NEXTCLOUD_ROOT_DIR}/db:/var/lib/mysql:Z
 Environment=MARIADB_AUTO_UPGRADE=1
 Environment=MARIADB_DISABLE_UPGRADE_BACKUP=1
@@ -90,6 +90,7 @@ EOF
 }
 
 function CreateQuadletCaddy() {
+  mkdir -p ${NEXTCLOUD_ROOT_DIR}/caddy/data
   cat <<EOF > ${CADDYFILE}
 :80 {
     root * /var/www/html
@@ -139,14 +140,13 @@ Label=app=nextcloud
 AutoUpdate=registry
 ContainerName=caddy
 Image=docker.io/caddy:latest
-Network=nextcloud.network
+Network=${NETWORK_NAME}
 PublishPort=80:80
 PublishPort=9443:443
 Volume=${CADDYFILE}:/etc/caddy/Caddyfile:z
 Volume=${NEXTCLOUD_ROOT_DIR}/caddy/data:/data:Z
 Volume=${NEXTCLOUD_ROOT_DIR}/html:/var/www/html:ro,z
 AddCapability=CAP_AUDIT_WRITE
-
 
 [Install]
 WantedBy=default.target
@@ -191,7 +191,7 @@ Label=app=nextcloud
 AutoUpdate=registry
 ContainerName=nextcloud-redis
 Image=docker.io/library/redis:alpine
-Network=nextcloud.network
+Network=${NETWORK_NAME}
 
 [Install]
 WantedBy=nextcloud-app.service default.target
@@ -199,14 +199,16 @@ EOF
 }
 
 function CreateUnitNextcloudNetwork() {
-  cat <<EOF > ${QUADLET_DIR}/nextcloud.network 
-[Unit]
-Description=Nextcloud Network
+podman network create ${NETWORK_NAME} --ignore
+#   cat <<EOF > ${QUADLET_DIR}/${NETWORK_NAME}.network
+# [Unit]
+# Description=${NETWORK_NAME} Network
 
-[Network]
-Label=app=nextcloud
-DisableDNS=false
-EOF
+# [Network]
+# # Label=app=nextcloud
+# DisableDNS=false
+# NetworkName=${NETWORK_NAME}
+# EOF
 }
 
 function CreateUnitNextcloudPod() {
@@ -216,7 +218,7 @@ Description=Nextcloud Pod
 
 [Pod]
 PodName=nextcloud
-Network=nextcloud.network
+Network=${NETWORK_NAME}
 EOF
 }
 
@@ -272,7 +274,6 @@ function uninstallNextcloud() {
   podman secret rm mysql-password
   podman secret rm mysql-root-password
   podman secret rm nextcloud-admin-password
-
 }
 
 function setEnvVars() {
@@ -287,6 +288,7 @@ function setEnvVars() {
     export SYSTEMD_UNIT_DIR=${HOME}/.config/systemd/user
     export SYSTEMCTL_CMD="systemctl --user"
   fi
+  NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' ${CONFIG_YAML})"
   NEXTCLOUD_ROOT_DIR="$(yq -r '.NEXTCLOUD.ROOT_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_DATA_DIR="$(yq -r '.NEXTCLOUD.DATA_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_EXTERNAL_DATA_DIR="$(yq -r '.NEXTCLOUD.EXTERNAL_DATA_DIR' ${CONFIG_YAML})"
@@ -307,7 +309,6 @@ function setEnvVars() {
     nextcloud-db.container
     nextcloud-redis.container
     nextcloud.pod
-    nextcloud.network
   )
 }
 
@@ -339,6 +340,7 @@ function printEnvVars() {
   echo NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
   echo MARIADB_DATABASE_NAME=${MARIADB_DATABASE_NAME}
   echo MARIADB_USER=${MARIADB_USER}
+  echo NETWORK_NAME=${NETWORK_NAME}
   echo INSTALL_CADDY=${INSTALL_CADDY}
   if [ ${INSTALL_CADDY} == "true" ]; then
     echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
@@ -405,11 +407,11 @@ function checkpCLIParams() {
     exit 1
   fi
 
-  if [ -z ${CONFIG_YAML+x}] || [ ! -f ${CONFIG_YAML} ]; then 
+  if [ -z "${CONFIG_YAML+x}" ]  || [ ! -f ${CONFIG_YAML} ]; then 
     echo "Config file does not exist Please specify an existing config file witch -c"; 
     usage
   fi
-  if [ -z ${RUN_MODE+x}]; then
+  if [ -z "${RUN_MODE+x}" ]; then
      echo "No Runmode mode specified specify either -c or -u"
      usage
      exit 1
