@@ -18,7 +18,6 @@ function createDirs() {
   mkdir -p ${QUADLET_DIR}
   mkdir -p ${NEXTCLOUD_ROOT_DIR}
   mkdir -p ${NEXTCLOUD_ROOT_DIR}/{db,html}
-  mkdir -p ${NEXTCLOUD_DATA_DIR}
   mkdir -p ${QUADLET_DIR}
 }
 
@@ -90,9 +89,9 @@ EOF
 }
 
 function CreateQuadletCaddy() {
-  mkdir -p ${NEXTCLOUD_ROOT_DIR}/caddy/data
+  mkdir -p "${CADDY_ROOT_DIR}/data"
   cat <<EOF > ${CADDYFILE}
-:80 {
+:${NEXTCLOUD_HTTP_PORT} {
     root * /var/www/html
     file_server
     php_fastcgi nextcloud-app:9000
@@ -115,17 +114,18 @@ function CreateQuadletCaddy() {
     respond @forbidden 404
 }
 
-${CADDY_PROXY_DOMAIN} {
+${CADDY_PROXY_DOMAIN}:${NEXTCLOUD_HTTPS_PORT} {
     redir /.well-known/carddav /remote.php/dav/ 301
     redir /.well-known/caldav /remote.php/dav/ 301
-
+    tls internal
     header {
         Strict-Transport-Security max-age=31536000;
     }
 
     # Change below to host IP
-    reverse_proxy ${SERVER_IP}:80
+    reverse_proxy ${SERVER_IP}:${NEXTCLOUD_HTTP_PORT}
 }
+
 EOF
 
   cat <<EOF > ${QUADLET_DIR}/caddy.container 
@@ -141,10 +141,10 @@ AutoUpdate=registry
 ContainerName=caddy
 Image=docker.io/caddy:latest
 Network=${NETWORK_NAME}
-PublishPort=80:80
-PublishPort=9443:443
+PublishPort=${NEXTCLOUD_HTTP_PORT}:${NEXTCLOUD_HTTP_PORT}
+PublishPort=${NEXTCLOUD_HTTPS_PORT}:${NEXTCLOUD_HTTPS_PORT}
 Volume=${CADDYFILE}:/etc/caddy/Caddyfile:z
-Volume=${NEXTCLOUD_ROOT_DIR}/caddy/data:/data:Z
+Volume=${CADDY_ROOT_DIR}/data:/data:Z
 Volume=${NEXTCLOUD_ROOT_DIR}/html:/var/www/html:ro,z
 AddCapability=CAP_AUDIT_WRITE
 
@@ -224,7 +224,7 @@ EOF
 
 function postInstall() {
   ${SYSTEMCTL_CMD} daemon-reload
-  ${SYSTEMCTL_CMD} enable --now podman-auto-update.timer
+  # ${SYSTEMCTL_CMD} enable --now podman-auto-update.timer
   ${SYSTEMCTL_CMD} start nextcloud-pod.service
   if [ ${INSTALL_CADDY} == "true" ]; then
     ${SYSTEMCTL_CMD} start caddy.service
@@ -240,8 +240,8 @@ function postInstall() {
 
 function configureNextcloud() {
   alias occ='podman exec -it -u www-data nextcloud-app php occ'
-  ${BASH_ALIASES[occ]} config:system:set trusted_domains 1 --value=${SERVER_IP}
-  ${BASH_ALIASES[occ]} config:system:set trusted_domains 2 --value=${CADDY_PROXY_DOMAIN}
+  ${BASH_ALIASES[occ]} config:system:set trusted_domains 1 --value=${SERVER_IP}:${NEXTCLOUD_HTTP_PORT}
+  ${BASH_ALIASES[occ]} config:system:set trusted_domains 2 --value=${CADDY_PROXY_DOMAIN}:${NEXTCLOUD_HTTPS_PORT}
   ${BASH_ALIASES[occ]} config:system:set trusted_proxies 0 --value=${SERVER_IP}
   ${BASH_ALIASES[occ]} app:enable files_external
   OC_PASS=$(yq -r '.NEXTCLOUD.USERS.stefan.password' ${CONFIG_YAML})
@@ -298,14 +298,17 @@ function setEnvVars() {
   NEXTCLOUD_EXTERNAL_DATA_DIR="$(yq -r '.NEXTCLOUD.EXTERNAL_DATA_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_ADMIN_USER="$(yq -r '.NEXTCLOUD.ADMIN_USER' ${CONFIG_YAML})"
   NEXTCLOUD_ADMIN_PASSWORD="$(yq -r '.NEXTCLOUD.ADMIN_PASSWORD' ${CONFIG_YAML})"
+  NEXTCLOUD_HTTP_PORT="$(yq -r '.NEXTCLOUD.HTTP_PORT' ${CONFIG_YAML})"
+  NEXTCLOUD_HTTPS_PORT="$(yq -r '.NEXTCLOUD.HTTPS_PORT' ${CONFIG_YAML})"
   MARIADB_DATABASE_NAME="$(yq -r '.MARIADB.DATABASE_NAME' ${CONFIG_YAML})"
   MARIADB_USER="$(yq -r '.MARIADB.USER' ${CONFIG_YAML})"
   MARIADB_USER_PASSWORD="$(yq -r '.MARIADB.USER_PASSWORD' ${CONFIG_YAML})"
   MARIADB_ROOT_PASSWORD="$(yq -r '.MARIADB.ROOT_PASSWORD' ${CONFIG_YAML})"
-  INSTALL_CADDY="$(yq -r '.CADDY.INSTALL' ${CONFIG_YAML})"
+  INSTALL_CADDY="$(yq -r '.NEXTCLOUD.INSTALL_CADDY' ${CONFIG_YAML})"
   if [ ${INSTALL_CADDY} == "true" ]; then
-    CADDYFILE=${NEXTCLOUD_ROOT_DIR}/caddy/caddyfile
+    CADDYFILE="$(yq -r '.CADDY.CADDYFILE' ${CONFIG_YAML})"
     CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' ${CONFIG_YAML})"
+    CADDY_ROOT_DIR="$(yq -r '.CADDY.ROOT_DIR' ${CONFIG_YAML})"
   fi  
   SERVER_IP=$(hostname -I | awk '{print $1}')
   QUADLETS=(
@@ -342,6 +345,7 @@ function printEnvVars() {
   echo NEXTCLOUD_DATA_DIR=${NEXTCLOUD_DATA_DIR}
   echo NEXTCLOUD_EXTERNAL_DATA_DIR=${NEXTCLOUD_EXTERNAL_DATA_DIR}
   echo NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+  echo NEXTCLOUD_HTTP_PORT=${NEXTCLOUD_HTTP_PORT}
   echo MARIADB_DATABASE_NAME=${MARIADB_DATABASE_NAME}
   echo MARIADB_USER=${MARIADB_USER}
   echo NETWORK_NAME=${NETWORK_NAME}
@@ -349,6 +353,7 @@ function printEnvVars() {
   if [ ${INSTALL_CADDY} == "true" ]; then
     echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
     echo CADDYFILE=${CADDYFILE}
+    echo CADDY_ROOT_DIR=${CADDY_ROOT_DIR}    
   fi  
   echo SERVER_IP=${SERVER_IP}
 }
