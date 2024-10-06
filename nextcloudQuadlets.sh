@@ -244,12 +244,16 @@ function configureNextcloud() {
   ${BASH_ALIASES[occ]} config:system:set trusted_domains 2 --value=${CADDY_PROXY_DOMAIN}
   ${BASH_ALIASES[occ]} config:system:set trusted_proxies 0 --value=${SERVER_IP}
   ${BASH_ALIASES[occ]} app:enable files_external
-  OC_PASS=$(yq -r '.USERS.stefan.password' ${CONFIG_YAML})
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.stefan.password' ${CONFIG_YAML})
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Stefan Zink" --group="burghalde" stefan 
-  OC_PASS=$(yq -r '.USERS.marion.password' ${CONFIG_YAML})
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.marion.password' ${CONFIG_YAML})
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Marion Zink" --group="burghalde" marion 
-  OC_PASS=$(yq -r '.USERS.georg.password' ${CONFIG_YAML})
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.georg.password' ${CONFIG_YAML})
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Georg Zink" --group="burghalde" georg 
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.henry.password' ${CONFIG_YAML})
+  podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Henry Zink" --group="burghalde" henry 
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.valentin.password' ${CONFIG_YAML})
+  podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Valentin Zink" --group="burghalde" valentin 
 }
 
 function uninstallNextcloud() {
