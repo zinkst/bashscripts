@@ -39,7 +39,7 @@ After=nextcloud-db.service
 
 [Container]
 Label=app=nextcloud
-AutoUpdate=registry
+AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 Pod=nextcloud.pod
 ContainerName=nextcloud-app
 Image=docker.io/library/nextcloud:fpm-alpine
@@ -69,7 +69,7 @@ Description=Nextcloud Database
 [Container]
 Pod=nextcloud.pod
 Label=app=nextcloud
-AutoUpdate=registry
+AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=nextcloud-db
 Image=docker.io/library/mariadb:10.6
 Network=${NETWORK_NAME}
@@ -137,7 +137,7 @@ After=network-online.target
 [Container]
 # Pod=nextcloud.pod
 Label=app=nextcloud
-AutoUpdate=registry
+AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=caddy
 Image=docker.io/caddy:latest
 Network=${NETWORK_NAME}
@@ -188,7 +188,7 @@ Description=Nextcloud Redis
 [Container]
 Pod=nextcloud.pod
 Label=app=nextcloud
-AutoUpdate=registry
+AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=nextcloud-redis
 Image=docker.io/library/redis:alpine
 Network=${NETWORK_NAME}
@@ -293,6 +293,7 @@ function setEnvVars() {
     export SYSTEMCTL_CMD="systemctl --user"
   fi
   NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' ${CONFIG_YAML})"
+  PODMAN_AUTO_UPDATE_STRATEGY="$(yq -r '.HOST.PODMAN_AUTO_UPDATE_STRATEGY' ${CONFIG_YAML})"
   NEXTCLOUD_ROOT_DIR="$(yq -r '.NEXTCLOUD.ROOT_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_DATA_DIR="$(yq -r '.NEXTCLOUD.DATA_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_EXTERNAL_DATA_DIR="$(yq -r '.NEXTCLOUD.EXTERNAL_DATA_DIR' ${CONFIG_YAML})"
@@ -350,6 +351,7 @@ function printEnvVars() {
   echo MARIADB_USER=${MARIADB_USER}
   echo NETWORK_NAME=${NETWORK_NAME}
   echo INSTALL_CADDY=${INSTALL_CADDY}
+  echo PODMAN_AUTO_UPDATE_STRATEGY=${PODMAN_AUTO_UPDATE_STRATEGY}
   if [ ${INSTALL_CADDY} == "true" ]; then
     echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
     echo CADDYFILE=${CADDYFILE}
