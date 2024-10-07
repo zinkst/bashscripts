@@ -14,41 +14,41 @@ function CreateQuadletCaddy() {
 }
 
 :${NEXTCLOUD_HTTP_PORT} {
-    root * /var/www/html
-    file_server
-    php_fastcgi nextcloud-app:9000
-    redir /.well-known/carddav /remote.php/dav/ 301
-    redir /.well-known/caldav /remote.php/dav/ 301
-    # .htaccess / data / config / ... shouldn't be accessible from outside
-    @forbidden {
-            path    /.htaccess
-            path    /data/*
-            path    /config/*
-            path    /db_structure
-            path    /.xml
-            path    /README
-            path    /3rdparty/*
-            path    /lib/*
-            path    /templates/*
-            path    /occ
-            path    /console.php
-    }
-    respond @forbidden 404
+  root * /var/www/html
+  file_server
+  php_fastcgi nextcloud-app:9000
+  redir /.well-known/carddav /remote.php/dav/ 301
+  redir /.well-known/caldav /remote.php/dav/ 301
+  # .htaccess / data / config / ... shouldn't be accessible from outside
+  @forbidden {
+          path    /.htaccess
+          path    /data/*
+          path    /config/*
+          path    /db_structure
+          path    /.xml
+          path    /README
+          path    /3rdparty/*
+          path    /lib/*
+          path    /templates/*
+          path    /occ
+          path    /console.php
+  }
+  respond @forbidden 404
 }
 
 ${CADDY_PROXY_DOMAIN}:${NEXTCLOUD_HTTPS_PORT} {
-    redir /.well-known/carddav /remote.php/dav/ 301
-    redir /.well-known/caldav /remote.php/dav/ 301
+  redir /.well-known/carddav /remote.php/dav/ 301
+  redir /.well-known/caldav /remote.php/dav/ 301
 
-    header {
-        Strict-Transport-Security max-age=31536000;
-    }
-    
-    # for local testing uncomment the following line
-    # tls internal
+  header {
+      Strict-Transport-Security max-age=31536000;
+  }
+  
+  # for local testing uncomment the following line
+  # tls internal
 
-    # Change below to host IP
-    reverse_proxy ${SERVER_IP}:${NEXTCLOUD_HTTP_PORT}
+  # Change below to host IP
+  reverse_proxy ${SERVER_IP}:${NEXTCLOUD_HTTP_PORT}
 }
 
 ${CADDY_PROXY_DOMAIN}:${VAULTWARDEN_HTTPS_PORT} {
@@ -118,7 +118,6 @@ function setEnvVars() {
   NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' ${CONFIG_YAML})"
   CADDYFILE="$(yq -r '.CADDY.CADDYFILE' ${CONFIG_YAML})"
   CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' ${CONFIG_YAML})"
-  CADDY_EXTERNAL_PORT="$(yq -r '.CADDY.EXTERNAL_PORT' ${CONFIG_YAML})"
   CADDY_ROOT_DIR="$(yq -r '.CADDY.ROOT_DIR' ${CONFIG_YAML})"
   NEXTCLOUD_ROOT_DIR="$(yq -r '.NEXTCLOUD.ROOT_DIR' ${CONFIG_YAML})"
   SERVER_IP=$(hostname -I | awk '{print $1}')
@@ -223,13 +222,13 @@ setEnvVars
 printEnvVars
 case "${RUN_MODE}" in 
    "INSTALL" )
-     echo "installing nextcloud"
+     echo "installing"
      installCaddy ;;
    "UNINSTALL")
-     echo "uninstalling nextcloud"
+     echo "uninstalling"
      uninstallCaddy ;;
    "STATUS")
-     echo "showing status nextcloud"
+     echo "showing status"
      showStatus ;;
    * )
      echo "Invalid Installation mode specified specifed us either -c or -u parameter"
