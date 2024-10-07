@@ -67,7 +67,7 @@ After=network-online.target
 [Container]
 # Pod=nextcloud.pod
 Label=app=nextcloud
-AutoUpdate=registry
+AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=caddy
 Image=docker.io/caddy:latest
 Network=${NETWORK_NAME}
@@ -125,6 +125,7 @@ function setEnvVars() {
   NEXTCLOUD_HTTPS_PORT="$(yq -r '.NEXTCLOUD.HTTPS_PORT' ${CONFIG_YAML})"
   VAULTWARDEN_HTTPS_PORT="$(yq -r '.VAULTWARDEN.HTTPS_PORT' ${CONFIG_YAML})"
   VAULTWARDEN_ROCKET_PORT="$(yq -r '.VAULTWARDEN.ROCKET_PORT' ${CONFIG_YAML})"
+  PODMAN_AUTO_UPDATE_STRATEGY="$(yq -r '.HOST.PODMAN_AUTO_UPDATE_STRATEGY' ${CONFIG_YAML})"
 }
 
 
@@ -145,6 +146,7 @@ function printEnvVars() {
   echo SYSTEMD_UNIT_DIR=${SYSTEMD_UNIT_DIR}
   echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
   echo NETWORK_NAME=${NETWORK_NAME}
+  echo PODMAN_AUTO_UPDATE_STRATEGY=${PODMAN_AUTO_UPDATE_STRATEGY}
   echo SERVER_IP=${SERVER_IP}
   echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
   echo CADDYFILE=${CADDYFILE}
