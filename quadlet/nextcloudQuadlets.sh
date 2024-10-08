@@ -243,6 +243,7 @@ function configureNextcloud() {
   ${BASH_ALIASES[occ]} config:system:set trusted_domains 1 --value=${SERVER_IP}:${NEXTCLOUD_HTTP_PORT}
   ${BASH_ALIASES[occ]} config:system:set trusted_domains 2 --value=${CADDY_PROXY_DOMAIN}:${NEXTCLOUD_HTTPS_PORT}
   ${BASH_ALIASES[occ]} config:system:set trusted_proxies 0 --value=${SERVER_IP}
+  ${BASH_ALIASES[occ]} config:system:set overwriteprotocol --value 'https'
   ${BASH_ALIASES[occ]} app:enable files_external
   OC_PASS=$(yq -r '.NEXTCLOUD.USERS.stefan.password' ${CONFIG_YAML})
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Stefan Zink" --group="burghalde" stefan 
@@ -305,10 +306,10 @@ function setEnvVars() {
   MARIADB_USER="$(yq -r '.MARIADB.USER' ${CONFIG_YAML})"
   MARIADB_USER_PASSWORD="$(yq -r '.MARIADB.USER_PASSWORD' ${CONFIG_YAML})"
   MARIADB_ROOT_PASSWORD="$(yq -r '.MARIADB.ROOT_PASSWORD' ${CONFIG_YAML})"
+  CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' ${CONFIG_YAML})"
   INSTALL_CADDY="$(yq -r '.NEXTCLOUD.INSTALL_CADDY' ${CONFIG_YAML})"
   if [ ${INSTALL_CADDY} == "true" ]; then
     CADDYFILE="$(yq -r '.CADDY.CADDYFILE' ${CONFIG_YAML})"
-    CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' ${CONFIG_YAML})"
     CADDY_ROOT_DIR="$(yq -r '.CADDY.ROOT_DIR' ${CONFIG_YAML})"
   fi  
   SERVER_IP=$(hostname -I | awk '{print $1}')
@@ -449,5 +450,4 @@ case "${RUN_MODE}" in
      exit 1
      ;;
  esac    
-
 
