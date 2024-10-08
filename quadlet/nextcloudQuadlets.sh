@@ -123,7 +123,7 @@ ${CADDY_PROXY_DOMAIN}:${NEXTCLOUD_HTTPS_PORT} {
     }
 
     # Change below to host IP
-    reverse_proxy ${SERVER_IP}:${NEXTCLOUD_HTTP_PORT}
+    reverse_proxy ${SERVER_NAME}:${NEXTCLOUD_HTTP_PORT}
 }
 
 EOF
@@ -240,7 +240,7 @@ function postInstall() {
 
 function configureNextcloud() {
   alias occ='podman exec -it -u www-data nextcloud-app php occ'
-  ${BASH_ALIASES[occ]} config:system:set trusted_domains 1 --value=${SERVER_IP}:${NEXTCLOUD_HTTP_PORT}
+  ${BASH_ALIASES[occ]} config:system:set trusted_domains 1 --value=${SERVER_NAME}:${NEXTCLOUD_HTTP_PORT}
   ${BASH_ALIASES[occ]} config:system:set trusted_domains 2 --value=${CADDY_PROXY_DOMAIN}:${NEXTCLOUD_HTTPS_PORT}
   ${BASH_ALIASES[occ]} config:system:set trusted_proxies 0 --value=${SERVER_IP}
   ${BASH_ALIASES[occ]} config:system:set overwriteprotocol --value 'https'
@@ -313,6 +313,7 @@ function setEnvVars() {
     CADDY_ROOT_DIR="$(yq -r '.CADDY.ROOT_DIR' ${CONFIG_YAML})"
   fi  
   SERVER_IP=$(hostname -I | awk '{print $1}')
+  SERVER_NAME=$(hostname -s)
   QUADLETS=(
     nextcloud-app.container
     nextcloud-db.container
@@ -359,6 +360,7 @@ function printEnvVars() {
     echo CADDY_ROOT_DIR=${CADDY_ROOT_DIR}    
   fi  
   echo SERVER_IP=${SERVER_IP}
+  echo SERVER_NAME=${SERVER_NAME}
 }
 
 function installNextcloud() {
@@ -436,18 +438,18 @@ setEnvVars
 printEnvVars
 case "${RUN_MODE}" in 
    "INSTALL" )
-     echo "installing nextcloud"
+     echo "installing ${QUADLETS[*]}"
      installNextcloud ;;
    "UNINSTALL")
-     echo "uninstalling nextcloud"
+     echo "uninstalling ${QUADLETS[*]}"
      uninstallNextcloud ;;
    "STATUS")
-     echo "showing status nextcloud"
+     echo "showing status for ${QUADLETS[*]}"
      showStatus ;;
    * )
      echo "Invalid Installation mode specified specifed us either -c or -u parameter"
      usage; 
      exit 1
      ;;
- esac    
+esac    
 
