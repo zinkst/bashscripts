@@ -71,6 +71,7 @@ AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=caddy
 Image=docker.io/caddy:latest
 Network=${NETWORK_NAME}
+# PublishPort=80:80 # required for acme challenge which needs to run every other month
 PublishPort=${NEXTCLOUD_HTTP_PORT}:${NEXTCLOUD_HTTP_PORT}
 PublishPort=${NEXTCLOUD_HTTPS_PORT}:${NEXTCLOUD_HTTPS_PORT}
 PublishPort=${VAULTWARDEN_HTTPS_PORT}:${VAULTWARDEN_HTTPS_PORT}
@@ -92,10 +93,11 @@ function CreatePodmanNetwork() {
 function postInstall() {
   ${SYSTEMCTL_CMD} daemon-reload
   ${SYSTEMCTL_CMD} start caddy.service
-  if [[ $(id -u) -eq 0 ]] ; then 
-    cp ${CADDY_ROOT_DIR}/data/caddy/pki/authorities/local/root.crt /etc/pki/ca-trust/source/anchors/caddy-root-ca.crt
-    update-ca-trust
-  fi  
+  # for local development enable this
+  #  if [[ $(id -u) -eq 0 ]] ; then 
+  #  cp ${CADDY_ROOT_DIR}/data/caddy/pki/authorities/local/root.crt /etc/pki/ca-trust/source/anchors/caddy-root-ca.crt
+  #  update-ca-trust
+  # fi  
 }
 
 function uninstallCaddy() {
