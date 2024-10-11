@@ -1,3 +1,0 @@
-#!/bin/bash
-. findwine
-$WINE "c:\\programme\\DVD Shrink\\DVD Shrink 3.2.exe" $@ &>/dev/null &

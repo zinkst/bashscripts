@@ -45,7 +45,7 @@ ${CADDY_PROXY_DOMAIN}:${NEXTCLOUD_HTTPS_PORT} {
   }
   
   # for local testing uncomment the following line
-  # tls internal
+  tls internal
 
   # Change below to host IP
   reverse_proxy ${SERVER_IP}:${NEXTCLOUD_HTTP_PORT}
