@@ -88,6 +88,7 @@ Description=Backup ${SERVICE_NAME} data folder
 
 [Service]
 Type=simple
+Environment="NUM_BACKUPS=2"
 ExecStart=/links/bin/zinksrv/backup-${SERVICE_NAME}.sh
 
 EOF
