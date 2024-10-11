@@ -1,10 +1,10 @@
 #!/bin/bash
 # username and password are sroted in ${root}/.my.cnf in section mysqldump
-export NUM_BACKUPS=3
+export NUM_BACKUPS=${NUM_BACKUPS:-3}
 export DB_NAME="nextcloud_db"
 export BACKUP_DIR=/links/zinksrv/sysbkp/mariadb
 export BACKUP_FILE=${DB_NAME}.sql.gz
-source /links/bin/zinksrv/dbBackupFunctions.sh
+source /links/bin/lib/dbBackupFunctions.sh
 
 
 function backupMariadb () {

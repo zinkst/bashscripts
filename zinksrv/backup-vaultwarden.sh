@@ -1,11 +1,11 @@
 #!/bin/bash
 # username and password are sroted in ${root}/.my.cnf in section mysqldump
-export NUM_BACKUPS=2
+export NUM_BACKUPS=${NUM_BACKUPS:-2}
 export SERVICE_NAME="vaultwarden"
 export SRC_DIR="/links/zinksrv/srv/${SERVICE_NAME}"
 export BACKUP_DIR=/links/zinksrv/sysbkp/${SERVICE_NAME}
 export BACKUP_FILE=${SERVICE_NAME}Dir.tgz
-source /links/bin/zinksrv/dbBackupFunctions.sh
+source /links/bin/lib/dbBackupFunctions.sh
 
 
 #main

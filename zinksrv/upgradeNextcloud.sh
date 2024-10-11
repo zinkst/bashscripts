@@ -1,5 +1,5 @@
 #!/bin/bash
-source /links/bin/zinksrv/dbBackupFunctions.sh
+source /links/bin/lib/dbBackupFunctions.sh
 
 export CLOUD_NAME="nextcloud"
 export OLD_CLOUD_VER="28.0.3"

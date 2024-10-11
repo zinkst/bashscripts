@@ -1,11 +1,11 @@
 #!/bin/bash
 # username and password are sroted in ${root}/.my.cnf in section mysqldump
-export NUM_BACKUPS=2
+export NUM_BACKUPS=${NUM_BACKUPS:-2}
 export SERVICE_NAME="rootfs"
 export SRC_DIR="/"
 export BACKUP_DIR=/links/sysbkp/${SERVICE_NAME}
 export BACKUP_FILE=${SERVICE_NAME}.tgz
-source /links/bin/zinksrv/dbBackupFunctions.sh
+source /links/bin/lib/dbBackupFunctions.sh
 
 function backupRootfs() {
   echo "starting backup on $(date +%H:%M:%S)"
@@ -29,6 +29,8 @@ do
 done
 
 ls -l ${BACKUP_DIR}
+echo NUM_BACKUPS=$NUM_BACKUPS
+exit
 rotateFiles
 backupRootfs
 ls -l ${BACKUP_DIR}
