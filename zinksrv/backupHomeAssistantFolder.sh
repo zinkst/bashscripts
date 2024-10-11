@@ -1,10 +1,10 @@
 #!/bin/bash
 # username and password are sroted in ${root}/.my.cnf in section mysqldump
-export NUM_BACKUPS=2
+export NUM_BACKUPS=${NUM_BACKUPS:-2}
 export SRC_DIR="/links/zinksrv/srv/home-assist/home-assistant-config/"
 export BACKUP_DIR=/links/zinksrv/sysbkp/homeAssistant
 export BACKUP_FILE=homeAssitantDir.tgz
-source /links/bin/zinksrv/dbBackupFunctions.sh
+source /links/bin/lib/dbBackupFunctions.sh
 
 
 function backupHomeAssistant () {

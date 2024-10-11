@@ -1,8 +1,8 @@
 #!/bin/bash
 export BACKUP_DIR=/links/zinksrv/sysbkp/influx
-export NUM_BACKUPS=2
+export NUM_BACKUPS=${NUM_BACKUPS:-2}
 
-source /links/bin/zinksrv/dbBackupFunctions.sh
+source /links/bin/lib/dbBackupFunctions.sh
 
 function backupInflux () {
   echo "creating new database backup"
