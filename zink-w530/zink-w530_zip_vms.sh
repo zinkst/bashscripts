@@ -1,5 +1,5 @@
 #!/bin/bash
-source /links/bin/bkp_functions.sh
+source /links/bin/lib/bkp_functions.sh
 
 DATESTRING=$(date +'%Y%m%d')
 src_dir="/"

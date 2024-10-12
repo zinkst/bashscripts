@@ -17,7 +17,7 @@ Directories[1]="local/data/zinksrv/Filme"
 TargetDir[1]="Filme"
 MountTestFile[1]=${TGT_ROOT}"doNotDelete"
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 setLogfileName ${LOGFILENAME}
 checkCorrectHost

@@ -16,7 +16,7 @@ Directories[2]="local/data/zinksrv/persdata"
 Directories[3]="local/data/zinksrv/FamilienVideos"
 Directories[4]="local/data/zinksrv/Musik"
 
-source /links/bin/resticFunctions.sh
+source /links/bin/lib/resticFunctions.sh
 
 #main
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi

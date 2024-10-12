@@ -22,7 +22,7 @@ MountTestFile[1]=${SRC_ROOT}"data/doNotDelete"
 AllowDelete[1]=true
 
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 # main routine
 setLogfileName ${LOGFILENAME}

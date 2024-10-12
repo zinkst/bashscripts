@@ -6,7 +6,7 @@ FQ_SAMETIME_SRC_FOLDER="/links/workdata/Lotus/SametimeEssentialFiles"
 NOTES_TGT_FOLDER="${HOME}/lotus/notes/data"
 NOTES_PLUGIN_SUBDIR="${NOTES_TGT_FOLDER}/workspace/.metadata/.plugins"
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 #. /home/zinks/bin/updateSametimeProfile.sh
 
 

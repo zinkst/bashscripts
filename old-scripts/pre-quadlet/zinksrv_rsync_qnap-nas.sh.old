@@ -53,7 +53,7 @@ Directories[9]="local/ntfsdata"
 TargetDir[9]="same"
 MountTestFile[9]="${TGT_ROOT}doNotDelete"
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 usage() {
   echo "options are:"

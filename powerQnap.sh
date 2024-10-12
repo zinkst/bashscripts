@@ -1,7 +1,7 @@
 #!/bin/bash
 export SSH_HOST="qnap-ts130"
 
-source /links/bin/resticFunctions.sh
+source /links/bin/lib/resticFunctions.sh
 
 usage() {
   echo "run ${0} without parameters will power on qnap $SSH_HOST"
