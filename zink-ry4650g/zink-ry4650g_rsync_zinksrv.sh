@@ -24,7 +24,7 @@ TargetDir[2]="data/zink-ry4650g/data_hdd/zink-ry4650g"
 MountTestFile[2]=${TGT_ROOT}"data/doNotDelete"
 
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 # main routine
 setLogfileName ${LOGFILENAME}

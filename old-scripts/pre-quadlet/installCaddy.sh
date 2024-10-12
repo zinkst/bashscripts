@@ -3,7 +3,7 @@ SERVICE_NAME="caddy"
 CONTAINER_IMAGE="caddy:latest"
 DATA_DIR="/local/data/$(hostname -s)/srv/${SERVICE_NAME}"
 
-source /links/bin/podmanFunctions.sh
+source /links/bin/lib/podmanFunctions.sh
 
 function createConfig() {
    mkdir -p ${DATA_DIR}

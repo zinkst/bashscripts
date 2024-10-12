@@ -3,7 +3,7 @@
 # secret-tool store --label='BW_CLIENTID' database BW_CLIENTID
 # secret-tool store --label='BW_CLIENTSECRET' database BW_CLIENTSECRET
 
-source /links/bin/bitwardenFunctions.sh
+source /links/bin/lib/bitwardenFunctions.sh
 
 # main
 # bw config server https://zinks.dnshome.de:44300/vaultwarden/

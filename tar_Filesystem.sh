@@ -1,5 +1,5 @@
 #!/bin/bash
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 tag=$(date +'%d')
 monat=$(date +'%m')

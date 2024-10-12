@@ -16,7 +16,7 @@ function initDirs () {
 	initDirectory "${BACKUP_DIR}/latest"
 	#CMD="mkdir -p ${BACKUP_DIR}/$((NUM_BACKUPS+1))" 
 	#need to store this in a separate variable because it looks like this causes problems when $NUM_BACKUPS is used after
-	LAST_INDEX=$((NUM_BACKUPS+1)) 
+	LAST_INDEX=$((NUM_BACKUPS)) 
 	initDirectory "${BACKUP_DIR}/${LAST_INDEX}"
 	for i in $(seq 1 $NUM_BACKUPS) ; do
 		echo " processing index ${i}"
@@ -33,16 +33,17 @@ function initDirectory () {
 }
 
 function rotateDirs () {
-	LAST_INDEX=$((NUM_BACKUPS+1))
-	CMD="rm -rf ${BACKUP_DIR}/${LAST_INDEX}/*"
+	CMD="rm -rf ${BACKUP_DIR}/${NUM_BACKUPS}/*"
 	run-cmd "${CMD}"
 	for ((i=${NUM_BACKUPS};i>0;i-=1)) ; do 	
 		echo " processing index ${i}"
-		CMD="mv ${BACKUP_DIR}/${i}/* ${BACKUP_DIR}/$((i+1))/"
+		if [[ ${i} -eq 1 ]]; then
+			CMD="mv ${BACKUP_DIR}/latest/* ${BACKUP_DIR}/1/"
+		else	
+			CMD="mv ${BACKUP_DIR}/${i}/* ${BACKUP_DIR}/$((i+1))/"
+		fi
 		run-cmd "${CMD}"
 	done
-	CMD="mv ${BACKUP_DIR}/latest/* ${BACKUP_DIR}/1/"
-	run-cmd "${CMD}"
 }	
 
 ###############################################
@@ -63,17 +64,20 @@ function initDirWithBackupFiles () {
 }	
 
 function rotateFiles () {
-	LAST_INDEX=$((NUM_BACKUPS+1))
-	if [ -f "${BACKUP_DIR}/${BACKUP_FILE}.${LAST_INDEX}" ]; then
-		rm ${BACKUP_DIR}/${BACKUP_FILE}.${LAST_INDEX}
+	# LAST_INDEX=$((NUM_BACKUPS))
+	if [ -f "${BACKUP_DIR}/${BACKUP_FILE}.${NUM_BACKUPS}" ]; then
+		CMD="rm ${BACKUP_DIR}/${BACKUP_FILE}.${NUM_BACKUPS}"
+		run-cmd "${CMD}"
 	fi	
 	for ((i=${NUM_BACKUPS};i>0;i-=1)) ; do
 		echo " processing index ${i}"
-		CMD="mv ${BACKUP_DIR}/${BACKUP_FILE}.${i} ${BACKUP_DIR}/${BACKUP_FILE}.$((i+1))"
+		if [[ ${i} -eq 1 ]]; then
+			CMD="mv ${BACKUP_DIR}/${BACKUP_FILE} ${BACKUP_DIR}/${BACKUP_FILE}.1"
+		else	
+			CMD="mv ${BACKUP_DIR}/${BACKUP_FILE}.${i-1} ${BACKUP_DIR}/${BACKUP_FILE}.$((i))"
+		fi	
 		run-cmd "${CMD}"
 	done
-	CMD="mv ${BACKUP_DIR}/${BACKUP_FILE} ${BACKUP_DIR}/${BACKUP_FILE}.1"
-	run-cmd "${CMD}"
 }	
 
 

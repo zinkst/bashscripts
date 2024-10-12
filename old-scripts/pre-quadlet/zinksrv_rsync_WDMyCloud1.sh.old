@@ -43,7 +43,7 @@ MountTestFile[8]="${TGT_ROOT}doNotDelete"
 
 
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 
 # main routine

@@ -27,7 +27,7 @@ TargetDir[3]="local/data_hdd/bkp_zinksrv/Photos/Converted"
 MountTestFile[3]=${SRC_ROOT}"data/doNotDelete"
 
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 # main routine
 setLogfileName ${LOGFILENAME}

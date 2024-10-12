@@ -24,7 +24,7 @@ TargetDir[2]="data/kinder/data_hdd/kinder"
 MountTestFile[2]=${TGT_ROOT}"data/doNotDelete"
 
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 # main routine
 setLogfileName ${LOGFILENAME}

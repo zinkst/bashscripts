@@ -26,7 +26,7 @@ Directories[9]="local/ntfsdata"
 
 
 
-source /links/bin/resticFunctions.sh
+source /links/bin/lib/resticFunctions.sh
 
 function checkResticInputParams() {
 	while getopts "t" OPTNAME

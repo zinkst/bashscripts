@@ -11,7 +11,7 @@ function backupRootfs() {
   echo "starting backup on $(date +%H:%M:%S)"
   CMD="tar --selinux --acls --xattrs -cpf ${BACKUP_DIR}/${BACKUP_FILE} --directory / --use-compress-program=pigz --one-file-system --numeric-owner --exclude=proc/* --exclude=mnt/* --exclude=*/lost+found --exclude=tmp/* ."
   echo ${CMD}
-  ($CMD)
+  run-cmd "($CMD)"
   echo "finished backup on $(date +%H:%M:%S)"
 }
 
@@ -30,7 +30,6 @@ done
 
 ls -l ${BACKUP_DIR}
 echo NUM_BACKUPS=$NUM_BACKUPS
-exit
 rotateFiles
 backupRootfs
 ls -l ${BACKUP_DIR}

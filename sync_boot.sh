@@ -1,5 +1,5 @@
 #!/bin/bash
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 LOG_ROOT="/local/backup/rsync_logs/"
 
 

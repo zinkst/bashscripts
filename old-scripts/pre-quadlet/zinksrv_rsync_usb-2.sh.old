@@ -60,7 +60,7 @@ MountTestFile[9]="${TGT_ROOT}doNotDelete"
 AllowDelete[9]=true
 
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 setLogfileName ${LOGFILENAME}
 checkCorrectHost

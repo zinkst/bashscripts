@@ -2,7 +2,7 @@
 export USB1_TGT_DEVICE="/dev/disk/by-id/wwn-0x50014ee0aeb36c58-part1"
 export USB2_TGT_DEVICE="/dev/disk/by-id/wwn-0x50014ee204b797e8-part1"
 
-source /links/bin/resticFunctions.sh
+source /links/bin/lib/resticFunctions.sh
 
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 

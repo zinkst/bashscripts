@@ -22,7 +22,7 @@ Directories[8]="local/data/zink-w530"
 Directories[9]="local/data/zink-pc4"
 
 
-. /links/bin/resticFunctions.sh
+. /links/bin/lib/resticFunctions.sh
 
 # main
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi

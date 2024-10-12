@@ -3,7 +3,7 @@ SERVICE_NAME="vaultwarden"
 CONTAINER_IMAGE="vaultwarden/server:latest"
 DATA_DIR="/local/data/$(hostname -s)/srv/${SERVICE_NAME}"
 
-source /links/bin/podmanFunctions.sh
+source /links/bin/lib/podmanFunctions.sh
 
 function createPod() {
    podman run -d \

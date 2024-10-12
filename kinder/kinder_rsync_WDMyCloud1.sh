@@ -22,7 +22,7 @@ TargetDir[2]="kinder/sysbkp"
 MountTestFile[2]=${TGT_ROOT}"doNotDelete"
 
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 # main routine
 setLogfileName ${LOGFILENAME}

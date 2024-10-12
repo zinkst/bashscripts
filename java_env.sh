@@ -1,5 +1,5 @@
 #!/bin/bash
-. /home/zinks/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 
 determineDistribution

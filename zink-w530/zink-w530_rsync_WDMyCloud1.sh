@@ -22,7 +22,7 @@ TargetDir[2]="marion-pc/sysbkp"
 MountTestFile[4]=${TGT_ROOT}"doNotDelete"
 
 
-. /links/bin/bkp_functions.sh
+. /links/bin/lib/bkp_functions.sh
 
 # main routine
 setLogfileName ${LOGFILENAME}
