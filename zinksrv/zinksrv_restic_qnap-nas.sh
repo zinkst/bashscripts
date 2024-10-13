@@ -9,7 +9,7 @@ export RESTIC_REPOSITORY="${TGT_ROOT}/${RESTIC_PATH}"
 export RESTIC_PASSWORD_FILE=/links/sysbkp/restic_pwd_file
 export MOUNTED_BY_SCRIPT=false
 LOGFILENAME=$(basename "${0}" .sh)
-export LOG_ROOT="/links/zinksrv/sysbkp/restic_logs/${LOGFILENAME}/"
+export LOG_ROOT="/links/Not4Backup/BackupLogs/${LOGFILENAME}/"
 CORRECTHOST="zinksrv"
 export ETHERWAKE_INTERFACE=enp4s0
 index="1 2 3 4 5 6 7" 
@@ -52,9 +52,10 @@ checkResticInputParams $@
 printResticParams
 
 mkdir -p "${LOG_ROOT}"
-setLogfileName ${LOGFILENAME}
+#setLogfileName ${LOGFILENAME}
+LOGFILENAME=${LOGFILENAME}.log
 checkCorrectHost
-echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
+echo LogFileName: ${LOGROOT}${LOGFILENAME}
 mountQNAP
 #initializeBackupStore
 doResticWithTgtDir

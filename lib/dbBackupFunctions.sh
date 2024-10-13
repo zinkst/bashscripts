@@ -64,7 +64,6 @@ function initDirWithBackupFiles () {
 }	
 
 function rotateFiles () {
-	# LAST_INDEX=$((NUM_BACKUPS))
 	if [ -f "${BACKUP_DIR}/${BACKUP_FILE}.${NUM_BACKUPS}" ]; then
 		CMD="rm ${BACKUP_DIR}/${BACKUP_FILE}.${NUM_BACKUPS}"
 		run-cmd "${CMD}"
