@@ -7,7 +7,8 @@ export RESTIC_PATH="zinksrv_restic"
 export RESTIC_REPOSITORY="${TGT_ROOT}/${RESTIC_PATH}"
 export RESTIC_PASSWORD_FILE=/links/sysbkp/restic_pwd_file
 LOGFILENAME=$(basename "${0}" .sh)
-export LOG_ROOT="/links/zinksrv/sysbkp/restic_logs/${LOGFILENAME}/"
+export LOG_ROOT="/links/Not4Backup/BackupLogs/${LOGFILENAME}/"
+mkdir -p ${LOG_ROOT}
 CORRECTHOST="zinksrv"
 index="1 2 3 4 5 6 7 8 9"
 
@@ -27,7 +28,8 @@ Directories[9]="local/data/zink-pc4"
 # main
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 mkdir -p "${LOG_ROOT}"
-setLogfileName ${LOGFILENAME}
+# setLogfileName ${LOGFILENAME}
+LOGFILENAME=${LOGFILENAME}.log
 checkCorrectHost
 echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
 
