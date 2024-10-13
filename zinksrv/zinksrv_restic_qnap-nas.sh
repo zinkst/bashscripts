@@ -52,10 +52,9 @@ checkResticInputParams $@
 printResticParams
 
 mkdir -p "${LOG_ROOT}"
-#setLogfileName ${LOGFILENAME}
 LOGFILENAME=${LOGFILENAME}.log
 checkCorrectHost
-echo LogFileName: ${LOGROOT}${LOGFILENAME}
+echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
 mountQNAP
 #initializeBackupStore
 doResticWithTgtDir
