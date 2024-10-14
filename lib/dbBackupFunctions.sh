@@ -50,6 +50,10 @@ function rotateDirs () {
 # Functions for packing folders 
 ###############################################
 function initDirWithBackupFiles () {
+	BACKUP_FILE=${1:-$BACKUP_FILE}
+	BACKUP_DIR=${2:-$BACKUP_DIR}
+	echo BACKUP_FILE=${BACKUP_FILE} 
+	echo BACKUP_DIR=${BACKUP_DIR}
 	if [ ! -d "${BACKUP_DIR}" ]; then
 		CMD="mkdir -p "${BACKUP_DIR}""
 		run-cmd "${CMD}"
@@ -64,6 +68,10 @@ function initDirWithBackupFiles () {
 }	
 
 function rotateFiles () {
+	BACKUP_FILE=${1:-$BACKUP_FILE}
+	BACKUP_DIR=${2:-$BACKUP_DIR}
+	echo BACKUP_FILE=${BACKUP_FILE} 
+	echo BACKUP_DIR=${BACKUP_DIR}
 	if [ -f "${BACKUP_DIR}/${BACKUP_FILE}.${NUM_BACKUPS}" ]; then
 		CMD="rm ${BACKUP_DIR}/${BACKUP_FILE}.${NUM_BACKUPS}"
 		run-cmd "${CMD}"
@@ -73,7 +81,7 @@ function rotateFiles () {
 		if [[ ${i} -eq 1 ]]; then
 			CMD="mv ${BACKUP_DIR}/${BACKUP_FILE} ${BACKUP_DIR}/${BACKUP_FILE}.1"
 		else	
-			CMD="mv ${BACKUP_DIR}/${BACKUP_FILE}.${i-1} ${BACKUP_DIR}/${BACKUP_FILE}.$((i))"
+			CMD="mv ${BACKUP_DIR}/${BACKUP_FILE}.$((i-1)) ${BACKUP_DIR}/${BACKUP_FILE}.$((i))"
 		fi	
 		run-cmd "${CMD}"
 	done
