@@ -9,7 +9,7 @@ source /links/bin/lib/bitwardenFunctions.sh
 # bw config server https://zinks.dnshome.de:44300/vaultwarden/
 export BW_CLIENTID=$(secret-tool lookup database 'BW_CLIENTID')
 export BW_CLIENTSECRET=$(secret-tool lookup database 'BW_CLIENTSECRET')
-export BW_MASTERPASSWORD=$(secret-tool lookup database 'vaultwarden')
+export BW_MASTERPASSWORD=$(secret-tool lookup database 'BW_MASTERPASSWORD')
 export BW_USER="stefan@zink.bw"
 bitwardenLogin $@
 bw get password "${1}"

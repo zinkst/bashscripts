@@ -7,8 +7,8 @@ CORRECTHOST="zink-w530"
 #SRC_ROOT="/remote/marion/cifs/"
 # with CIFS there are permissions problems also when running as root
 SRC_ROOT="/"
-LOG_ROOT="${SRC_ROOT}/local/data/rsync/logs"
-RSYNC_PARAMS="-av -A --one-file-system --exclude-from ${SRC_ROOT}/local/data/rsync/exclude.txt"
+LOG_ROOT="/links/Not4Backup/BackupLogs/${LOGFILENAME}/"
+RSYNC_PARAMS="-av -A --one-file-system --exclude-from /links/etc/my-etc/rsync/rsync_exclude.txt"
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 MINS_SINCE_LASTRUN=-1500
@@ -30,9 +30,13 @@ Directories[4]="${CORRECTHOST}/sysbkp"
 TargetDir[4]="data/${CORRECTHOST}/sysbkp"
 MountTestFile[4]=${TGT_ROOT}"data/doNotDelete"
 
-. /root/bin/bkp_functions.sh
+. /root/bin/lib/bkp_functions.sh
 
-setLogfileName ${LOGFILENAME}
+
+prepareBackupLogs
+mkdir -p "${LOG_ROOT}"
+LOGFILENAME=${LOGFILENAME}.log
+logrotate -f /links/etc/logrotate.d/${LOGFILENAME}_logs
 checkCorrectHost
 rsyncBkpParamCheck $@
 cmd="mount ${NFS_SERVER_URI} ${REMOTEMOUNTPOINT}"
