@@ -35,21 +35,17 @@ checkFSMounted ()
   then
     MOUNTEDBYBKPSCRIPT="false"
   fi  
-  if [ -f ${MOUNTTESTFILE} ] 
-  then
+  if [ -f ${MOUNTTESTFILE} ]; then
     echo ${MOUNTTESTFILE} "exists we can continue" | tee -a ${LOG_ROOT}${LOGFILENAME}
     TARGETFSMOUNTED="true"
   else
-    if [ $1 == "false" -a ${TARGETFSMOUNTED} == "false" ]
-	then
-		echo ${MOUNTTESTFILE} "does not exist, please mount first"
-	fi	
-    if [ $1 == "true" ]
-    then
+    if [ $1 == "false" -a ${TARGETFSMOUNTED} == "false" ]; then
+      echo ${MOUNTTESTFILE} "does not exist, please mount first"
+    fi	
+    if [ $1 == "true" ]; then
     	echo ${MOUNTTESTFILE} "does not exist, trying to mount remote filesystem first" | tee -a ${LOG_ROOT}${LOGFILENAME}
     	mount ${REMOTEMOUNTPOINT} | tee -a ${LOG_ROOT}${LOGFILENAME}
-      if [ -f ${MOUNTTESTFILE} ] 
-      then
+      if [ -f ${MOUNTTESTFILE} ]; then
         MOUNTEDBYBKPSCRIPT="true"
         echo ${MOUNTTESTFILE} "exists we can continue" | tee -a ${LOG_ROOT}${LOGFILENAME}
         TARGETFSMOUNTED="true"
@@ -459,14 +455,64 @@ updateLastRunFile ()
 }
 
 function prepareBackupLogs () {
-  if [ -L "/links/Not4Backup/BackupLogs" ]; then
-		echo "symbolic ink /links/Not4Backup/BackupLogs exists - no setup needed"
-    return
-  fi
-  BACKUP_LOGS_DIR="/local/data/$(hostname -s)/BackupLogs"
+  BACKUP_LOGS_DIR="/local/data/Not4Backup/BackupLogs"
   if [ ! -d "${BACKUP_LOGS_DIR}" ]; then
-		echo "${BACKUP_LOGS_DIR}" does not exist creating it
+    echo "${BACKUP_LOGS_DIR}" does not exist creating it
     mkdir -p "${BACKUP_LOGS_DIR}"
   fi
-  ln -sf ${BACKUP_LOGS_DIR} /links/Not4Backup/BackupLogs
+  if [[ ! -L "/links/Not4Backup" ]]; then
+    echo "symbolic link /links/Not4Backup needs to be created"
+    ln -sf ${BACKUP_LOGS_DIR} /links/Not4Backup
+  fi  
+}
+
+function prepareRsyncConfig() {
+  if [ -f "/links/etc" ]; then
+		echo "symbolic link /links/etc exists - no setup needed"
+    return
+  else
+    ETC_DIR="/local/data/$(hostname -s)/etc"
+    if [ ! -d "${ETC_DIR}" ]; then
+      echo "${ETC_DIR}" does not exist creating it
+      mkdir -p "${ETC_DIR}"
+    fi
+    if [ ! -L "/links/etc" ]; then
+      ln -sf ${ETC_DIR} /links/etc
+    fi  
+  fi
+  LOGGER=${1}
+  mkdir -p "${ETC_DIR}/logrotate.d"
+
+  cat   <<EOF > "${ETC_DIR}/logrotate.d/${LOGGER}_logs"
+/links/Not4Backup/BackupLogs/${LOGGER}/${LOGGER}.log
+{
+    rotate 4
+    missingok
+    notifempty
+    compress
+}
+EOF
+chmod 600 ${ETC_DIR}/logrotate.d/${LOGGER}_logs
+
+  mkdir -p "${ETC_DIR}/my-etc/rsync"
+  cat   <<EOF > "${ETC_DIR}/my-etc/rsync/rsync_exclude.txt"
+Backup
+lost+found
+vms/*.vhd
+vms/VB/W7-prof-32bit/Windows7.vdi
+vms/VB/w7-ultimate-64/W7-ultimate-64.vhd
+vms/VB/Win81/win8pro.vhd
+vms/VB/Win81-zinksrv-vm/win81_pro_zinksrv.vhd
+vms/VB/Fedora/Fedora.vdi
+vms/*/Snapshots/*
+*XP_Pro_de.vmdk
+*.cache/google-chrome/*
+*.cache/mozilla/firefox*
+*GoogleEarth/Cache/*
+*GoogleEarth/Temp/*
+*UHD Content/*
+*vm-disks/*
+._sync_*
+.nextcloudsync.log
+EOF
 }
