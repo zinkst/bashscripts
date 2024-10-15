@@ -458,50 +458,15 @@ updateLastRunFile ()
   touch ${LOG_ROOT}${LASTRUN_FILENAME} 
 }
 
-#######################################################################################################
-#old functions
-
-Old_determineDistribution ()
-{
-	if [ -f /etc/fedora-release ]
-	then
-		DISTRIBUTION=`head -1 /etc/fedora-release | awk '{print $1 $3}'`
-	elif [ -f /etc/redhat-release ]
-	then
-		DISTRIBUTION="OPENCLIENT"
-	elif [ -f /etc/SuSE-release ]
-	then
-		DISTRIBUTION=`head -1 /etc/SuSE-release | awk '{print $1 $2}'`
-	else
-		uname -a | grep -i ubuntu
-		if [ $? -eq 0 ]
-		then 
-			DISTRIBUTION="UBUNTU"
-		else
-			DISTRIBUTION="UNKNOWN"
-		fi
-	fi
+function prepareBackupLogs () {
+  if [ -L "/links/Not4Backup/BackupLogs" ]; then
+		echo "symbolic ink /links/Not4Backup/BackupLogs exists - no setup needed"
+    return
+  fi
+  BACKUP_LOGS_DIR="/local/data/$(hostname -s)/BackupLogs"
+  if [ ! -d "${BACKUP_LOGS_DIR}" ]; then
+		echo "${BACKUP_LOGS_DIR}" does not exist creating it
+    mkdir -p "${BACKUP_LOGS_DIR}"
+  fi
+  ln -sf ${BACKUP_LOGS_DIR} /links/Not4Backup/BackupLogs
 }
-
-
-
-copyOldTarFiles ()
-{
-    for index in index
-    do
-        echo -n "starting backup of ${Directories[index]}" >> ${BACKUPDIR}/${LOGFILENAME}
-        date >> ${BACKUPDIR}/${LOGFILENAME}
-        
-        if [ -t ${BACKUPDIR}/${TargetNames[index]}_01.tgz ]
-        then 
-                echo "rm ${BACKUPDIR}/${TargetNames[index]}_01.tgz"
-        fi
-        echo -n "starting copy of ${BACKUPDIR}/${TargetNames[index]}.tgz to ${BACKUPDIR}/${TargetNames[index]}_01.tgz at" >> ${BACKUPDIR}/${LOGFILENAME}
-        date >> ${BACKUPDIR}/${LOGFILENAME}
-        echo "cp ${BACKUPDIR}/${TargetNames[index]}.tgz ${BACKUPDIR}/${TargetNames[index]}_01.tgz"
-        cp ${BACKUPDIR}/${TargetNames[index]}.tgz ${BACKUPDIR}/${TargetNames[index]}_01.tgz
-        echo -n "finished copy of ${BACKUPDIR}/${TargetNames[index]}_01.tgz to ${BACKUPDIR}/${TargetNames[index]}_01.tgz at" >> ${BACKUPDIR}/${LOGFILENAME}
-        date >> ${BACKUPDIR}/${LOGFILENAME}
-    done
-}
-
