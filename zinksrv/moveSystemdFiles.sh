@@ -19,6 +19,7 @@ function moveSystemdFiles() {
 	"backup-influx-db"
 	"backup-rootfs"
 	"backup-vaultwarden"
+	"backup-nextcloud-quadlet"
 	"restic_bkp_qnap-nas"
 	"zinksrv_usb_backup"
   )	

@@ -110,5 +110,5 @@ rotateFiles nextcloud_html.tgz
 rotateFiles nextcloud_db.tgz
 rotateFiles mariadb_dump.sql.gz
 backupNextcloud  
-ls -l ${BACKUP_DIR}
+ls -lh ${BACKUP_DIR}
 
