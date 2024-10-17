@@ -454,6 +454,36 @@ updateLastRunFile ()
   touch ${LOG_ROOT}${LASTRUN_FILENAME} 
 }
 
+function processRsyncBackup() {
+  # variables
+  export SRC_ROOT=${SRC_ROOT:-"/"}
+  export TGT_ROOT=${TGT_ROOT:-"/remote/zinksrv/nfs4/"}
+  LOGFILENAME=$(basename "${0}" .sh)
+  export LOG_ROOT="/links/Not4Backup/BackupLogs/${LOGFILENAME}/"
+  export RSYNC_PARAMS=${RSYNC_PARAMS:-"-av -A --one-file-system --exclude-from /links/etc/my-etc/rsync/rsync_exclude.txt"}
+  LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
+  export MINS_SINCE_LASTRUN=${MINS_SINCE_LASTRUN:-"-1500"}
+  export CHECK_LASTRUN=${CHECK_LASTRUN:-false}
+  REMOTEMOUNTPOINT=${TGT_ROOT}
+  export TRY_MOUNT_TGT=${TRY_MOUNT_TGT:-"true"}
+
+  prepareBackupLogs
+  prepareRsyncConfig "${LOGFILENAME}"
+  mkdir -p "${LOG_ROOT}"
+  logrotate -f /links/etc/logrotate.d/${LOGFILENAME}_logs
+  LOGFILENAME=${LOGFILENAME}.log
+  echo LOG_PATH=${LOG_ROOT}${LOGFILENAME}
+  checkCorrectHost
+  rsyncBkpParamCheck $@
+  if [ ${CHECK_LASTRUN} == true ]
+  then
+    checkLastRun
+  fi
+  doRsyncWithTgtDirAndMountTestFile
+  updateLastRunFile
+  umount ${REMOTEMOUNTPOINT}
+}
+
 function prepareBackupLogs () {
   BACKUP_LOGS_DIR="/local/data/Not4Backup/BackupLogs"
   if [ ! -d "${BACKUP_LOGS_DIR}" ]; then
