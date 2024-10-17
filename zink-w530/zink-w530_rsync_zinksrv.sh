@@ -32,27 +32,19 @@ MountTestFile[1]=${TGT_ROOT}"data/doNotDelete"
 
 . /root/bin/lib/bkp_functions.sh
 
-
+# main routine
 prepareBackupLogs
 prepareRsyncConfig "${LOGFILENAME}"
 mkdir -p "${LOG_ROOT}"
 logrotate -f /links/etc/logrotate.d/${LOGFILENAME}_logs
 LOGFILENAME=${LOGFILENAME}.log
+echo LOG_PATH=${LOG_ROOT}${LOGFILENAME}
 checkCorrectHost
 rsyncBkpParamCheck $@
-# cmd="mount ${NFS_SERVER_URI} ${REMOTEMOUNTPOINT}"
-# echo $cmd
-# eval $cmd
-
 if [ ${CHECK_LASTRUN} == true ]
 then
 	checkLastRun
 fi
-if [ ${USE_SSH} == true ]
-then
-    doRsyncWithTgtDir
-else	
-	doRsyncWithTgtDirAndMountTestFile
-fi	
+doRsyncWithTgtDirAndMountTestFile
 updateLastRunFile
 umount ${REMOTEMOUNTPOINT}
