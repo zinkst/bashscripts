@@ -14,6 +14,8 @@ function backupNextcloud () {
    echo "creating mariadbdump backup of nextcloud db "
    CMD="podman exec -it nextcloud-db mariadb-dump -u ${MARIADB_USER} -p${MARIADB_USER_PASSWORD} ${MARIADB_DATABASE_NAME} | gzip -9 > ${BACKUP_DIR}/mariadb_dump.sql.gz"
    run-cmd "${CMD}"
+  #  CMD="echo Waiting 60 seconds && sleep 60" # doesn't prevent  tar: ./ib_logfile0: Datei hat sich beim Lesen geändert in next call
+  #  run-cmd "${CMD}"
    echo "creating backup of nextcloud db data volume"
    CMD="tar -czf  ${BACKUP_DIR}/nextcloud_db.tgz --directory ${NEXTCLOUD_ROOT_DIR}/db ."
    run-cmd "${CMD}"
