@@ -507,7 +507,7 @@ function prepareRsyncConfig() {
   LOGGER=${1}
   mkdir -p "${ETC_DIR}/logrotate.d"
 
-if [ ! -f /links/Not4Backup/BackupLogs/${LOGGER}/${LOGGER}.log ]; then
+if [ ! -f ${ETC_DIR}/logrotate.d/${LOGGER}_logs ]; then
   cat   <<EOF > "${ETC_DIR}/logrotate.d/${LOGGER}_logs"
 /links/Not4Backup/BackupLogs/${LOGGER}/${LOGGER}.log
 {
