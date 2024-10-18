@@ -507,6 +507,7 @@ function prepareRsyncConfig() {
   LOGGER=${1}
   mkdir -p "${ETC_DIR}/logrotate.d"
 
+if [ ! -f /links/Not4Backup/BackupLogs/${LOGGER}/${LOGGER}.log ]; then
   cat   <<EOF > "${ETC_DIR}/logrotate.d/${LOGGER}_logs"
 /links/Not4Backup/BackupLogs/${LOGGER}/${LOGGER}.log
 {
@@ -516,8 +517,10 @@ function prepareRsyncConfig() {
     compress
 }
 EOF
-chmod 600 ${ETC_DIR}/logrotate.d/${LOGGER}_logs
+ chmod 600 ${ETC_DIR}/logrotate.d/${LOGGER}_logs
+fi
 
+if [ ! -f ${ETC_DIR}/my-etc/rsync/rsync_exclude.txt ]; then
   mkdir -p "${ETC_DIR}/my-etc/rsync"
   cat   <<EOF > "${ETC_DIR}/my-etc/rsync/rsync_exclude.txt"
 Backup
@@ -539,4 +542,6 @@ vms/*/Snapshots/*
 ._sync_*
 .nextcloudsync.log
 EOF
+fi
+
 }
