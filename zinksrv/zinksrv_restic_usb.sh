@@ -5,7 +5,7 @@ export TGT_ROOT="/run/media/BKP_ZINK_USB"
 export TGT_DEVICE="/dev/disk/by-id/wwn-0x50014ee0aeb36c58-part1"
 export RESTIC_PATH="zinksrv_restic"
 export RESTIC_REPOSITORY="${TGT_ROOT}/${RESTIC_PATH}"
-export RESTIC_PASSWORD_FILE=/links/sysbkp/restic_pwd_file
+export RESTIC_PASSWORD_FILE=/links/etc/restic_pwd_file
 LOGFILENAME=$(basename "${0}" .sh)
 export LOG_ROOT="/links/Not4Backup/BackupLogs/${LOGFILENAME}/"
 mkdir -p ${LOG_ROOT}
@@ -22,8 +22,8 @@ Directories[7]="local/data/zink-e595"
 Directories[8]="local/data/zink-w530"
 Directories[9]="local/data/zink-pc4"
 
-
-. /links/bin/lib/resticFunctions.sh
+source /links/bin/lib/bkp_functions.sh
+source /links/bin/lib/resticFunctions.sh
 
 # main
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
@@ -32,7 +32,9 @@ mkdir -p "${LOG_ROOT}"
 LOGFILENAME=${LOGFILENAME}.log
 checkCorrectHost
 echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
-
+prepareRsyncConfig "${LOGFILENAME}"
+mkdir -p "${LOG_ROOT}"
+logrotate -f /links/etc/logrotate.d/${LOGFILENAME}_logs
 powerOnTasmotaPlug "hama-4fach-01" "Power2"
 echo "mounting ${TGT_DEVICE}"
 udisksctl mount -b ${TGT_DEVICE}

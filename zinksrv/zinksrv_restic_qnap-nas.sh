@@ -6,7 +6,7 @@ export TGT_ROOT="/remote/qnap-ts130/data_smb"
 export QNAP_TOGGLE_POWER=true
 export RESTIC_PATH="zinksrv_restic"
 export RESTIC_REPOSITORY="${TGT_ROOT}/${RESTIC_PATH}"
-export RESTIC_PASSWORD_FILE=/links/sysbkp/restic_pwd_file
+export RESTIC_PASSWORD_FILE=/links/etc/restic_pwd_file
 export MOUNTED_BY_SCRIPT=false
 LOGFILENAME=$(basename "${0}" .sh)
 export LOG_ROOT="/links/Not4Backup/BackupLogs/${LOGFILENAME}/"
@@ -25,7 +25,7 @@ Directories[8]="local/ntfs_c"
 Directories[9]="local/ntfsdata"
 
 
-
+source /links/bin/lib/bkp_functions.sh
 source /links/bin/lib/resticFunctions.sh
 
 function checkResticInputParams() {
@@ -55,6 +55,9 @@ mkdir -p "${LOG_ROOT}"
 LOGFILENAME=${LOGFILENAME}.log
 checkCorrectHost
 echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
+prepareRsyncConfig "${LOGFILENAME}"
+mkdir -p "${LOG_ROOT}"
+logrotate -f /links/etc/logrotate.d/${LOGFILENAME}_logs
 mountQNAP
 #initializeBackupStore
 doResticWithTgtDir
