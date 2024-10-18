@@ -164,19 +164,15 @@ doRsyncWithTgtDirAndMountTestFile ()
 
 rsyncBkpParamCheck ()
 {
-	while getopts "dnsc" Option
+	while getopts "dnc" Option
 	do
 		case $Option in
 			c ) CHECK_LASTRUN=true;;
-			#d ) RSYNC_PARAMS="${RSYNC_PARAMS} --delete";;
 			d ) RSYNC_DELETE=true;;
 			n ) RSYNC_PARAMS="${RSYNC_PARAMS} -n";;
-			s ) TGT_ROOT=${SSH_TGT_ROOT}
-				USE_SSH=true
-				;;	
-		    * ) rsyncBkpParamCheckUsage
+	    * ) rsyncBkpParamCheckUsage
 				echo " exiting due to invalid option  ${@} " #:$OPTIND:1}"
-		        exit  
+		    exit  
 				;;		  
 		esac
 	done
@@ -190,7 +186,6 @@ rsyncBkpParamCheck ()
 
 	echo "TGT_ROOT = ${TGT_ROOT}"
 	echo "RSYNC_PARAMS=${RSYNC_PARAMS}"
-	echo "USE_SSH = ${USE_SSH}"
 	echo "CHECK_LASTRUN = ${CHECK_LASTRUN}"
 	echo "index = ${index}"
 }
@@ -200,7 +195,6 @@ rsyncBkpParamCheckUsage ()
   echo "options are:"
   echo " -d: use --delete as additional rysnc parameter (deletes on target)"
   echo " -n: use -n as additional rysnc parameter (does only a dry-run do not actually copy files)"
-  echo " -s: use ssh based rsync as target"
   echo " -c: check when the script was last run and exit if it was within the last ${MINS_SINCE_LASTRUN} minutes"
 }	
 
