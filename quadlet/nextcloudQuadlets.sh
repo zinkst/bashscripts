@@ -245,15 +245,15 @@ function configureNextcloud() {
   ${BASH_ALIASES[occ]} config:system:set trusted_proxies 0 --value=${SERVER_IP}
   ${BASH_ALIASES[occ]} config:system:set overwriteprotocol --value 'https'
   ${BASH_ALIASES[occ]} app:enable files_external
-  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.stefan.password' ${CONFIG_YAML})
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.stefan.password' "${CONFIG_YAML}")
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Stefan Zink" --group="burghalde" stefan 
-  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.marion.password' ${CONFIG_YAML})
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.marion.password' "${CONFIG_YAML}")
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Marion Zink" --group="burghalde" marion 
-  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.georg.password' ${CONFIG_YAML})
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.georg.password' "${CONFIG_YAML}")
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Georg Zink" --group="burghalde" georg 
-  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.henry.password' ${CONFIG_YAML})
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.henry.password' "${CONFIG_YAML}")
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Henry Zink" --group="burghalde" henry 
-  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.valentin.password' ${CONFIG_YAML})
+  OC_PASS=$(yq -r '.NEXTCLOUD.USERS.valentin.password' "${CONFIG_YAML}")
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Valentin Zink" --group="burghalde" valentin 
 }
 
@@ -293,24 +293,24 @@ function setEnvVars() {
     export SYSTEMD_UNIT_DIR=${HOME}/.config/systemd/user
     export SYSTEMCTL_CMD="systemctl --user"
   fi
-  NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' ${CONFIG_YAML})"
-  PODMAN_AUTO_UPDATE_STRATEGY="$(yq -r '.HOST.PODMAN_AUTO_UPDATE_STRATEGY' ${CONFIG_YAML})"
-  NEXTCLOUD_ROOT_DIR="$(yq -r '.NEXTCLOUD.ROOT_DIR' ${CONFIG_YAML})"
-  NEXTCLOUD_DATA_DIR="$(yq -r '.NEXTCLOUD.DATA_DIR' ${CONFIG_YAML})"
-  NEXTCLOUD_EXTERNAL_DATA_DIR="$(yq -r '.NEXTCLOUD.EXTERNAL_DATA_DIR' ${CONFIG_YAML})"
-  NEXTCLOUD_ADMIN_USER="$(yq -r '.NEXTCLOUD.ADMIN_USER' ${CONFIG_YAML})"
-  NEXTCLOUD_ADMIN_PASSWORD="$(yq -r '.NEXTCLOUD.ADMIN_PASSWORD' ${CONFIG_YAML})"
-  NEXTCLOUD_HTTP_PORT="$(yq -r '.NEXTCLOUD.HTTP_PORT' ${CONFIG_YAML})"
-  NEXTCLOUD_HTTPS_PORT="$(yq -r '.NEXTCLOUD.HTTPS_PORT' ${CONFIG_YAML})"
-  MARIADB_DATABASE_NAME="$(yq -r '.MARIADB.DATABASE_NAME' ${CONFIG_YAML})"
-  MARIADB_USER="$(yq -r '.MARIADB.USER' ${CONFIG_YAML})"
-  MARIADB_USER_PASSWORD="$(yq -r '.MARIADB.USER_PASSWORD' ${CONFIG_YAML})"
-  MARIADB_ROOT_PASSWORD="$(yq -r '.MARIADB.ROOT_PASSWORD' ${CONFIG_YAML})"
-  CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' ${CONFIG_YAML})"
-  INSTALL_CADDY="$(yq -r '.NEXTCLOUD.INSTALL_CADDY' ${CONFIG_YAML})"
+  NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' "${CONFIG_YAML}")"
+  PODMAN_AUTO_UPDATE_STRATEGY="$(yq -r '.HOST.PODMAN_AUTO_UPDATE_STRATEGY' "${CONFIG_YAML}")"
+  NEXTCLOUD_ROOT_DIR="$(yq -r '.NEXTCLOUD.ROOT_DIR' "${CONFIG_YAML}")"
+  NEXTCLOUD_DATA_DIR="$(yq -r '.NEXTCLOUD.DATA_DIR' "${CONFIG_YAML}")"
+  NEXTCLOUD_EXTERNAL_DATA_DIR="$(yq -r '.NEXTCLOUD.EXTERNAL_DATA_DIR' "${CONFIG_YAML}")"
+  NEXTCLOUD_ADMIN_USER="$(yq -r '.NEXTCLOUD.ADMIN_USER' "${CONFIG_YAML}")"
+  NEXTCLOUD_ADMIN_PASSWORD="$(yq -r '.NEXTCLOUD.ADMIN_PASSWORD' "${CONFIG_YAML}")"
+  NEXTCLOUD_HTTP_PORT="$(yq -r '.NEXTCLOUD.HTTP_PORT' "${CONFIG_YAML}")"
+  NEXTCLOUD_HTTPS_PORT="$(yq -r '.NEXTCLOUD.HTTPS_PORT' "${CONFIG_YAML}")"
+  MARIADB_DATABASE_NAME="$(yq -r '.MARIADB.DATABASE_NAME' "${CONFIG_YAML}")"
+  MARIADB_USER="$(yq -r '.MARIADB.USER' "${CONFIG_YAML}")"
+  MARIADB_USER_PASSWORD="$(yq -r '.MARIADB.USER_PASSWORD' "${CONFIG_YAML}")"
+  MARIADB_ROOT_PASSWORD="$(yq -r '.MARIADB.ROOT_PASSWORD' "${CONFIG_YAML}")"
+  CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' "${CONFIG_YAML}")"
+  INSTALL_CADDY="$(yq -r '.NEXTCLOUD.INSTALL_CADDY' "${CONFIG_YAML}")"
   if [ ${INSTALL_CADDY} == "true" ]; then
-    CADDYFILE="$(yq -r '.CADDY.CADDYFILE' ${CONFIG_YAML})"
-    CADDY_ROOT_DIR="$(yq -r '.CADDY.ROOT_DIR' ${CONFIG_YAML})"
+    CADDYFILE="$(yq -r '.CADDY.CADDYFILE' "${CONFIG_YAML}")"
+    CADDY_ROOT_DIR="$(yq -r '.CADDY.ROOT_DIR' "${CONFIG_YAML}")"
   fi  
   SERVER_IP=$(hostname -I | awk '{print $1}')
   SERVER_NAME=$(hostname -s)
@@ -340,7 +340,7 @@ function showStatus() {
 }
 
 function printEnvVars() {
-  echo CONFIG_YAML=${CONFIG_YAML}
+  echo CONFIG_YAML="${CONFIG_YAML}"
   echo QUADLET_DIR=${QUADLET_DIR}
   echo SYSTEMD_UNIT_DIR=${SYSTEMD_UNIT_DIR}
   echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
@@ -406,7 +406,7 @@ function checkpCLIParams() {
         ;;
       c )
         echo "config file used is ${OPTARG} is specified"
-        CONFIG_YAML=${OPTARG}
+        CONFIG_YAML="${OPTARG}"
         ;;
       * )
         echo "unknown parameter specified"
@@ -421,7 +421,7 @@ function checkpCLIParams() {
     exit 1
   fi
 
-  if [ -z "${CONFIG_YAML+x}" ]  || [ ! -f ${CONFIG_YAML} ]; then 
+  if [ -z "${CONFIG_YAML+x}" ]  || [ ! -f "${CONFIG_YAML}" ]; then 
     echo "Config file does not exist Please specify an existing config file witch -c"; 
     usage
   fi
@@ -433,7 +433,7 @@ function checkpCLIParams() {
 }
 
 # main start here
-checkpCLIParams $*
+checkpCLIParams "$@"
 setEnvVars
 printEnvVars
 case "${RUN_MODE}" in 

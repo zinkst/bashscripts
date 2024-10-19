@@ -3,13 +3,14 @@ set -euo pipefail
 
 function createDirs() {
   mkdir -p ${QUADLET_DIR}
-  mkdir -p ${VAULTWARDEN_DATA_DIR}
-  semanage fcontext -a -t svirt_sandbox_file_t "${VAULTWARDEN_DATA_DIR}(/.*)?"
-  restorecon -Rv "${VAULTWARDEN_DATA_DIR}"
+  mkdir -p ${HOME_ASSISTANT_DATA_DIR}
+  semanage fcontext -a -t svirt_sandbox_file_t "${HOME_ASSISTANT_DATA_DIR}(/.*)?"
+  restorecon -Rv "${HOME_ASSISTANT_DATA_DIR}"
 }
 
 function createPrereqs() {
-  printf "${VAULTWARDEN_ADMIN_TOKEN}" | podman secret create --replace vaultwarden-admin-token -
+  echo "Createing Prereqs for ${SERVICE_NAME}"
+  # printf "${VAULTWARDEN_ADMIN_TOKEN}" | podman secret create --replace vaultwarden-admin-token -
 }
 
 function CreateQuadletVaultwarden() {
@@ -21,15 +22,12 @@ Description=${SERVICE_NAME}
 Label=app=${SERVICE_NAME}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=${SERVICE_NAME}
-Image=${VAULTWARDEN_CONTAINER_IMAGE}
+Image=${HOME_ASSISTANT_CONTAINER_IMAGE}
 Network=${NETWORK_NAME}
-PublishPort=${VAULTWARDEN_ROCKET_PORT}:${VAULTWARDEN_ROCKET_PORT}
-Volume=${VAULTWARDEN_DATA_DIR}:/data:Z
+PublishPort=${HOME_ASSISTANT_HTTP_PORT}:${HOME_ASSISTANT_HTTP_PORT}
+Volume=${HOME_ASSISTANT_DATA_DIR}:/config:Z
 Volume=/etc/localtime:/etc/localtime:ro
-Environment=DOMAIN=https://${CADDY_PROXY_DOMAIN}:${VAULTWARDEN_HTTPS_PORT}
 Environment=TZ=Europe/Amsterdam
-Environment=ROCKET_PORT=${VAULTWARDEN_ROCKET_PORT}
-Secret=vaultwarden-admin-token,type=env,target=ADMIN_TOKEN
 
 [Install]
 WantedBy=default.target
@@ -56,13 +54,12 @@ function uninstall() {
     loginctl disable-linger $USER
   fi 
   rm "${QUADLET_DIR}/${SERVICE_NAME}.container"
-  podman secret rm vaultwarden-admin-token
   
 }
 
 function showStatus() {
   SERVICES=(
-    vaultwarden
+    ${SERVICE_NAME}
   )
   for  i in ${!SERVICES[@]}; do
         echo "###################################################"
@@ -85,29 +82,23 @@ function setEnvVars() {
   fi
   NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' "${CONFIG_YAML}")"
   PODMAN_AUTO_UPDATE_STRATEGY="$(yq -r '.HOST.PODMAN_AUTO_UPDATE_STRATEGY' "${CONFIG_YAML}")"
-  VAULTWARDEN_DATA_DIR="$(yq -r '.VAULTWARDEN.DATA_DIR' "${CONFIG_YAML}")"
-  VAULTWARDEN_ADMIN_TOKEN="$(yq -r '.VAULTWARDEN.ADMIN_TOKEN' "${CONFIG_YAML}")"
-  VAULTWARDEN_CONTAINER_IMAGE="$(yq -r '.VAULTWARDEN.CONTAINER_IMAGE' "${CONFIG_YAML}")"
-  VAULTWARDEN_ROCKET_PORT="$(yq -r '.VAULTWARDEN.ROCKET_PORT' "${CONFIG_YAML}")"
-  VAULTWARDEN_HTTPS_PORT="$(yq -r '.VAULTWARDEN.HTTPS_PORT' "${CONFIG_YAML}")"
-  CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' "${CONFIG_YAML}")"
-  SERVICE_NAME=vaultwarden
+  HOME_ASSISTANT_DATA_DIR="$(yq -r '.HOME_ASSISTANT.DATA_DIR' "${CONFIG_YAML}")"
+  HOME_ASSISTANT_CONTAINER_IMAGE="$(yq -r '.HOME_ASSISTANT.CONTAINER_IMAGE' "${CONFIG_YAML}")"
+  HOME_ASSISTANT_HTTP_PORT="$(yq -r '.HOME_ASSISTANT.HTTP_PORT' "${CONFIG_YAML}")"
+  SERVICE_NAME="home-assistant"
 }
 
 function printEnvVars() {
-  echo CONFIG_YAML=${CONFIG_YAML}
+  echo CONFIG_YAML="${CONFIG_YAML}"
   echo QUADLET_DIR=${QUADLET_DIR}
   echo SYSTEMD_UNIT_DIR=${SYSTEMD_UNIT_DIR}
   echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
   echo NETWORK_NAME=${NETWORK_NAME}
   echo PODMAN_AUTO_UPDATE_STRATEGY=${PODMAN_AUTO_UPDATE_STRATEGY}
-  echo VAULTWARDEN_DATA_DIR=${VAULTWARDEN_DATA_DIR}
-  echo VAULTWARDEN_ADMIN_TOKEN=${VAULTWARDEN_ADMIN_TOKEN}
-  echo VAULTWARDEN_CONTAINER_IMAGE=${VAULTWARDEN_CONTAINER_IMAGE}
-  echo VAULTWARDEN_ROCKET_PORT=${VAULTWARDEN_ROCKET_PORT}
-  echo VAULTWARDEN_HTTPS_PORT=${VAULTWARDEN_HTTPS_PORT}
+  echo HOME_ASSISTANT_DATA_DIR=${HOME_ASSISTANT_DATA_DIR}
+  echo HOME_ASSISTANT_CONTAINER_IMAGE=${HOME_ASSISTANT_CONTAINER_IMAGE}
+  echo HOME_ASSISTANT_HTTP_PORT=${HOME_ASSISTANT_HTTP_PORT}
   echo SERVICE_NAME=${SERVICE_NAME}
-  echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
 }
 
 function install() {
@@ -144,7 +135,7 @@ function checkpCLIParams() {
         RUN_MODE="STATUS"
         ;;
       c )
-        echo "config file used is ${OPTARG} is specified"
+        echo "config file used is \"${OPTARG}\" is specified"
         CONFIG_YAML="${OPTARG}"
         ;;
       * )
