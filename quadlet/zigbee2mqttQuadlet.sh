@@ -3,9 +3,9 @@ set -euo pipefail
 
 function createDirs() {
   mkdir -p ${QUADLET_DIR}
-  mkdir -p ${HOME_ASSISTANT_DATA_DIR}
-  semanage fcontext -a -t svirt_sandbox_file_t "${HOME_ASSISTANT_DATA_DIR}(/.*)?"
-  restorecon -Rv "${HOME_ASSISTANT_DATA_DIR}"
+  mkdir -p ${ZIGBEE2MQTT_DATA_DIR}
+  semanage fcontext -a -t svirt_sandbox_file_t "${ZIGBEE2MQTT_DATA_DIR}(/.*)?"
+  restorecon -Rv "${ZIGBEE2MQTT_DATA_DIR}"
 }
 
 function createPrereqs() {
@@ -22,12 +22,17 @@ Description=${SERVICE_NAME}
 Label=app=${SERVICE_NAME}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=${SERVICE_NAME}
-Image=${HOME_ASSISTANT_CONTAINER_IMAGE}
+Image=${ZIGBEE2MQTT_CONTAINER_IMAGE}
 Network=${NETWORK_NAME}
-PublishPort=${HOME_ASSISTANT_HTTP_PORT}:${HOME_ASSISTANT_HTTP_PORT}
-Volume=${HOME_ASSISTANT_DATA_DIR}:/config:Z
+PublishPort=${ZIGBEE2MQTT_HTTP_PORT}:8080
+Volume=${ZIGBEE2MQTT_DATA_DIR}:/app/data:Z
+Volume=/run/udev:/run/udev:ro
 Volume=/etc/localtime:/etc/localtime:ro
 Environment=TZ=Europe/Amsterdam
+AddDevice=/dev/serial/by-id/${ZIGBEE2MQTT_USB_DEVICE}:/dev/ttyACM0
+Exec=docker-entrypoint.sh /sbin/tini -- node index.js
+SecurityLabelDisable=true
+# AddHost=host.containers.internal:host-gateway # resolves to correct Address but still ECONREFUSED
 
 [Install]
 WantedBy=default.target
@@ -82,10 +87,11 @@ function setEnvVars() {
   fi
   NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' "${CONFIG_YAML}")"
   PODMAN_AUTO_UPDATE_STRATEGY="$(yq -r '.HOST.PODMAN_AUTO_UPDATE_STRATEGY' "${CONFIG_YAML}")"
-  HOME_ASSISTANT_DATA_DIR="$(yq -r '.HOME_ASSISTANT.DATA_DIR' "${CONFIG_YAML}")"
-  HOME_ASSISTANT_CONTAINER_IMAGE="$(yq -r '.HOME_ASSISTANT.CONTAINER_IMAGE' "${CONFIG_YAML}")"
-  HOME_ASSISTANT_HTTP_PORT="$(yq -r '.HOME_ASSISTANT.HTTP_PORT' "${CONFIG_YAML}")"
-  SERVICE_NAME="home-assistant"
+  ZIGBEE2MQTT_DATA_DIR="$(yq -r '.ZIGBEE2MQTT.DATA_DIR' "${CONFIG_YAML}")"
+  ZIGBEE2MQTT_CONTAINER_IMAGE="$(yq -r '.ZIGBEE2MQTT.CONTAINER_IMAGE' "${CONFIG_YAML}")"
+  ZIGBEE2MQTT_HTTP_PORT="$(yq -r '.ZIGBEE2MQTT.HTTP_PORT' "${CONFIG_YAML}")"
+  ZIGBEE2MQTT_USB_DEVICE="$(yq -r '.ZIGBEE2MQTT.USB_DEVICE' "${CONFIG_YAML}")"
+  SERVICE_NAME="zigbee2mqtt"
 }
 
 function printEnvVars() {
@@ -95,9 +101,10 @@ function printEnvVars() {
   echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
   echo NETWORK_NAME=${NETWORK_NAME}
   echo PODMAN_AUTO_UPDATE_STRATEGY=${PODMAN_AUTO_UPDATE_STRATEGY}
-  echo HOME_ASSISTANT_DATA_DIR=${HOME_ASSISTANT_DATA_DIR}
-  echo HOME_ASSISTANT_CONTAINER_IMAGE=${HOME_ASSISTANT_CONTAINER_IMAGE}
-  echo HOME_ASSISTANT_HTTP_PORT=${HOME_ASSISTANT_HTTP_PORT}
+  echo ZIGBEE2MQTT_DATA_DIR=${ZIGBEE2MQTT_DATA_DIR}
+  echo ZIGBEE2MQTT_CONTAINER_IMAGE=${ZIGBEE2MQTT_CONTAINER_IMAGE}
+  echo ZIGBEE2MQTT_HTTP_PORT=${ZIGBEE2MQTT_HTTP_PORT}
+  echo ZIGBEE2MQTT_USB_DEVICE=${ZIGBEE2MQTT_USB_DEVICE}
   echo SERVICE_NAME=${SERVICE_NAME}
 }
 
