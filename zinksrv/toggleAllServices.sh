@@ -1,20 +1,9 @@
 #!/bin/bash
 
 
-function startAll() {
-    startServices=(mariadb influxdb smb.service nfs-server.service grafana-server.service nginx php-fpm zigbee2mqtt.service home-assist.service node-red.service)
-    for svc in "${startServices[@]}"
-    do
-        echo "==================================== starting $svc ======================================================="
-        cmd="systemctl start $svc"
-        echo $cmd
-        eval $cmd
-    done
-}
-
 function toggleAll() {
     OPERATION=${1}
-    stopServicesSequence=(php-fpm nginx grafana-server.service zigbee2mqtt.service home-assist.service node-red.service influxdb mariadb smb.service nfs-server.service )
+    stopServicesSequence=(nexcloud-pod grafana-server.service zigbee2mqtt.service home-assistant.service node-red.service influxdb smb.service nfs-server.service )
     for svc in "${stopServicesSequence[@]}"
     do
         echo "==================================== toggling operation ${OPERATION} for service $svc ======================================================="
@@ -26,8 +15,8 @@ function toggleAll() {
 
 function usage {
     echo "no argument specified usage:"
-    echo "${0} [ -s | -o operation ]"
-    echo "operation : [stop | enable | disable | status ]" 
+    echo "${0} [ -o operation ]"
+    echo "operation : [start | stop | enable | disable | status ]" 
 }
 
 #main
@@ -37,13 +26,9 @@ if [[ $1 == "" ]]; then
    usage;
    exit 1;
 else
-    while getopts "o:s" OPTNAME
+    while getopts "o:" OPTNAME
     do
         case "${OPTNAME}" in
-            "s")
-            echo "Operation selected ist start"
-            startAll
-            ;;
             "o")
             echo "Option o with value  ${OPTARG} is specified"
             toggleAll ${OPTARG}
