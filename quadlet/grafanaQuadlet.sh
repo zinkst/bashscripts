@@ -43,8 +43,9 @@ function configure() {
 function setEnvVars() {
   setDefaultEnvVars
   SERVICE_NAME="grafana"
-  GRAFANA_DATA_DIR="$(yq -r '.GRAFANA.DATA_DIR' "${CONFIG_YAML}")"
-  GRAFANA_ETC_DIR="$(yq -r '.GRAFANA.ETC_DIR' "${CONFIG_YAML}")"
+  DATA_DIR="$(yq -r '.GRAFANA.DATA_DIR' "${CONFIG_YAML}")"
+  GRAFANA_DATA_DIR="${DATA_DIR}/data"
+  GRAFANA_ETC_DIR="${DATA_DIR}/etc"
   SERVER_IP=$(hostname -I | awk '{print $1}')
   GRAFANA_HTTP_PORT="$(yq -r '.GRAFANA.HTTP_PORT' "${CONFIG_YAML}")"
   PODMAN_AUTO_UPDATE_STRATEGY="$(yq -r '.HOST.PODMAN_AUTO_UPDATE_STRATEGY' "${CONFIG_YAML}")"

@@ -65,6 +65,8 @@ function initDirWithBackupFiles () {
 			run-cmd "${CMD}"
 		fi	
 	done
+	CMD="touch ${BACKUP_DIR}/${BACKUP_FILE}"
+	run-cmd "${CMD}"
 }	
 
 function rotateFiles () {
