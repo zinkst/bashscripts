@@ -69,23 +69,8 @@ function setEnvVars() {
 }
 
 
-function showStatus() {
-  SERVICES=(
-    ${SERVICE_NAME}
-  )
-  for  i in ${!SERVICES[@]}; do
-        echo "###################################################"
-        echo "Show status for service ${SERVICES[$i]}"
-        ${SYSTEMCTL_CMD} --no-pager is-active  ${SERVICES[$i]}
-  done
-}
-
 function printEnvVars() {
-  echo CONFIG_YAML=${CONFIG_YAML}
-  echo QUADLET_DIR=${QUADLET_DIR}
-  echo SYSTEMD_UNIT_DIR=${SYSTEMD_UNIT_DIR}
-  echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
-  echo NETWORK_NAME=${NETWORK_NAME}
+  printDefaultEnvVars
   echo PODMAN_AUTO_UPDATE_STRATEGY=${PODMAN_AUTO_UPDATE_STRATEGY}
   echo SERVER_IP=${SERVER_IP}
   echo PROMETHEUS_DATA_DIR=${PROMETHEUS_DATA_DIR}

@@ -9,7 +9,7 @@ function postInstall() {
   ${SYSTEMCTL_CMD} start ${SERVICE_NAME}.service
 }
 
-function uninstall() {
+function remove() {
   ${SYSTEMCTL_CMD} stop ${SERVICE_NAME}.service
   rm ${QUADLET_DIR}/${SERVICE_NAME}.container
 }
@@ -25,12 +25,17 @@ function showStatus() {
   done
 }
 
+function update() {
+  echo "not implemented"
+}
+
 function usage() {
   echo "##################"
   echo "Parameters available"
   echo "-c <path-to-config-file> (required) "
   echo "-i to install ${SERVICE_NAME}"
-  echo "-u to uninstall ${SERVICE_NAME}"
+  echo "-u to update ${SERVICE_NAME}"
+  echo "-r to remove/uninstall ${SERVICE_NAME}"
   echo "-s to show status of ${SERVICE_NAME} "
 }
 
@@ -50,20 +55,34 @@ function setDefaultEnvVars() {
   export NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' "${CONFIG_YAML}")"
 }
 
+function printDefaultEnvVars() {
+  echo CONFIG_YAML=${CONFIG_YAML}
+  echo QUADLET_DIR=${QUADLET_DIR}
+  echo SYSTEMD_UNIT_DIR=${SYSTEMD_UNIT_DIR}
+  echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
+  echo NETWORK_NAME=${NETWORK_NAME}
+  echo SERVICE_NAME=${SERVICE_NAME}
+}
+
+
 function checkpCLIParams() {
-  while getopts "iusc:" OPTNAME; do
+  while getopts "iursc:" OPTNAME; do
     case "${OPTNAME}" in
       i )
         echo "Runmode Option ${OPTNAME} is specified"
         RUN_MODE="INSTALL"
         ;;
-      u )
+      r )
         echo "Runmode Option ${OPTNAME} is specified"
-        RUN_MODE="UNINSTALL"
+        RUN_MODE="REMOVE"
         ;;
       s )
         echo "Runmode Option ${OPTNAME} is specified"
         RUN_MODE="STATUS"
+        ;;
+      u )
+        echo "Runmode Option ${OPTNAME} is specified"
+        RUN_MODE="UPDATE"
         ;;
       c )
         echo "config file used is \"${OPTARG}\" is specified"
@@ -99,14 +118,13 @@ function main() {
   printEnvVars
   case "${RUN_MODE}" in 
     "INSTALL" )
-      echo "installing"
       install ;;
-    "UNINSTALL")
-      echo "uninstalling"
-      uninstall ;;
+    "REMOVE")
+      remove ;;
     "STATUS")
-      echo "showing status"
       showStatus ;;
+    "UPDATE")
+      update ;;
     * )
       echo "Invalid Installation mode specified specifed us either -c or -u parameter"
       usage; 
