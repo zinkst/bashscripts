@@ -106,7 +106,7 @@ Description=Backup ${SERVICE_NAME} data folder
 [Service]
 Type=simple
 Environment="NUM_BACKUPS=${NUM_BACKUPS}"
-ExecStart="/links/bin/quadlet/${SERVICE_NAME}Quadlet.sh -c /links/etc/my-etc/quadlet/config-$(hostname -s).yml -b"
+ExecStart=/links/bin/quadlet/${SERVICE_NAME}Quadlet.sh -c /links/etc/my-etc/quadlet/config-$(hostname -s).yml -b
 EOF
 
   if [ "${IS_DEVELOPMENT_SYSTEM}" == "false" ]; then
