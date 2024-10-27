@@ -56,6 +56,7 @@ function setEnvVars() {
   CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' "${CONFIG_YAML}")"
   SERVICE_NAME="vaultwarden"
   START_ON_BOOT="$(yq -r '.GRAFANA.START_ON_BOOT' "${CONFIG_YAML}")" 
+  NUM_BACKUPS=4
 }
 
 function printEnvVars() {
