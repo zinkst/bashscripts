@@ -77,13 +77,12 @@ Wants=network-online.target
 After=network-online.target
 
 [Container]
-# Pod=nextcloud.pod
-Label=app=nextcloud
+Label=app=${SERVICE_NAME}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
-ContainerName=
+ContainerName=${SERVICE_NAME}
 Image=${CONTAINER_IMAGE}
 Network=${NETWORK_NAME}
-# PublishPort=80:80 # required for acme challenge which needs to run every other month
+PublishPort=80:80 # required for acme challenge which needs to run every other month
 PublishPort=${NEXTCLOUD_HTTP_PORT}:${NEXTCLOUD_HTTP_PORT}
 PublishPort=${NEXTCLOUD_HTTPS_PORT}:${NEXTCLOUD_HTTPS_PORT}
 PublishPort=${VAULTWARDEN_HTTPS_PORT}:${VAULTWARDEN_HTTPS_PORT}
@@ -131,6 +130,7 @@ function setEnvVars() {
   CONTAINER_IMAGE="$(yq -r '.CADDY.CONTAINER_IMAGE' "${CONFIG_YAML}")" 
   START_ON_BOOT="$(yq -r '.CADDY.START_ON_BOOT' "${CONFIG_YAML}")" 
   INTERNAL_TLS="$(yq -r '.CADDY.INTERNAL_TLS' "${CONFIG_YAML}")" 
+  NUM_BACKUPS=3
 }
 
 
@@ -152,4 +152,3 @@ function printEnvVars() {
 }
 
 main "$@"
-
