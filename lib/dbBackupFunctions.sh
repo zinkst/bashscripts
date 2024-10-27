@@ -90,45 +90,45 @@ function rotateFiles () {
 }	
 
 
-function createBackupSystemdService() {
-if [ -f "/etc/systemd/system/backup-${SERVICE_NAME}.service" ]; then
-   echo "systemd service ${SERVICE_NAME} already exists"
-else	
+# function createBackupSystemdService() {
+# if [ -f "/etc/systemd/system/backup-${SERVICE_NAME}.service" ]; then
+#    echo "systemd service ${SERVICE_NAME} already exists"
+# else	
 	
-cat << EOF > /etc/systemd/system/backup-${SERVICE_NAME}.service
-[Unit]
-Description=Backup ${SERVICE_NAME} data folder
+# cat << EOF > /etc/systemd/system/backup-${SERVICE_NAME}.service
+# [Unit]
+# Description=Backup ${SERVICE_NAME} data folder
 
-[Service]
-Type=simple
-Environment="NUM_BACKUPS=2"
-ExecStart=/links/bin/zinksrv/backup-${SERVICE_NAME}.sh
+# [Service]
+# Type=simple
+# Environment="NUM_BACKUPS=2"
+# ExecStart=/links/bin/zinksrv/backup-${SERVICE_NAME}.sh
 
-EOF
-fi
-}
+# EOF
+# fi
+# }
 
-function createBackupSystemdTimer() {
-if [ -f "/etc/systemd/system/backup-${SERVICE_NAME}.timer" ]; then
-   echo "systemd timer ${SERVICE_NAME} already exists"
-else	
+# function createBackupSystemdTimer() {
+# if [ -f "/etc/systemd/system/backup-${SERVICE_NAME}.timer" ]; then
+#    echo "systemd timer ${SERVICE_NAME} already exists"
+# else	
 	
-cat << EOF > /etc/systemd/system/backup-${SERVICE_NAME}.timer
-[Unit]
-Description=Timer for Backup ${SERVICE_NAME} data folder
+# cat << EOF > /etc/systemd/system/backup-${SERVICE_NAME}.timer
+# [Unit]
+# Description=Timer for Backup ${SERVICE_NAME} data folder
 
-[Timer]
-OnCalendar=*-*-* 02:35:00
-Persistent=True
-Unit=backup-${SERVICE_NAME}.service
+# [Timer]
+# OnCalendar=*-*-* 02:35:00
+# Persistent=True
+# Unit=backup-${SERVICE_NAME}.service
 
-[Install]
-WantedBy=basic.target
-EOF
+# [Install]
+# WantedBy=basic.target
+# EOF
 
-  systemctl enable backup-${SERVICE_NAME}.timer
-fi
-}
+#   systemctl enable backup-${SERVICE_NAME}.timer
+# fi
+# }
 
 function backupServiceFolder () {
    echo "creating new backup of ${SERVICE_NAME} Dir ${SRC_DIR}"
