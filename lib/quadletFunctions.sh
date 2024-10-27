@@ -10,7 +10,7 @@ function postInstall() {
 }
 
 function remove() {
-  ${SYSTEMCTL_CMD} stop ${SERVICE_NAME}.service
+  ${SYSTEMCTL_CMD} disable ${SERVICE_NAME}.service --now
   rm ${QUADLET_DIR}/${SERVICE_NAME}.container
 }
 
