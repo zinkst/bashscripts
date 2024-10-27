@@ -41,7 +41,6 @@ function usage() {
 }
 
 function setDefaultEnvVars() {
-  SERVICE_NAME="node-exporter"
   if [[ $(id -u) -eq 0 ]] ; then 
     echo "running as USER root" 
     export QUADLET_DIR=/etc/containers/systemd
@@ -54,6 +53,7 @@ function setDefaultEnvVars() {
     export SYSTEMCTL_CMD="systemctl --user"
   fi
   export NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' "${CONFIG_YAML}")"
+  export IS_DEVELOPMENT_SYSTEM="$(yq -r '.HOST.IS_DEVELOPMENT_SYSTEM' "${CONFIG_YAML}")"
 }
 
 function printDefaultEnvVars() {
@@ -63,6 +63,7 @@ function printDefaultEnvVars() {
   echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
   echo NETWORK_NAME=${NETWORK_NAME}
   echo SERVICE_NAME=${SERVICE_NAME}
+  echo IS_DEVELOPMENT_SYSTEM=${IS_DEVELOPMENT_SYSTEM}
 }
 
 function backup () {
@@ -71,18 +72,80 @@ function backup () {
   source /links/bin/lib/dbBackupFunctions.sh
   initDirWithBackupFiles ${SERVICE_NAME}.tgz
   rotateFiles ${SERVICE_NAME}.tgz
-  CMD="systemctl stop ${SERVICE_NAME}" 
-  run-cmd "${CMD}"
-  echo "give 60 seconds to bring down ${SERVICE_NAME} completely"
-  CMD="sleep 60"
-  run-cmd "${CMD}"
+  START_SERVICE_AFTER_BACKUP="false"
+  if [ "$(${SYSTEMCTL_CMD} is-active ${SERVICE_NAME}.service)" == "active" ]; then
+    START_SERVICE_AFTER_BACKUP="true"
+    CMD="${SYSTEMCTL_CMD} stop ${SERVICE_NAME}" 
+    run-cmd "${CMD}"
+    echo "give 60 seconds to bring down ${SERVICE_NAME} completely"
+    CMD="sleep 60"
+    run-cmd "${CMD}"
+  fi
   echo "creating backup of ${SERVICE_NAME}"
   CMD="tar -czf  ${BACKUP_DIR}/${SERVICE_NAME}.tgz --directory \"${DATA_DIR}/\" ."
   run-cmd "${CMD}"
-  CMD="systemctl start ${SERVICE_NAME}" 
-  run-cmd "${CMD}"
+  if [ "${START_SERVICE_AFTER_BACKUP}" == "true" ]; then
+    CMD="${SYSTEMCTL_CMD} start ${SERVICE_NAME}" 
+    run-cmd "${CMD}"
+  fi
   echo "finished Backup of ${SERVICE_NAME}"
+  createBackupService
+  createBackupTimer
 }	
+
+function createBackupService() {
+  if [ -f "/links${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.service" ]; then
+    echo "systemd service ${SERVICE_NAME}.service already exists"
+    return
+  fi   
+	
+  cat << EOF > /links${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.service
+[Unit]
+Description=Backup ${SERVICE_NAME} data folder
+
+[Service]
+Type=simple
+Environment="NUM_BACKUPS=${NUM_BACKUPS}"
+ExecStart="/links/bin/quadlet/${SERVICE_NAME}Quadlet.sh -c /links/etc/my-etc/quadlet/config-$(hostname -s).yml -b"
+EOF
+
+  if [ "${IS_DEVELOPMENT_SYSTEM}" == "false" ]; then
+    if [ ! -f "${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.service" ]; then
+      echo "creating symlinks for backup services of ${SERVICE_NAME}"
+      ln -sf /links${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.service ${SYSTEMD_UNIT_DIR}/
+    fi  
+  fi
+}
+
+function createBackupTimer() {
+  if [ -f "/links${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.timer" ]; then
+    echo "systemd timer ${SERVICE_NAME}.timer already exists"
+    return
+  fi	
+	
+  cat << EOF > /links${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.timer
+[Unit]
+Description=Timer for Backup ${SERVICE_NAME} data folder
+
+[Timer]
+OnCalendar=*-*-* 0$(shuf -i 1-4 -n 1):$(shuf -i 0-5 -n 1)0:00
+Persistent=True
+Unit=backup-${SERVICE_NAME}.service
+
+[Install]
+WantedBy=basic.target
+EOF
+
+  if [ "${IS_DEVELOPMENT_SYSTEM}" == "false" ]; then
+    if [ ! -f "${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.timer" ]; then
+      echo "creating symlinks for backup services of ${SERVICE_NAME}"
+      ln -sf /links${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.timer ${SYSTEMD_UNIT_DIR}/
+    fi
+    ${SYSTEMCTL_CMD} daemon-reload  
+    ${SYSTEMCTL_CMD} enable backup-${SERVICE_NAME}.timer --now
+  fi
+}
+
 
 
 function checkpCLIParams() {
