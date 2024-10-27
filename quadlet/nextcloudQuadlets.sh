@@ -1,24 +1,15 @@
 #!/bin/bash
 
 # inspired by https://codeberg.org/mjack/nextcloud-quadlets.git
-
 set -euo pipefail
 
-# TEST_MODE="false"
-
-# function run-cmd () {
-#   if [ ${TEST_MODE} == "false" ]; then
-# 		eval "${1}"
-# 	else
-# 	  echo "${1}"
-# 	fi	
-# }
+source /links/bin/lib/quadletFunctions.sh
 
 function createDirs() {
+  mkdir -p ${DATA_DIR}
+  mkdir -p ${DATA_DIR}/{db,html}
   mkdir -p ${QUADLET_DIR}
-  mkdir -p ${NEXTCLOUD_ROOT_DIR}
-  mkdir -p ${NEXTCLOUD_ROOT_DIR}/{db,html}
-  mkdir -p ${QUADLET_DIR}
+  mkdir -p ${NC_DATA_DIR}
 }
 
 function createPrereqs() {
@@ -31,6 +22,11 @@ function createPrereqs() {
 }
 
 function CreateQuadletNextcloudApp() {
+if [ -f "${QUADLET_DIR}/nextcloud-app.container" ]; then
+  echo "File ${QUADLET_DIR}/nextcloud-app.container exists"
+  return
+fi
+  
   cat <<EOF > ${QUADLET_DIR}/nextcloud-app.container 
 [Unit]
 Description=Nextcloud App
@@ -42,10 +38,10 @@ Label=app=nextcloud
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 Pod=nextcloud.pod
 ContainerName=nextcloud-app
-Image=docker.io/library/nextcloud:fpm-alpine
+Image=${NEXTCLOUD_IMAGE}
 Network=${NETWORK_NAME}
-Volume=${NEXTCLOUD_DATA_DIR}:/var/www/html/data:Z
-Volume=${NEXTCLOUD_ROOT_DIR}/html:/var/www/html/:Z
+Volume=${NC_DATA_DIR}:/var/www/html/data:Z
+Volume=${DATA_DIR}/html:/var/www/html/:Z
 Volume=${NEXTCLOUD_EXTERNAL_DATA_DIR}:${NEXTCLOUD_EXTERNAL_DATA_DIR}:Z
 Environment=MYSQL_HOST=nextcloud-db
 Environment=MYSQL_DATABASE=${MARIADB_DATABASE_NAME}
@@ -62,6 +58,10 @@ EOF
 }
 
 function CreateQuadletNextcloudDb() {
+if [ -f "${QUADLET_DIR}/nextcloud-db.container" ]; then
+  echo "File ${QUADLET_DIR}/nextcloud-db.container exists"
+  return
+fi
   cat <<EOF > ${QUADLET_DIR}/nextcloud-db.container 
 [Unit]
 Description=Nextcloud Database
@@ -71,9 +71,9 @@ Pod=nextcloud.pod
 Label=app=nextcloud
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=nextcloud-db
-Image=docker.io/library/mariadb:10.6
+Image=${MARIADB_IMAGE}
 Network=${NETWORK_NAME}
-Volume=${NEXTCLOUD_ROOT_DIR}/db:/var/lib/mysql:Z
+Volume=${DATA_DIR}/db:/var/lib/mysql:Z
 Environment=MARIADB_AUTO_UPGRADE=1
 Environment=MARIADB_DISABLE_UPGRADE_BACKUP=1
 Environment=MARIADB_DATABASE=${MARIADB_DATABASE_NAME}
@@ -89,7 +89,11 @@ EOF
 }
 
 function CreateQuadletCaddy() {
-  mkdir -p "${CADDY_ROOT_DIR}/data"
+  mkdir -p "${CADDY_DATA_DIR}/data"
+if [ -f "${QUADLET_DIR}/nextcloud-app.container" ]; then
+  echo "File ${QUADLET_DIR}/nextcloud-app.container exists"
+  return
+fi
   cat <<EOF > ${CADDYFILE}
 :${NEXTCLOUD_HTTP_PORT} {
     root * /var/www/html
@@ -139,13 +143,13 @@ After=network-online.target
 Label=app=nextcloud
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=caddy
-Image=docker.io/caddy:latest
+Image=${CADDY_IMAGE}
 Network=${NETWORK_NAME}
 PublishPort=${NEXTCLOUD_HTTP_PORT}:${NEXTCLOUD_HTTP_PORT}
 PublishPort=${NEXTCLOUD_HTTPS_PORT}:${NEXTCLOUD_HTTPS_PORT}
 Volume=${CADDYFILE}:/etc/caddy/Caddyfile:z
-Volume=${CADDY_ROOT_DIR}/data:/data:Z
-Volume=${NEXTCLOUD_ROOT_DIR}/html:/var/www/html:ro,z
+Volume=${CADDY_DATA_DIR}/data:/data:Z
+Volume=${DATA_DIR}/html:/var/www/html:ro,z
 AddCapability=CAP_AUDIT_WRITE
 
 [Install]
@@ -190,25 +194,12 @@ Pod=nextcloud.pod
 Label=app=nextcloud
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=nextcloud-redis
-Image=docker.io/library/redis:alpine
+Image=${REDIS_IMAGE}
 Network=${NETWORK_NAME}
 
 [Install]
 WantedBy=nextcloud-app.service default.target
 EOF
-}
-
-function CreateUnitNextcloudNetwork() {
-podman network create ${NETWORK_NAME} --ignore
-#   cat <<EOF > ${QUADLET_DIR}/${NETWORK_NAME}.network
-# [Unit]
-# Description=${NETWORK_NAME} Network
-
-# [Network]
-# # Label=app=nextcloud
-# DisableDNS=false
-# NetworkName=${NETWORK_NAME}
-# EOF
 }
 
 function CreateUnitNextcloudPod() {
@@ -222,6 +213,74 @@ Network=${NETWORK_NAME}
 EOF
 }
 
+function backup () {
+   source /links/bin/lib/dbBackupFunctions.sh
+   BACKUP_DIR="/links/sysbkp/nextcloud-quadlet"
+   export NUM_BACKUPS=${NUM_BACKUPS:-3}
+   START_SERVICE_AFTER_BACKUP="false"
+   if [ "$(${SYSTEMCTL_CMD} is-active nextcloud-pod.service)" == "active" ]; then
+     START_SERVICE_AFTER_BACKUP="true"
+     CMD="podman exec -it -u www-data nextcloud-app php occ maintenance:mode --on" 
+     run-cmd "${CMD}"
+   fi
+   echo "creating backup of nextcloud html "
+   initDirWithBackupFiles "nextcloud_html.tgz"
+   rotateFiles "nextcloud_html.tgz"
+   CMD="tar -czf  ${BACKUP_DIR}/nextcloud_html.tgz --directory ${DATA_DIR}/html ."
+   run-cmd "${CMD}"
+   echo "creating mariadbdump backup of nextcloud db "
+   initDirWithBackupFiles "mariadb_dump.sql.gz"
+   rotateFiles "mariadb_dump.sql.gz"
+   CMD="podman exec -it nextcloud-db mariadb-dump -u ${MARIADB_USER} -p${MARIADB_USER_PASSWORD} ${MARIADB_DATABASE_NAME} | gzip -9 > ${BACKUP_DIR}/mariadb_dump.sql.gz"
+   run-cmd "${CMD}"
+   #  CMD="echo Waiting 60 seconds && sleep 60" # doesn't prevent  tar: ./ib_logfile0: Datei hat sich beim Lesen geändert in next call
+   #  run-cmd "${CMD}"
+   echo "creating backup of nextcloud db data volume"
+   initDirWithBackupFiles "nextcloud_db.tgz"
+   rotateFiles "nextcloud_db.tgz"
+   CMD="tar -czf  ${BACKUP_DIR}/nextcloud_db.tgz --directory ${DATA_DIR}/db . || true"
+   run-cmd "${CMD}"
+   if [ "${START_SERVICE_AFTER_BACKUP}" == "true" ]; then
+    CMD="podman exec -it -u www-data nextcloud-app php occ maintenance:mode --off" 
+    run-cmd "${CMD}"
+   fi 
+   echo "finished Backup of ${SERVICE_NAME}"
+   createBackupService
+   createBackupTimer
+}	
+
+function restore () {
+   CMD="systemctl stop nextcloud-pod.service"
+   run-cmd "${CMD}"
+   echo "restoring backup of nextcloud html "
+   CMD="mv ${DATA_DIR}/html ${DATA_DIR}/html_$(date +'%y%m%d_%H%M%S')"
+   run-cmd "${CMD}"
+   CMD="mkdir -p ${DATA_DIR}/html"
+   run-cmd "${CMD}"
+   CMD="tar -xzf  ${BACKUP_DIR}/nextcloud_html.tgz --directory ${DATA_DIR}/html"
+   run-cmd "${CMD}"
+   # restore of DB seems to be not necessary restoreing the db volume is sufficient
+   #  echo "creating mariadbdump backup of nextcloud db "
+   #  CMD="podman exec -it nextcloud-db mariadb-dump -u ${MARIADB_USER} -p${MARIADB_USER_PASSWORD} ${MARIADB_DATABASE_NAME} | gzip -9 > ${BACKUP_DIR}/mariadb_dump.sql.gz"
+   #  run-cmd "${CMD}"
+   echo "restoring backup of nextcloud db data volume"
+   CMD="mv ${DATA_DIR}/db ${DATA_DIR}/db_$(date +'%y%m%d_%H%M%S')"
+   run-cmd "${CMD}"
+   CMD="mkdir -p ${DATA_DIR}/db"
+   run-cmd "${CMD}"
+   CMD="tar -xzf  ${BACKUP_DIR}/nextcloud_db.tgz --directory ${DATA_DIR}/db"
+   run-cmd "${CMD}"
+   echo "Starting nextcloud pods from backup"
+   CMD="systemctl start nextcloud-pod.service" 
+   run-cmd "${CMD}"
+   CMD="echo Waiting 60 seconds && sleep 60" 
+   run-cmd "${CMD}"
+   # need to disable maintenance mode since nextcloud was in mainteance mode when backup was created
+   echo "Disabling maintenance mode" 
+   CMD="podman exec -it -u www-data nextcloud-app php occ maintenance:mode --off" 
+   run-cmd "${CMD}"
+}	
+
 function postInstall() {
   ${SYSTEMCTL_CMD} daemon-reload
   # ${SYSTEMCTL_CMD} enable --now podman-auto-update.timer
@@ -234,8 +293,7 @@ function postInstall() {
   if [[ $(id -u) -ne 0 ]] ; then 
     loginctl enable-linger $USER
   fi 
-
-  # sudo chown -R 100998:100997 ${NEXTCLOUD_ROOT_DIR}/db
+  # sudo chown -R 100998:100997 ${DATA_DIR}/db
 }
 
 function configureNextcloud() {
@@ -257,7 +315,7 @@ function configureNextcloud() {
   podman exec -it -u www-data -e OC_PASS="${OC_PASS}" nextcloud-app php occ user:add --password-from-env --display-name="Valentin Zink" --group="burghalde" valentin 
 }
 
-function uninstallNextcloud() {
+function remove() {
   ${SYSTEMCTL_CMD} disable --now podman-auto-update.timer
   ${SYSTEMCTL_CMD} stop nextcloud-pod.service
   if [[ $(id -u) -ne 0 ]] ; then 
@@ -276,44 +334,40 @@ function uninstallNextcloud() {
   fi  
   rm ${SYSTEMD_UNIT_DIR}/nextcloud-cron.timer
   rm ${SYSTEMD_UNIT_DIR}/nextcloud-cron.service
+  rm ${SYSTEMD_UNIT_DIR}/backup-nextcloud.timer
+  rm ${SYSTEMD_UNIT_DIR}/backup-nextcloud.service
   podman secret rm mysql-password
   podman secret rm mysql-root-password
   podman secret rm nextcloud-admin-password
 }
 
 function setEnvVars() {
-  if [[ $(id -u) -eq 0 ]] ; then 
-    echo "running as USER root" 
-    export QUADLET_DIR=/etc/containers/systemd
-    export SYSTEMD_UNIT_DIR=/etc/systemd/system
-    export SYSTEMCTL_CMD="systemctl"
-  else  
-    echo "running as USER ${USER}" 
-    export QUADLET_DIR=${HOME}/.config/containers/systemd
-    export SYSTEMD_UNIT_DIR=${HOME}/.config/systemd/user
-    export SYSTEMCTL_CMD="systemctl --user"
-  fi
-  NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' "${CONFIG_YAML}")"
+  setDefaultEnvVars
+  SERVICE_NAME="nextcloud"
   PODMAN_AUTO_UPDATE_STRATEGY="$(yq -r '.HOST.PODMAN_AUTO_UPDATE_STRATEGY' "${CONFIG_YAML}")"
-  NEXTCLOUD_ROOT_DIR="$(yq -r '.NEXTCLOUD.ROOT_DIR' "${CONFIG_YAML}")"
-  NEXTCLOUD_DATA_DIR="$(yq -r '.NEXTCLOUD.DATA_DIR' "${CONFIG_YAML}")"
+  DATA_DIR="$(yq -r '.NEXTCLOUD.DATA_DIR' "${CONFIG_YAML}")"
+  NC_DATA_DIR="$(yq -r '.NEXTCLOUD.NC_DATA_DIR' "${CONFIG_YAML}")"
   NEXTCLOUD_EXTERNAL_DATA_DIR="$(yq -r '.NEXTCLOUD.EXTERNAL_DATA_DIR' "${CONFIG_YAML}")"
   NEXTCLOUD_ADMIN_USER="$(yq -r '.NEXTCLOUD.ADMIN_USER' "${CONFIG_YAML}")"
   NEXTCLOUD_ADMIN_PASSWORD="$(yq -r '.NEXTCLOUD.ADMIN_PASSWORD' "${CONFIG_YAML}")"
   NEXTCLOUD_HTTP_PORT="$(yq -r '.NEXTCLOUD.HTTP_PORT' "${CONFIG_YAML}")"
   NEXTCLOUD_HTTPS_PORT="$(yq -r '.NEXTCLOUD.HTTPS_PORT' "${CONFIG_YAML}")"
+  NEXTCLOUD_IMAGE="$(yq -r '.NEXTCLOUD.CONTAINER_IMAGE' "${CONFIG_YAML}")"
   MARIADB_DATABASE_NAME="$(yq -r '.MARIADB.DATABASE_NAME' "${CONFIG_YAML}")"
   MARIADB_USER="$(yq -r '.MARIADB.USER' "${CONFIG_YAML}")"
   MARIADB_USER_PASSWORD="$(yq -r '.MARIADB.USER_PASSWORD' "${CONFIG_YAML}")"
   MARIADB_ROOT_PASSWORD="$(yq -r '.MARIADB.ROOT_PASSWORD' "${CONFIG_YAML}")"
+  MARIADB_IMAGE="$(yq -r '.MARIADB.CONTAINER_IMAGE' "${CONFIG_YAML}")"
   CADDY_PROXY_DOMAIN="$(yq -r '.CADDY.PROXY_DOMAIN' "${CONFIG_YAML}")"
   INSTALL_CADDY="$(yq -r '.NEXTCLOUD.INSTALL_CADDY' "${CONFIG_YAML}")"
   if [ ${INSTALL_CADDY} == "true" ]; then
     CADDYFILE="$(yq -r '.CADDY.CADDYFILE' "${CONFIG_YAML}")"
-    CADDY_ROOT_DIR="$(yq -r '.CADDY.ROOT_DIR' "${CONFIG_YAML}")"
+    CADDY_DATA_DIR="$(yq -r '.CADDY.DATA_DIR' "${CONFIG_YAML}")"
+    CADDY_IMAGE="$(yq -r '.CADDY.CONTAINER_IMAGE' "${CONFIG_YAML}")"
   fi  
   SERVER_IP=$(hostname -I | awk '{print $1}')
   SERVER_NAME=$(hostname -s)
+  REDIS_IMAGE="$(yq -r '.REDIS.CONTAINER_IMAGE' "${CONFIG_YAML}")"
   QUADLETS=(
     nextcloud-app.container
     nextcloud-db.container
@@ -340,34 +394,34 @@ function showStatus() {
 }
 
 function printEnvVars() {
-  echo CONFIG_YAML="${CONFIG_YAML}"
-  echo QUADLET_DIR=${QUADLET_DIR}
-  echo SYSTEMD_UNIT_DIR=${SYSTEMD_UNIT_DIR}
-  echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
-  echo NEXTCLOUD_ROOT_DIR=${NEXTCLOUD_ROOT_DIR}
-  echo NEXTCLOUD_DATA_DIR=${NEXTCLOUD_DATA_DIR}
+  printDefaultEnvVars
+  echo DATA_DIR=${DATA_DIR}
+  echo NC_DATA_DIR=${NC_DATA_DIR}
   echo NEXTCLOUD_EXTERNAL_DATA_DIR=${NEXTCLOUD_EXTERNAL_DATA_DIR}
   echo NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
   echo NEXTCLOUD_HTTP_PORT=${NEXTCLOUD_HTTP_PORT}
+  echo NEXTCLOUD_IMAGE=${NEXTCLOUD_IMAGE}
   echo MARIADB_DATABASE_NAME=${MARIADB_DATABASE_NAME}
   echo MARIADB_USER=${MARIADB_USER}
+  echo MARIADB_IMAGE=${MARIADB_IMAGE}
   echo NETWORK_NAME=${NETWORK_NAME}
+  echo REDIS_IMAGE=${REDIS_IMAGE}
   echo INSTALL_CADDY=${INSTALL_CADDY}
   echo PODMAN_AUTO_UPDATE_STRATEGY=${PODMAN_AUTO_UPDATE_STRATEGY}
   if [ ${INSTALL_CADDY} == "true" ]; then
     echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
     echo CADDYFILE=${CADDYFILE}
-    echo CADDY_ROOT_DIR=${CADDY_ROOT_DIR}    
+    echo CADDY_DATA_DIR=${CADDY_DATA_DIR}    
   fi  
   echo SERVER_IP=${SERVER_IP}
   echo SERVER_NAME=${SERVER_NAME}
 }
 
-function installNextcloud() {
+function install() {
   createDirs
   createPrereqs
   CreateUnitNextcloudPod
-  CreateUnitNextcloudNetwork
+  CreatePodmanNetwork
   CreateQuadletNextcloudRedis
   CreateQuadletNextcloudDb
   CreateQuadletNextcloudApp
@@ -380,76 +434,5 @@ function installNextcloud() {
 }
 
 
-function usage() {
-  echo "##################"
-  echo "Parameters available"
-  echo "-c <path-to-config-file> (required) "
-  echo "-i to install Nextcloud"
-  echo "-u to uninstall Nextcloud"
-  echo "-s to show status of Nextcloud services"
-}
-
-function checkpCLIParams() {
-  while getopts "iusc:" OPTNAME; do
-    case "${OPTNAME}" in
-      i )
-        echo "Runmode Option ${OPTNAME} is specified"
-        RUN_MODE="INSTALL"
-        ;;
-      u )
-        echo "Runmode Option ${OPTNAME} is specified"
-        RUN_MODE="UNINSTALL"
-        ;;
-      s )
-        echo "Runmode Option ${OPTNAME} is specified"
-        RUN_MODE="STATUS"
-        ;;
-      c )
-        echo "config file used is ${OPTARG} is specified"
-        CONFIG_YAML="${OPTARG}"
-        ;;
-      * )
-        echo "unknown parameter specified"
-        usage
-        exit 1
-        ;;
-    esac
-  done
-  if [ $OPTIND -eq 1 ]; then 
-    echo "No options were passed"; 
-    usage
-    exit 1
-  fi
-
-  if [ -z "${CONFIG_YAML+x}" ]  || [ ! -f "${CONFIG_YAML}" ]; then 
-    echo "Config file does not exist Please specify an existing config file witch -c"; 
-    usage
-  fi
-  if [ -z "${RUN_MODE+x}" ]; then
-     echo "No Runmode mode specified specify either -c or -u"
-     usage
-     exit 1
-  fi   
-}
-
 # main start here
-checkpCLIParams "$@"
-setEnvVars
-printEnvVars
-case "${RUN_MODE}" in 
-   "INSTALL" )
-     echo "installing ${QUADLETS[*]}"
-     installNextcloud ;;
-   "UNINSTALL")
-     echo "uninstalling ${QUADLETS[*]}"
-     uninstallNextcloud ;;
-   "STATUS")
-     echo "showing status for ${QUADLETS[*]}"
-     showStatus ;;
-   * )
-     echo "Invalid Installation mode specified specifed us either -c or -u parameter"
-     usage; 
-     exit 1
-     ;;
-esac    
-
+main "$@"
