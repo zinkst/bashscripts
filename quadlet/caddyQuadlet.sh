@@ -131,6 +131,7 @@ function setEnvVars() {
   START_ON_BOOT="$(yq -r '.CADDY.START_ON_BOOT' "${CONFIG_YAML}")" 
   INTERNAL_TLS="$(yq -r '.CADDY.INTERNAL_TLS' "${CONFIG_YAML}")" 
   NUM_BACKUPS=3
+  INSTALLED_VERSION=$(podman image inspect ${CONTAINER_IMAGE} | jq -r .[0].Config.Labels.\"org.opencontainers.image.version\")
 }
 
 

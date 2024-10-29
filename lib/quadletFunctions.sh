@@ -1,5 +1,14 @@
 #!/bin/bash
 
+
+function run-cmd () {
+  if [ ${TEST_MODE} == "false" ]; then
+		eval "${1}"
+	else
+	  echo "${1}"
+	fi	
+}
+
 function CreatePodmanNetwork() {
   podman network create ${NETWORK_NAME} --ignore
 }
@@ -26,7 +35,25 @@ function showStatus() {
 }
 
 function update() {
-  echo "not implemented"
+  echo CONTANER_IMAGE="${CONTAINER_IMAGE}"
+  echo INSTALLED_VERSION="${INSTALLED_VERSION}"
+  echo "[INFO] pulling ${CONTAINER_IMAGE}"
+  cmd="podman pull ${CONTAINER_IMAGE}"
+  run-cmd "${cmd}"
+  echo "[INFO] labels of new image"
+  cmd="podman inspect ${CONTAINER_IMAGE} | jq -r \".[].Labels\""
+  run-cmd "${cmd}"
+  eval "${cmd}"
+  # PULLED_VERSION=$(podman image inspect ${IMAGE} | jq -r .[0].Config.Labels.\"org.opencontainers.image.version\")
+  # echo PULLED_VERSION=${PULLED_VERSION} 
+  # # podman auto-update --dry-run --format "{{.Image}} {{.Updated}}"
+  # podman auto-update will update all registered containers so will not use it
+  echo "[INFO] stopping ${SERVICE_NAME}"
+  cmd="systemctl stop ${SERVICE_NAME}"
+  run-cmd "${cmd}"
+  echo "[INFO] starting ${SERVICE_NAME}"
+  cmd="systemctl start ${SERVICE_NAME}"
+  run-cmd "${cmd}"
 }
 
 function usage() {
@@ -54,6 +81,8 @@ function setDefaultEnvVars() {
   fi
   export NETWORK_NAME="$(yq -r '.HOST.PODMAN_NETWORK_NAME' "${CONFIG_YAML}")"
   export IS_DEVELOPMENT_SYSTEM="$(yq -r '.HOST.IS_DEVELOPMENT_SYSTEM' "${CONFIG_YAML}")"
+  export SERVER_NAME=$(hostname -s)
+  export INSTALLED_VERSION="not set" # overwrite in implementation
 }
 
 function printDefaultEnvVars() {
@@ -62,8 +91,8 @@ function printDefaultEnvVars() {
   echo SYSTEMD_UNIT_DIR=${SYSTEMD_UNIT_DIR}
   echo SYSTEMCTL_CMD=${SYSTEMCTL_CMD}
   echo NETWORK_NAME=${NETWORK_NAME}
-  echo SERVICE_NAME=${SERVICE_NAME}
   echo IS_DEVELOPMENT_SYSTEM=${IS_DEVELOPMENT_SYSTEM}
+  echo SERVER_NAME=${SERVER_NAME}
 }
 
 function backup () {
@@ -146,10 +175,9 @@ EOF
   fi
 }
 
-
-
 function checkpCLIParams() {
   TEST_MODE="false"
+  DEFAULT_CONFIG_YAML="/links/etc/my-etc/quadlet/config-$(hostname -s).yml"
   while getopts "iubrstc:" OPTNAME; do
     case "${OPTNAME}" in
       i )
@@ -188,16 +216,21 @@ function checkpCLIParams() {
     esac
   done
   if [ $OPTIND -eq 1 ]; then 
-    echo "No options were passed"; 
+    echo "[ERROR] No options were passed"; 
     usage
     exit 1
   fi
-  if [ -z "${CONFIG_YAML+x}" ]  || [ ! -f "${CONFIG_YAML}" ]; then 
-    echo "Config file does not exist Please specify an existing config file witch -c"; 
-    usage
+  if [ -z "${CONFIG_YAML+x}" ]; then
+    echo "[WARN] config File not specified trying default config path"
+    CONFIG_YAML="${DEFAULT_CONFIG_YAML}"
   fi
+  if [ ! -f "${CONFIG_YAML}" ]; then 
+    echo "[ERROR] Config file does not exist Please specify an existing config file witch -c"; 
+    usage
+    exit 1
+  fi  
   if [ -z "${RUN_MODE+x}" ]; then
-     echo "No Runmode mode specified specify either -c or -u"
+     echo "[ERROR] No Runmode mode specified specify either -c or -u"
      usage
      exit 1
   fi   

@@ -57,6 +57,7 @@ function setEnvVars() {
   SERVICE_NAME="vaultwarden"
   START_ON_BOOT="$(yq -r '.GRAFANA.START_ON_BOOT' "${CONFIG_YAML}")" 
   NUM_BACKUPS=7
+  INSTALLED_VERSION=$(podman image inspect ${CONTAINER_IMAGE} | jq -r .[0].Config.Labels.\"org.opencontainers.image.version\")
 }
 
 function printEnvVars() {
