@@ -35,25 +35,35 @@ function showStatus() {
 }
 
 function update() {
-  echo CONTANER_IMAGE="${CONTAINER_IMAGE}"
-  echo INSTALLED_VERSION="${INSTALLED_VERSION}"
-  echo "[INFO] pulling ${CONTAINER_IMAGE}"
-  cmd="podman pull ${CONTAINER_IMAGE}"
+  updateComponent "${CONTAINER_IMAGE}" "${SERVICE_NAME}"
+}
+
+function updateComponent() {
+  IMAGE="${1}"
+  SERVICE="${2}"
+  START_SERVICE="${3:-true}"
+
+  echo "[INFO] INSTALLED_VERSION=${INSTALLED_VERSION}"
+  echo "[INFO] pulling ${IMAGE}"
+  echo "[INFO] start service after update: ${START_SERVICE}"
+  cmd="podman pull ${IMAGE}"
   run-cmd "${cmd}"
   echo "[INFO] labels of new image"
-  cmd="podman inspect ${CONTAINER_IMAGE} | jq -r \".[].Labels\""
+  cmd="podman inspect ${IMAGE} | jq -r \".[].Labels\""
   run-cmd "${cmd}"
   eval "${cmd}"
   # PULLED_VERSION=$(podman image inspect ${IMAGE} | jq -r .[0].Config.Labels.\"org.opencontainers.image.version\")
   # echo PULLED_VERSION=${PULLED_VERSION} 
   # # podman auto-update --dry-run --format "{{.Image}} {{.Updated}}"
   # podman auto-update will update all registered containers so will not use it
-  echo "[INFO] stopping ${SERVICE_NAME}"
-  cmd="systemctl stop ${SERVICE_NAME}"
+  echo "[INFO] stopping ${SERVICE}"
+  cmd="systemctl stop ${SERVICE}"
   run-cmd "${cmd}"
-  echo "[INFO] starting ${SERVICE_NAME}"
-  cmd="systemctl start ${SERVICE_NAME}"
-  run-cmd "${cmd}"
+  if [ "${START_SERVICE}" == "true"  ]; then
+    echo "[INFO] starting ${SERVICE}"
+    cmd="systemctl start ${SERVICE}"
+    run-cmd "${cmd}"
+  fi  
 }
 
 function usage() {
@@ -65,6 +75,7 @@ function usage() {
   echo "-r to remove/uninstall ${SERVICE_NAME}"
   echo "-b to backup ${SERVICE_NAME}"
   echo "-s to show status of ${SERVICE_NAME} "
+  echo "-t test-mode (only available for update)"
 }
 
 function setDefaultEnvVars() {
