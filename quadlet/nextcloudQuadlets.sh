@@ -387,9 +387,7 @@ function showStatus() {
     SERVICES+=("caddy")
   fi  
   for  i in ${!SERVICES[@]}; do
-        echo "###################################################"
-        echo "Show status for service ${SERVICES[$i]}"
-        ${SYSTEMCTL_CMD} --no-pager is-active  ${SERVICES[$i]}
+        echo "### Status for service ${SERVICES[$i]}:" $(${SYSTEMCTL_CMD} --no-pager is-active  ${SERVICES[$i]})
   done
 }
 

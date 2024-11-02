@@ -71,7 +71,7 @@ function install() {
   CreatePodmanNetwork
   CreateQuadlet
   postInstall
-  if [ "${DO_CONFIG}" == true]; then
+  if [ "${DO_CONFIG}" == "true" ]; then
     configure
   fi  
   showStatus
