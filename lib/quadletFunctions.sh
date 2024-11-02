@@ -246,6 +246,7 @@ function main() {
   setEnvVars
   case "${RUN_MODE}" in 
     "INSTALL" )
+      printEnvVars
       install ;;
     "REMOVE")
       remove ;;
