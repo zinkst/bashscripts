@@ -393,6 +393,15 @@ function showStatus() {
   done
 }
 
+function update() {
+  updateComponent "${MARIADB_IMAGE}" "nextcloud-db" "false"
+  updateComponent "${NEXTCLOUD_IMAGE}" "nextcloud-app" "false"
+  updateComponent "${REDIS_IMAGE}" "nextcloud-redis" "false"
+  ${SYSTEMCTL_CMD} daemon-reload
+  ${SYSTEMCTL_CMD} start nextcloud-pod.service
+  showStatus
+}
+
 function printEnvVars() {
   printDefaultEnvVars
   echo DATA_DIR=${DATA_DIR}
