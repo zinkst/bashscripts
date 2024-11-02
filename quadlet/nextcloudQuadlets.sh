@@ -392,11 +392,15 @@ function showStatus() {
 }
 
 function update() {
+  cmd="${SYSTEMCTL_CMD} stop nextcloud-pod.service"
+  run-cmd "${cmd}"
   updateComponent "${MARIADB_IMAGE}" "nextcloud-db" "false"
   updateComponent "${NEXTCLOUD_IMAGE}" "nextcloud-app" "false"
   updateComponent "${REDIS_IMAGE}" "nextcloud-redis" "false"
-  ${SYSTEMCTL_CMD} daemon-reload
-  ${SYSTEMCTL_CMD} start nextcloud-pod.service
+  cmd="${SYSTEMCTL_CMD} daemon-reload"
+  run-cmd "${cmd}"
+  cmd="${SYSTEMCTL_CMD} start nextcloud-pod.service"
+  run-cmd "${cmd}"
   showStatus
 }
 

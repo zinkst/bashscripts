@@ -42,11 +42,11 @@ function updateComponent() {
   printEnvVars
   IMAGE="${1}"
   SERVICE="${2}"
-  START_SERVICE="${3:-true}"
+  TOGGLE_SERVICE="${3:-true}"
 
   echo "[INFO] INSTALLED_VERSION=${INSTALLED_VERSION}"
   echo "[INFO] pulling ${IMAGE}"
-  echo "[INFO] start service after update: ${START_SERVICE}"
+  echo "[INFO] toggle service ${SERVICE} during update: ${TOGGLE_SERVICE}"
   cmd="podman pull ${IMAGE}"
   run-cmd "${cmd}"
   echo "[INFO] labels of new image"
@@ -57,10 +57,13 @@ function updateComponent() {
   # echo PULLED_VERSION=${PULLED_VERSION} 
   # # podman auto-update --dry-run --format "{{.Image}} {{.Updated}}"
   # podman auto-update will update all registered containers so will not use it
-  echo "[INFO] stopping ${SERVICE}"
-  cmd="systemctl stop ${SERVICE}"
-  run-cmd "${cmd}"
-  if [ "${START_SERVICE}" == "true"  ]; then
+  if [ "${TOGGLE_SERVICE}" == "true"  ]; then
+    echo "[INFO] stopping ${SERVICE}"
+    cmd="systemctl stop ${SERVICE}"
+    run-cmd "${cmd}"
+    echo "[INFO] sleeping 30 secs"
+    cmd="sleep 30"
+    run-cmd "${cmd}"
     echo "[INFO] starting ${SERVICE}"
     cmd="systemctl start ${SERVICE}"
     run-cmd "${cmd}"
