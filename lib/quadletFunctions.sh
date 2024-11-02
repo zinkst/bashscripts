@@ -19,6 +19,7 @@ function postInstall() {
 }
 
 function remove() {
+  printEnvVars
   ${SYSTEMCTL_CMD} disable ${SERVICE_NAME}.service --now
   rm ${QUADLET_DIR}/${SERVICE_NAME}.container
 }
@@ -28,17 +29,17 @@ function showStatus() {
     ${SERVICE_NAME}
   )
   for  i in ${!SERVICES[@]}; do
-        echo "###################################################"
-        echo "Show status for service ${SERVICES[$i]}"
-        ${SYSTEMCTL_CMD} --no-pager is-active  ${SERVICES[$i]}
+        echo "### status for service ${SERVICES[$i]}:" $(${SYSTEMCTL_CMD} --no-pager is-active  ${SERVICES[$i]})
   done
 }
 
 function update() {
+  printEnvVars
   updateComponent "${CONTAINER_IMAGE}" "${SERVICE_NAME}"
 }
 
 function updateComponent() {
+  printEnvVars
   IMAGE="${1}"
   SERVICE="${2}"
   START_SERVICE="${3:-true}"
@@ -80,12 +81,10 @@ function usage() {
 
 function setDefaultEnvVars() {
   if [[ $(id -u) -eq 0 ]] ; then 
-    echo "running as USER root" 
     export QUADLET_DIR=/etc/containers/systemd
     export SYSTEMD_UNIT_DIR=/etc/systemd/system
     export SYSTEMCTL_CMD="systemctl"
   else  
-    echo "running as USER ${USER}" 
     export QUADLET_DIR=${HOME}/.config/containers/systemd
     export SYSTEMD_UNIT_DIR=${HOME}/.config/systemd/user
     export SYSTEMCTL_CMD="systemctl --user"
@@ -107,6 +106,7 @@ function printDefaultEnvVars() {
 }
 
 function backup () {
+  printEnvVars
   export BACKUP_DIR=/links/sysbkp/${SERVICE_NAME}
   export NUM_BACKUPS=${NUM_BACKUPS:-3}
   source /links/bin/lib/dbBackupFunctions.sh
@@ -192,31 +192,24 @@ function checkpCLIParams() {
   while getopts "iubrstc:" OPTNAME; do
     case "${OPTNAME}" in
       i )
-        echo "Runmode Option ${OPTNAME} is specified"
         RUN_MODE="INSTALL"
         ;;
       r )
-        echo "Runmode Option ${OPTNAME} is specified"
         RUN_MODE="REMOVE"
         ;;
       s )
-        echo "Runmode Option ${OPTNAME} is specified"
         RUN_MODE="STATUS"
         ;;
       u )
-        echo "Runmode Option ${OPTNAME} is specified"
         RUN_MODE="UPDATE"
         ;;
       b )
-        echo "Runmode Option ${OPTNAME} is specified"
         RUN_MODE="BACKUP"
         ;;
       t )
-        echo "Testmode ${OPTNAME} is specified"
         TEST_MODE="true"
         ;;
       c )
-        echo "config file used is \"${OPTARG}\" is specified"
         CONFIG_YAML="${OPTARG}"
         ;;
       * )
@@ -232,7 +225,7 @@ function checkpCLIParams() {
     exit 1
   fi
   if [ -z "${CONFIG_YAML+x}" ]; then
-    echo "[WARN] config File not specified trying default config path"
+    # echo "[WARN] config File not specified trying default config path"
     CONFIG_YAML="${DEFAULT_CONFIG_YAML}"
   fi
   if [ ! -f "${CONFIG_YAML}" ]; then 
@@ -251,7 +244,6 @@ function checkpCLIParams() {
 function main() {
   checkpCLIParams "$@"
   setEnvVars
-  printEnvVars
   case "${RUN_MODE}" in 
     "INSTALL" )
       install ;;
