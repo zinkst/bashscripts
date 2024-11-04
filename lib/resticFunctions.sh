@@ -50,7 +50,7 @@ function doResticForgetKeepOnlyLastNSnapshots()
 	for ind in $index
 	do
 		tag=$(basename "${SRC_ROOT}${Directories[ind]}")
-        cmd="restic forget --keep-last ${numOfSnapshotsToKeep} --prune --verbose=2 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
+        cmd="restic forget --keep-last ${numOfSnapshotsToKeep} --prune --verbose=2 --tag $tag"  
 		echo "$cmd"
 		eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
     done		
