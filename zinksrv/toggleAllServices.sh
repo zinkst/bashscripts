@@ -3,7 +3,7 @@
 
 function toggleAll() {
     OPERATION=${1}
-    stopServicesSequence=(nexcloud-pod grafana-server.service zigbee2mqtt.service home-assistant.service node-red.service influxdb smb.service nfs-server.service )
+    stopServicesSequence=(nexcloud-pod grafana-server.service zigbee2mqtt.service home-assistant.service node-red.service influx-db.service smb.service nfs-server.service )
     for svc in "${stopServicesSequence[@]}"
     do
         echo "==================================== toggling operation ${OPERATION} for service $svc ======================================================="

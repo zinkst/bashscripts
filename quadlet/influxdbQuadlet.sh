@@ -38,22 +38,22 @@ ${START_ON_BOOT}
 EOF
 }
 
-# docker run -d -p 8086:8086 \
-#     -v "$PWD/data:/var/lib/influxdb2" \
-#     -v "$PWD/config:/etc/influxdb2" \
-#     -e DOCKER_INFLUXDB_INIT_MODE=setup \
-#     -e DOCKER_INFLUXDB_INIT_USERNAME=my-user \
-#     -e DOCKER_INFLUXDB_INIT_PASSWORD=my-password \
-#     -e DOCKER_INFLUXDB_INIT_ORG=my-org \
-#     -e DOCKER_INFLUXDB_INIT_BUCKET=my-bucket \
-#     -e DOCKER_INFLUXDB_INIT_RETENTION=1w \
-#     -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token \
-#     influxdb:2
-
+function backup() {
+  echo "currently not implemented"
+  return 0
+  # 1. tar the whole DATA_DIR takes very long
+  # 
+  # 2. CMD="influx backup ${BACKUP_DIR}/latest -t $(cat /links/zinksrv/var/influxdb/root-token)"
+  # Restore didn't work
+  # 
+  # best would be to rsync the DATA_DIR like this
+  CMD="rsync --info=progress2 -ah ${DATA_DIR}  /links/sysbkp/${SERVICE_NAME}" 
+  run-cmd "${CMD}"
+}
 
 function setEnvVars() {
   setDefaultEnvVars
-  SERVICE_NAME="influxdb"
+  SERVICE_NAME="influx-db" # not use influxdb since this is the name of the packaged influxdb service
   DATA_DIR="$(yq -r '.INFLUXDB.DATA_DIR' "${CONFIG_YAML}")"
   INFLUXDB_DATA_DIR="${DATA_DIR}/data"
   INFLUXDB_ETC_DIR="${DATA_DIR}/etc"
