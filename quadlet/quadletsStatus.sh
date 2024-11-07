@@ -9,6 +9,7 @@ nodeExporterQuadlet.sh
 prometheusQuadlet.sh
 vaultwardenQuadlet.sh
 zigbee2mqttQuadlet.sh
+influxdbQuadlet.sh
 )
 
 for quadlet in "${QUADLET_SCRIPTS[@]}"
