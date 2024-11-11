@@ -60,7 +60,7 @@ echo LogFileName: ${LOG_ROOT}${LOGFILENAME}
 LOGFILENAME=${LOGFILENAME}.log
 mountQNAP
 #initializeBackupStore
-doResticWithTgtDir
+doResticWithTgtDirAndMountTest
 ShowResticSnapshots
 doResticForgetKeepOnlyLastNSnapshots 12
 df -h ${TGT_ROOT} | tee -a ${LOG_ROOT}${LOGFILENAME}
