@@ -38,7 +38,7 @@ function doResticWithTgtDir ()
   	for ind in $index
 	do
 		tag=$(basename "${SRC_ROOT}${Directories[ind]}")
-        cmd="restic backup --exclude-caches --no-cache --verbose=2 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
+        cmd="restic backup --exclude-caches --no-cache --verbose=1 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
 		echo "$cmd"
 		eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
     done		
@@ -59,13 +59,7 @@ function doResticForgetKeepOnlyLastNSnapshots()
 function doResticWithTgtDirAndMountTest () 
 {
   if mountpoint -q "${TGT_ROOT}"; then
-  	for ind in $index
-	do
-		tag=$(basename "${SRC_ROOT}${Directories[ind]}")
-        cmd="restic backup --exclude-caches --no-cache --verbose=1 --tag $tag \"${SRC_ROOT}${Directories[ind]}/\""
-		echo "$cmd"
-		eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
-    done		
+  	doResticWithTgtDir
   else
     echo "${TGT_ROOT} not mounted skipping" | tee -a ${LOG_ROOT}${LOGFILENAME}
   fi
@@ -73,9 +67,12 @@ function doResticWithTgtDirAndMountTest ()
 
 
 # function restoreRestic () {
-# 	mkdir -p /run/media/restic-restore
+# 	RESTORE_PATH="${1}"
+#	echo "Mounting ${RESORE_PATH} to /run/media/restic-restore"
+#   mkdir -p /run/media/restic-restore
 # 	tag=$(basename "${SRC_ROOT}${Directories[ind]}")
 # 	cmd="restic restore latest --path \"${SRC_ROOT}${Directories[ind]}/\"" --target /run/media/restic-restore
+# 	cmd="restic restore latest --path ${RESTORE_PATH} --target /run/media/restic-restore
 # 	echo "$cmd"
 # 	#eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
 # }
