@@ -176,13 +176,13 @@ Persistent=True
 Unit=backup-${SERVICE_NAME}.service
 
 [Install]
-WantedBy=basic.target
+WantedBy=timers.target
 EOF
 
   if [ "${IS_DEVELOPMENT_SYSTEM}" == "false" ]; then
     if [ ! -f "${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.timer" ]; then
       echo "creating symlinks for backup services of ${SERVICE_NAME}"
-      ln -sf /links${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.timer ${SYSTEMD_UNIT_DIR}/
+      cp /links${SYSTEMD_UNIT_DIR}/backup-${SERVICE_NAME}.timer ${SYSTEMD_UNIT_DIR}/
     fi
     ${SYSTEMCTL_CMD} daemon-reload  
     ${SYSTEMCTL_CMD} enable backup-${SERVICE_NAME}.timer --now
