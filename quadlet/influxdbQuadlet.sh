@@ -39,16 +39,26 @@ EOF
 }
 
 function backup() {
-  echo "currently not implemented"
-  return 0
+  # echo "currently not implemented"
+  mkdir -p /links/sysbkp/${SERVICE_NAME}
   # 1. tar the whole DATA_DIR takes very long
   # 
   # 2. CMD="influx backup ${BACKUP_DIR}/latest -t $(cat /links/zinksrv/var/influxdb/root-token)"
   # Restore didn't work
   # 
   # best would be to rsync the DATA_DIR like this
-  CMD="rsync --info=progress2 -ah ${DATA_DIR}  /links/sysbkp/${SERVICE_NAME}" 
+  echo "starting backup at $(date +'%y%m%d_%H%M%S')"
+  CMD="time rsync --info=progress2 -ah ${DATA_DIR}/  /links/sysbkp/${SERVICE_NAME}"
   run-cmd "${CMD}"
+  echo "stopping backup at $(date +'%y%m%d_%H%M%S')"
+
+# complete backup takes 47 minutes
+# time rsync --info=progress2 -ah ${DATA_DIR}/  /links/sysbkp/${SERVICE_NAME}
+#         203,04G 100%   68,56MB/s    0:47:04 (xfr#6372, to-chk=0/8642)   
+
+# real    47m4,339s
+# user    1m7,420s
+# sys     7m43,267s
 }
 
 function setEnvVars() {
