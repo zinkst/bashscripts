@@ -59,13 +59,13 @@ function installBinaryFromTGZ(){
 
 
 function installDevToolsfromBinaryTGZ(){
-  COMMAND_VERSION[0]="1.51.1"
+  COMMAND_VERSION[0]="1.57.1"
   COMMAND[0]="golangci-lint"
   DOWNLOAD_URL[0]="https://github.com/golangci/golangci-lint/releases/download/v${COMMAND_VERSION[0]}/golangci-lint-${COMMAND_VERSION[0]}-linux-amd64.tar.gz"
   BINARY_TARGET[0]="golangci-lint-${COMMAND_VERSION[0]}-linux-amd64/golangci-lint"
 
   COMMAND[1]="k9s"
-  COMMAND_VERSION[1]="0.30.8"
+  COMMAND_VERSION[1]="0.32.5"
   DOWNLOAD_URL[1]="https://github.com/derailed/k9s/releases/download/v${COMMAND_VERSION[1]}/k9s_Linux_amd64.tar.gz"
   BINARY_TARGET[1]="k9s"
   
@@ -75,7 +75,7 @@ function installDevToolsfromBinaryTGZ(){
   DOWNLOAD_URL[2]="https://github.com/homeport/dyff/releases/download/v${COMMAND_VERSION[2]}/dyff_${COMMAND_VERSION[2]}_linux_amd64.tar.gz"
   
   COMMAND[3]="fly"
-  COMMAND_VERSION[3]="7.10.0"
+  COMMAND_VERSION[3]="7.11.2"
   DOWNLOAD_URL[3]="https://github.com/concourse/concourse/releases/download/v${COMMAND_VERSION[3]}/fly-${COMMAND_VERSION[3]}-linux-amd64.tgz"
   BINARY_TARGET[3]="fly"
 
@@ -101,7 +101,7 @@ function installDevToolsfromBinaryTGZ(){
   BINARY_TARGET[7]="retry"
   
   COMMAND[8]="stern"
-  COMMAND_VERSION[8]="1.25.0"
+  COMMAND_VERSION[8]="1.28.0"
   DOWNLOAD_URL[8]="https://github.com/stern/stern/releases/download/v${COMMAND_VERSION[8]}/stern_${COMMAND_VERSION[8]}_linux_amd64.tar.gz"
   BINARY_TARGET[8]="stern"
   
@@ -111,7 +111,7 @@ function installDevToolsfromBinaryTGZ(){
   BINARY_TARGET[9]="kubectl-neat"
 
   COMMAND[10]="ko"
-  COMMAND_VERSION[10]="0.14.1"
+  COMMAND_VERSION[10]="0.15.4"
   DOWNLOAD_URL[10]="https://github.com/ko-build/ko/releases/download/v${COMMAND_VERSION[10]}/ko_Linux_x86_64.tar.gz"
   BINARY_TARGET[10]="ko"
 
@@ -121,7 +121,7 @@ function installDevToolsfromBinaryTGZ(){
   BINARY_TARGET[11]="yft"
 
   COMMAND[12]="pack"
-  COMMAND_VERSION[12]="0.32.1"
+  COMMAND_VERSION[12]="0.35.1"
   DOWNLOAD_URL[12]="https://github.com/buildpacks/pack/releases/download/v${COMMAND_VERSION[12]}/pack-v${COMMAND_VERSION[12]}-linux.tgz"
   BINARY_TARGET[12]="pack"
 
@@ -131,17 +131,17 @@ function installDevToolsfromBinaryTGZ(){
   BINARY_TARGET[13]="pspblueprint"
   
   COMMAND[14]="tsh"
-  COMMAND_VERSION[14]="13.3.8"
+  COMMAND_VERSION[14]="13.4.14"
   DOWNLOAD_URL[14]="https://cdn.teleport.dev/teleport-v${COMMAND_VERSION[14]}-linux-amd64-bin.tar.gz"
   BINARY_TARGET[14]="teleport/tsh"
   
   COMMAND[15]="teleport"
-  COMMAND_VERSION[15]="13.3.8"
+  COMMAND_VERSION[15]="13.4.14"
   DOWNLOAD_URL[15]="https://cdn.teleport.dev/teleport-v${COMMAND_VERSION[15]}-linux-amd64-bin.tar.gz"
   BINARY_TARGET[15]="teleport/teleport"
   
   COMMAND[16]="tctl"
-  COMMAND_VERSION[16]="13.3.8"
+  COMMAND_VERSION[16]="13.4.14"
   DOWNLOAD_URL[16]="https://cdn.teleport.dev/teleport-v${COMMAND_VERSION[16]}-linux-amd64-bin.tar.gz"
   BINARY_TARGET[16]="teleport/tctl"
   
@@ -149,11 +149,16 @@ function installDevToolsfromBinaryTGZ(){
   COMMAND_VERSION[17]="2.18.2"
   DOWNLOAD_URL[17]="https://github.com/securego/gosec/releases/download/v${COMMAND_VERSION[17]}/gosec_${COMMAND_VERSION[17]}_linux_amd64.tar.gz"
   BINARY_TARGET[17]="gosec"
+
+  COMMAND[18]="marp"
+  COMMAND_VERSION[18]="3.4.0"
+  DOWNLOAD_URL[18]="https://github.com/marp-team/marp-cli/releases/download/v${COMMAND_VERSION[18]}/marp-cli-v${COMMAND_VERSION[18]}-linux.tar.gz"
+  BINARY_TARGET[18]="marp"
+
   
-  https://github.com/securego/gosec/releases/download/v2.18.2/gosec_2.18.2_linux_amd64.tar.gz
 
   index=(0 1 2 3 4 5 6 7 8 9 10 11 12 13)
-  index=(1) 
+  index=(12) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
@@ -194,7 +199,7 @@ function installDevToolsfromBinary(){
   DOWNLOAD_URL[6]="https://github.com/ahmetb/kubectx/raw/${COMMAND_VERSION[6]}/kubens"
 
   COMMAND[7]="kind"
-  COMMAND_VERSION[7]="v0.20.0"
+  COMMAND_VERSION[7]="v0.24.0"
   DOWNLOAD_URL[7]="https://github.com/kubernetes-sigs/kind/releases/download/${COMMAND_VERSION[7]}/kind-linux-amd64"
 
   COMMAND[8]="aviator"
@@ -216,9 +221,13 @@ function installDevToolsfromBinary(){
   COMMAND[12]="hey"
   COMMAND_VERSION[12]="0.1.4"
   DOWNLOAD_URL[12]="https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64"
+  
+  COMMAND[13]="crane"
+  COMMAND_VERSION[13]="0.0.5"
+  DOWNLOAD_URL[13]="https://github.com/migtools/crane/releases/download/v${COMMAND_VERSION[13]}/amd64-linux-crane-v${COMMAND_VERSION[13]}"
 
   index=(0 1 2 3 4 5 6 7)
-  index=(2) 
+  index=(7) 
   for i in "${index[@]}"
   do
     # do whatever on "$i" here
@@ -228,7 +237,7 @@ function installDevToolsfromBinary(){
 
 function installGinkgo() {
 	pushd ${HOME}/go
-	GINKGO2_VERSION="2.12.1"
+	GINKGO2_VERSION="2.20.2"
   go install github.com/onsi/ginkgo/v2/ginkgo@v${GINKGO2_VERSION}
   mkdir -p ${TARGET_DIR}/ginkgo-versions/
 	mv ~/go/bin/ginkgo ${TARGET_DIR}/ginkgo-versions/ginkgo-${GINKGO2_VERSION}
@@ -240,7 +249,7 @@ function installGinkgo() {
 }
 
 function installGolangFromTGZ(){
-  GO_VERSION="1.20.6"
+  GO_VERSION="1.23.2"
   if [ ! -f ${HOME}/Downloads/go${GO_VERSION}.linux-amd64.tar.gz ]; then 
     wget -O ${HOME}/Downloads/go${GO_VERSION}.linux-amd64.tar.gz https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
   fi
@@ -286,8 +295,8 @@ export TARGET_DIR=${HOME}/.local/bin
 #hashMap
 #installGinkgo
 #installDetectSecrets
-installDevToolsfromBinary
+#installDevToolsfromBinary
 #installLegalyamlTools
-#installDevToolsfromBinaryTGZ
+installDevToolsfromBinaryTGZ
 #installGolangFromTGZ
 #installWebExRPM
