@@ -199,7 +199,7 @@ function installDevToolsfromBinary(){
   DOWNLOAD_URL[6]="https://github.com/ahmetb/kubectx/raw/${COMMAND_VERSION[6]}/kubens"
 
   COMMAND[7]="kind"
-  COMMAND_VERSION[7]="v0.24.0"
+  COMMAND_VERSION[7]="v0.25.0"
   DOWNLOAD_URL[7]="https://github.com/kubernetes-sigs/kind/releases/download/${COMMAND_VERSION[7]}/kind-linux-amd64"
 
   COMMAND[8]="aviator"
