@@ -9,6 +9,7 @@ alias ic="ibmcloud"
 alias git='LANG=en_US.UTF-8 git'
 export CLICOLOR=1
 export LSCOLORS=gxfxcxdxbxegedabagaced
+export GH_ZINKST="${HOME}/workspace/src/github.com/zinkst"
 #source /usr/local/opt/chruby/share/chruby/chruby.sh
 #source /usr/local/opt/chruby/share/chruby/auto.sh
 export PATH=${HOME}/workspace/go/bin:${HOME}/.local/bin:$PATH
