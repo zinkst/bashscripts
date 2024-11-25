@@ -19,5 +19,6 @@
   prompt = cyan
 [core]
 	excludesfile = ~/.gitignore_global
+	editor = vim
 [url "git@github.ibm.com:"]
 	insteadOf = https://github.ibm.com
