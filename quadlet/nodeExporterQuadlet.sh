@@ -19,6 +19,9 @@ Network=${NETWORK_NAME}
 PublishPort=${NODE_EXPORTER_HTTP_PORT}:9100
 AddCapability=CAP_AUDIT_WRITE
 
+[Service]
+Restart=on-failure
+
 [Install]
 ${START_ON_BOOT}
 EOF

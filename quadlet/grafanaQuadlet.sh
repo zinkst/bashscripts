@@ -31,6 +31,9 @@ Volume=${GRAFANA_ETC_DIR}/grafana.ini:/etc/grafana/grafana.ini:Z
 Volume=/etc/localtime:/etc/localtime:ro
 Environment=TZ=Europe/Amsterdam
 
+[Service]
+Restart=on-failure
+
 [Install]
 ${START_ON_BOOT}
 EOF

@@ -109,5 +109,12 @@ source $ZSH/oh-my-zsh.sh
 
 source <(kubectl completion zsh)
 
+HISTFILE=~/.zsh_history
+HISTSIZE=10000  # Save most-recent 1000 lines
+SAVEHIST=10000  # Save most-recent 1000 lines
+
+bindkey -v
+bindkey '^R' history-incremental-search-backward
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

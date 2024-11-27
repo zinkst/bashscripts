@@ -26,6 +26,9 @@ Volume=${DATA_DIR}:/config:Z
 Volume=/etc/localtime:/etc/localtime:ro
 Environment=TZ=Europe/Amsterdam
 
+[Service]
+Restart=on-failure
+
 [Install]
 ${START_ON_BOOT}
 EOF

@@ -26,6 +26,9 @@ Volume=${PROMETHEUS_ETC_DIR}/prometheus:/etc/prometheus:Z
 Volume=/etc/localtime:/etc/localtime:ro
 Environment=TZ=Europe/Amsterdam
 
+[Service]
+Restart=on-failure
+
 [Install]
 ${START_ON_BOOT}
 EOF

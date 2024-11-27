@@ -24,6 +24,9 @@ Volume=${VM_ETC_DIR}:/vm-etc:Z
 Volume=/etc/localtime:/etc/localtime:ro
 Environment=TZ=Europe/Amsterdam
 
+[Service]
+Restart=on-failure
+
 [Install]
 ${START_ON_BOOT}
 EOF

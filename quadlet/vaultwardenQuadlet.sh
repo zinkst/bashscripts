@@ -33,6 +33,9 @@ Environment=TZ=Europe/Amsterdam
 Environment=ROCKET_PORT=${VAULTWARDEN_ROCKET_PORT}
 Secret=vaultwarden-admin-token,type=env,target=ADMIN_TOKEN
 
+[Service]
+Restart=on-failure
+
 [Install]
 ${START_ON_BOOT}
 EOF
