@@ -31,6 +31,9 @@ Exec=docker-entrypoint.sh /sbin/tini -- node index.js
 SecurityLabelDisable=true
 # AddHost=host.containers.internal:host-gateway # resolves to correct Address but still ECONREFUSED
 
+[Service]
+Restart=on-failure
+
 [Install]
 ${START_ON_BOOT}
 EOF

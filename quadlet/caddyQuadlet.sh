@@ -91,6 +91,9 @@ Volume=${DATA_DIR}/data:/data:Z
 Volume=${NEXTCLOUD_DATA_DIR}/html:/var/www/html:ro,z
 AddCapability=CAP_AUDIT_WRITE
 
+[Service]
+Restart=on-failure
+
 [Install]
 ${START_ON_BOOT}
 EOF

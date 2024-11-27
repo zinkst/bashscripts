@@ -152,6 +152,9 @@ Volume=${CADDY_DATA_DIR}/data:/data:Z
 Volume=${DATA_DIR}/html:/var/www/html:ro,z
 AddCapability=CAP_AUDIT_WRITE
 
+[Service]
+Restart=on-failure
+
 [Install]
 WantedBy=default.target
 EOF
@@ -166,6 +169,9 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=podman  exec -t -u www-data nextcloud-app php -f /var/www/html/cron.php
+
+[Service]
+Restart=on-failure
 
 [Install]
 WantedBy=default.target
@@ -196,6 +202,9 @@ AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=nextcloud-redis
 Image=${REDIS_IMAGE}
 Network=${NETWORK_NAME}
+
+[Service]
+Restart=on-failure
 
 [Install]
 WantedBy=nextcloud-app.service default.target
