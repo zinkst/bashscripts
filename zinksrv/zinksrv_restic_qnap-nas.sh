@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+# set -euo pipefail
 # variables
 export SRC_ROOT="/"
 export TGT_ROOT="/remote/qnap-ts130/data_smb"

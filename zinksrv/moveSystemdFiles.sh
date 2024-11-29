@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+# set -euo pipefail
 # variables
 HOSTNAME=$(hostname -s)
 SYSTEMD_DIR="/etc/systemd/system"
@@ -13,20 +13,18 @@ function run-cmd () {
 	fi	
 }
 
-function moveSystemdFiles() {
+function moveFiles() {
   TIMER_SERVICES=(
 	"backup-home-assistant"
 	"backup-influx-db"
 	"backup-rootfs"
 	"backup-vaultwarden"
-	"backup-nextcloud-quadlet"
+	"backup-nextcloud"
+	"backup-grafana"
+	"backup-zigbee2mqtt"
+	"backup-caddy"
 	"restic_bkp_qnap-nas"
 	"zinksrv_usb_backup"
-  )	
-  SERVICES=(
-	home-assist
-	node-red
-	zigbee2mqtt
   )
   for svc in ${TIMER_SERVICES[@]}; do
 	SERVICE_TYPES=( 
@@ -34,13 +32,17 @@ function moveSystemdFiles() {
 		"timer" 
 	)
 	for svc_type in ${SERVICE_TYPES[@]}; do
-		moveService ${svc}.${svc_type}
+		# cmd="rm ${SYSTEMD_DIR}/${svc}.${svc_type}" 
+		# run-cmd "$cmd"
+		# cmd="cp ${SYSTEMD_TARGET_DIR}/${svc}.${svc_type} ${SYSTEMD_DIR}/" 
+		# run-cmd "$cmd"
+		cmd="systemctl is-active ${svc}.${svc_type}" 
+		run-cmd "$cmd"
 	done	
   done
-  for  svc in ${SERVICES[@]}; do
-	moveService ${svc}.service
-  done
 }
+
+
 
 function moveService() {
 	SERVICE_TO_MOVE=${1}
@@ -67,4 +69,4 @@ do
 		t    ) TEST_MODE="true";;
     esac
 done
-moveSystemdFiles
+moveFiles
