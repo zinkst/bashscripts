@@ -3,12 +3,11 @@
 
 function toggleAll() {
     OPERATION=${1}
-    stopServicesSequence=(nexcloud-pod grafana-server.service zigbee2mqtt.service home-assistant.service node-red.service influx-db.service smb.service nfs-server.service )
-    for svc in "${stopServicesSequence[@]}"
+    for svc in "${SERVICES[@]}"
     do
-        echo "==================================== toggling operation ${OPERATION} for service $svc ======================================================="
+        # echo "==================================== toggling operation ${OPERATION} for service $svc ======================================================="
         cmd="systemctl --no-pager ${OPERATION} $svc"
-        echo $cmd
+        echo "==================== $cmd ===================="
         eval $cmd
     done
 }
@@ -19,9 +18,23 @@ function usage {
     echo "operation : [start | stop | enable | disable | status ]" 
 }
 
-#main
 
 # main
+SERVICES=(
+    nextcloud-app.service
+    nextcloud-db.service
+    nextcloud-redis.service
+    grafana.service
+    zigbee2mqtt.service 
+    home-assistant.service 
+    node-red.service 
+    influx-db.service 
+    smb.service 
+    nfs-server.service
+    vaultwarden.service
+    caddy.service
+)
+
 if [[ $1 == "" ]]; then
    usage;
    exit 1;
