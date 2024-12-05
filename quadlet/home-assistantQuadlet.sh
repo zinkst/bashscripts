@@ -44,7 +44,28 @@ function setEnvVars() {
   START_ON_BOOT="$(yq -r '.HOME_ASSISTANT.START_ON_BOOT' "${CONFIG_YAML}")"
   NUM_BACKUPS=7
   INSTALLED_VERSION=$(podman image inspect ${CONTAINER_IMAGE} | jq -r .[0].Config.Labels.\"io.hass.version\")
+  RESTART_SERVICE_FOR_BACKUP="false"
 }
+
+function backup () {
+  printEnvVars
+  export BACKUP_DIR=/links/sysbkp/${SERVICE_NAME}
+  export NUM_BACKUPS=${NUM_BACKUPS:-3}
+  source /links/bin/lib/dbBackupFunctions.sh
+  initDirWithBackupFiles ${SERVICE_NAME}_internalBackup.tar
+  rotateFiles ${SERVICE_NAME}_internalBackup.tar
+  echo "moving internal backup of ${SERVICE_NAME} to ${BACKUP_DIR}"
+  CMD="mv $DATA_DIR/backups/*.tar ${BACKUP_DIR}/${SERVICE_NAME}_internalBackup.tar"
+  run-cmd "${CMD}"
+  echo "creating backup of ${SERVICE_NAME}"
+  initDirWithBackupFiles ${SERVICE_NAME}.tgz
+  rotateFiles ${SERVICE_NAME}.tgz
+  CMD="tar -czf  ${BACKUP_DIR}/${SERVICE_NAME}.tgz --directory \"${DATA_DIR}/\" ."
+  run-cmd "${CMD}"
+  echo "finished Backup of ${SERVICE_NAME}"
+  createBackupService
+  createBackupTimer
+}	
 
 function printEnvVars() {
   printDefaultEnvVars
@@ -55,6 +76,7 @@ function printEnvVars() {
   echo SERVICE_NAME=${SERVICE_NAME}
   echo START_ON_BOOT=${START_ON_BOOT}
   echo "INSTALLED_VERSION=${INSTALLED_VERSION}"
+  echo RESTART_SERVICE_FOR_BACKUP=${RESTART_SERVICE_FOR_BACKUP}
 }
 
 function install() {

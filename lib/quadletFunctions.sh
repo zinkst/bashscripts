@@ -116,13 +116,17 @@ function backup () {
   initDirWithBackupFiles ${SERVICE_NAME}.tgz
   rotateFiles ${SERVICE_NAME}.tgz
   START_SERVICE_AFTER_BACKUP="false"
-  if [ "$(${SYSTEMCTL_CMD} is-active ${SERVICE_NAME}.service)" == "active" ]; then
-    START_SERVICE_AFTER_BACKUP="true"
-    CMD="${SYSTEMCTL_CMD} stop ${SERVICE_NAME}" 
-    run-cmd "${CMD}"
-    echo "give 60 seconds to bring down ${SERVICE_NAME} completely"
-    CMD="sleep 60"
-    run-cmd "${CMD}"
+  if [ "${RESTART_SERVICE_FOR_BACKUP}" == "false" ]; then
+    echo "Do not restart servive ${SERVER_NAME} for backup"
+  else  
+    if [ "$(${SYSTEMCTL_CMD} is-active ${SERVICE_NAME}.service)" == "active" ]; then
+      START_SERVICE_AFTER_BACKUP="true"
+      CMD="${SYSTEMCTL_CMD} stop ${SERVICE_NAME}" 
+      run-cmd "${CMD}"
+      echo "give 60 seconds to bring down ${SERVICE_NAME} completely"
+      CMD="sleep 60"
+      run-cmd "${CMD}"
+    fi
   fi
   echo "creating backup of ${SERVICE_NAME}"
   CMD="tar -czf  ${BACKUP_DIR}/${SERVICE_NAME}.tgz --directory \"${DATA_DIR}/\" ."
