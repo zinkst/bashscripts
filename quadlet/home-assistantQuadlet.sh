@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 
 source /links/bin/lib/quadletFunctions.sh
 
@@ -34,6 +33,29 @@ ${START_ON_BOOT}
 EOF
 }
 
+function backup () {
+  printEnvVars
+  export BACKUP_DIR=/links/sysbkp/${SERVICE_NAME}
+  export NUM_BACKUPS=${NUM_BACKUPS:-3}
+  source /links/bin/lib/dbBackupFunctions.sh
+  initDirWithBackupFiles ${SERVICE_NAME}_internalBackup.tar
+  rotateFiles ${SERVICE_NAME}_internalBackup.tar
+  echo "[INFO] creating new backup using hass-cli"
+  CMD="hass-cli service call backup.create"
+  run-cmd "${CMD}"
+  echo "[INFO] moving internal backup of ${SERVICE_NAME} to ${BACKUP_DIR}"
+  CMD="mv $DATA_DIR/backups/*.tar ${BACKUP_DIR}/${SERVICE_NAME}_internalBackup.tar"
+  run-cmd "${CMD}"
+  echo "[INFO] creating backup of ${DATA_DIR}"
+  initDirWithBackupFiles ${SERVICE_NAME}.tgz
+  rotateFiles ${SERVICE_NAME}.tgz
+  CMD="tar -czf  ${BACKUP_DIR}/${SERVICE_NAME}.tgz --directory \"${DATA_DIR}/\" . || true"
+  run-cmd "${CMD}"
+  echo "[INFO] finished Backup of ${SERVICE_NAME}"
+  createBackupService
+  createBackupTimer
+}	
+
 function setEnvVars() {
   setDefaultEnvVars
   PODMAN_AUTO_UPDATE_STRATEGY="$(yq -r '.HOST.PODMAN_AUTO_UPDATE_STRATEGY' "${CONFIG_YAML}")"
@@ -45,27 +67,9 @@ function setEnvVars() {
   NUM_BACKUPS=7
   INSTALLED_VERSION=$(podman image inspect ${CONTAINER_IMAGE} | jq -r .[0].Config.Labels.\"io.hass.version\")
   RESTART_SERVICE_FOR_BACKUP="false"
+  export HASS_SERVER="$(yq -r '.HOME_ASSISTANT.HASS_SERVER' "${CONFIG_YAML}")"
+  export HASS_TOKEN="$(yq -r '.HOME_ASSISTANT.HASS_TOKEN' "${CONFIG_YAML}")"
 }
-
-function backup () {
-  printEnvVars
-  export BACKUP_DIR=/links/sysbkp/${SERVICE_NAME}
-  export NUM_BACKUPS=${NUM_BACKUPS:-3}
-  source /links/bin/lib/dbBackupFunctions.sh
-  initDirWithBackupFiles ${SERVICE_NAME}_internalBackup.tar
-  rotateFiles ${SERVICE_NAME}_internalBackup.tar
-  echo "moving internal backup of ${SERVICE_NAME} to ${BACKUP_DIR}"
-  CMD="mv $DATA_DIR/backups/*.tar ${BACKUP_DIR}/${SERVICE_NAME}_internalBackup.tar"
-  run-cmd "${CMD}"
-  echo "creating backup of ${SERVICE_NAME}"
-  initDirWithBackupFiles ${SERVICE_NAME}.tgz
-  rotateFiles ${SERVICE_NAME}.tgz
-  CMD="tar -czf  ${BACKUP_DIR}/${SERVICE_NAME}.tgz --directory \"${DATA_DIR}/\" ."
-  run-cmd "${CMD}"
-  echo "finished Backup of ${SERVICE_NAME}"
-  createBackupService
-  createBackupTimer
-}	
 
 function printEnvVars() {
   printDefaultEnvVars
@@ -77,6 +81,7 @@ function printEnvVars() {
   echo START_ON_BOOT=${START_ON_BOOT}
   echo "INSTALLED_VERSION=${INSTALLED_VERSION}"
   echo RESTART_SERVICE_FOR_BACKUP=${RESTART_SERVICE_FOR_BACKUP}
+  echo "HASS_SERVER=${HASS_SERVER}"
 }
 
 function install() {
