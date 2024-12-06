@@ -36,7 +36,7 @@ function rotateDirs () {
 	CMD="rm -rf ${BACKUP_DIR}/${NUM_BACKUPS}/*"
 	run-cmd "${CMD}"
 	for ((i=${NUM_BACKUPS};i>0;i-=1)) ; do 	
-		echo " processing index ${i}"
+		# echo "[INFO] processing index ${i}"
 		if [[ ${i} -eq 1 ]]; then
 			CMD="mv ${BACKUP_DIR}/latest/* ${BACKUP_DIR}/1/"
 		else	
@@ -59,7 +59,7 @@ function initDirWithBackupFiles () {
 		run-cmd "${CMD}"
 	fi 
 	for i in  $(seq 1 $NUM_BACKUPS) ; do
-		echo " processing index ${i}"
+		# echo "[INFO] processing index ${i}"
 		if [ ! -f "${BACKUP_DIR}/${BACKUP_FILE}.${i}" ]; then
 			CMD="touch ${BACKUP_DIR}/${BACKUP_FILE}.${i}"
 			run-cmd "${CMD}"
@@ -79,7 +79,7 @@ function rotateFiles () {
 		run-cmd "${CMD}"
 	fi	
 	for ((i=${NUM_BACKUPS};i>0;i-=1)) ; do
-		echo " processing index ${i}"
+		# echo " processing index ${i}"
 		if [[ ${i} -eq 1 ]]; then
 			CMD="mv ${BACKUP_DIR}/${BACKUP_FILE} ${BACKUP_DIR}/${BACKUP_FILE}.1"
 		else	
