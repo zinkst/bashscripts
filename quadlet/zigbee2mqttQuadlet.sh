@@ -49,6 +49,7 @@ function setEnvVars() {
   ZIGBEE2MQTT_USB_DEVICE="$(yq -r '.ZIGBEE2MQTT.USB_DEVICE' "${CONFIG_YAML}")"
   START_ON_BOOT="$(yq -r '.ZIGBEE2MQTT.START_ON_BOOT' "${CONFIG_YAML}")" 
   SERVICE_NAME="zigbee2mqtt"
+  RESTART_SERVICE_FOR_BACKUP="true"
 }
 
 function printEnvVars() {
@@ -60,6 +61,7 @@ function printEnvVars() {
   echo ZIGBEE2MQTT_USB_DEVICE=${ZIGBEE2MQTT_USB_DEVICE}
   echo SERVICE_NAME=${SERVICE_NAME}
   echo START_ON_BOOT=${START_ON_BOOT}
+  echo RESTART_SERVICE_FOR_BACKUP=${RESTART_SERVICE_FOR_BACKUP}
 }
 
 function install() {

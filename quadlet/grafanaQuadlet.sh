@@ -56,6 +56,7 @@ function setEnvVars() {
   START_ON_BOOT="$(yq -r '.GRAFANA.START_ON_BOOT' "${CONFIG_YAML}")" 
   ADMIN_PWD="$(yq -r '.GRAFANA.ADMIN_PWD' "${CONFIG_YAML}")"
   DO_CONFIG=${DO_CONFIG:-"false"}
+  RESTART_SERVICE_FOR_BACKUP="true"
 }
 
 
@@ -69,6 +70,7 @@ function printEnvVars() {
   echo START_ON_BOOT=${START_ON_BOOT}
   echo ADMIN_PWD=${ADMIN_PWD}
   echo DO_CONFIG=${DO_CONFIG}
+  echo RESTART_SERVICE_FOR_BACKUP=${RESTART_SERVICE_FOR_BACKUP}
 }
 
 function install() {

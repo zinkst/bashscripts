@@ -61,6 +61,7 @@ function setEnvVars() {
   START_ON_BOOT="$(yq -r '.GRAFANA.START_ON_BOOT' "${CONFIG_YAML}")" 
   NUM_BACKUPS=7
   INSTALLED_VERSION=$(podman image inspect ${CONTAINER_IMAGE} | jq -r .[0].Config.Labels.\"org.opencontainers.image.version\")
+  RESTART_SERVICE_FOR_BACKUP="true"
 }
 
 function printEnvVars() {
@@ -74,6 +75,7 @@ function printEnvVars() {
   echo SERVICE_NAME=${SERVICE_NAME}
   echo CADDY_PROXY_DOMAIN=${CADDY_PROXY_DOMAIN}
   echo START_ON_BOOT=${START_ON_BOOT}
+  echo RESTART_SERVICE_FOR_BACKUP=${RESTART_SERVICE_FOR_BACKUP}
 }
 
 function install() {
