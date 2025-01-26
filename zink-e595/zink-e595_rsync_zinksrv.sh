@@ -2,7 +2,7 @@
 
 TGT_ROOT="/remote/zinksrv/nfs4/"
 CORRECTHOST="zink-e595"
-MEDIA_SYNC_YEAR=2024
+MEDIA_SYNC_YEAR=2025
 index="1 2 3 4 5 6 7 8 9 10"
 
 

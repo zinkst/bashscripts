@@ -14,7 +14,7 @@ getTimestamps()
     TIMESTAMP=$(date -d@"${TIMESTAMP_UNIX}" +'%Y-%m-%d %H:%M:%S')
   fi 
   # uncomment and adapt the following to overwrite timestamp
-  #TIMESTAMP="UTC 2024-09-23 09:15:00"
+  # TIMESTAMP="UTC 2006-04-16 16:10:00"
   setTimestampVariables  
 }
 
@@ -23,7 +23,7 @@ getTimestampsFromFilename()
   IFS='_'
   read -a splitarr <<< "$FBNAME_NOEXTENSION"
   if [ "$splitarr" == "" ]; then
-      echo "WARNING timestamp of Video could not be determined"
+      echo "[WARNING] timestamp of Video could not be determined"
    else  
       TIMESTAMP="${splitarr[0]}"
    fi  
@@ -151,6 +151,10 @@ function getCamera() {
           ss )
               CAMERA_MANUFACTURER="Slideshow"
               CAMERA_MODEL_NAME="generated"
+              ;;
+          fj )
+              CAMERA_MANUFACTURER="Fuji"
+              CAMERA_MODEL_NAME="FinePix E500"
               ;;
       esac
     fi  
