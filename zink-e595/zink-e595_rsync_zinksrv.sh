@@ -3,7 +3,7 @@
 TGT_ROOT="/remote/zinksrv/nfs4/"
 CORRECTHOST="zink-e595"
 MEDIA_SYNC_YEAR=2025
-index="1 2 3 4 5 6 7 8 9 10"
+index="1 2 3 4 5 6 8 9 10"
 
 
 Directories[1]="local/data/${CORRECTHOST}/lokal"
@@ -27,10 +27,10 @@ Directories[6]="local/ssd-data/Photos/${MEDIA_SYNC_YEAR}"
 TargetDir[6]="data/zinksrv/Photos/Sammlung/${MEDIA_SYNC_YEAR}"
 MountTestFile[6]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[6]=true
-Directories[7]="local/data/${CORRECTHOST}/FamilienVideos/Videos Familie Zink/${MEDIA_SYNC_YEAR}"
-TargetDir[7]="data/Not4Backup/shared/Videos Familie Zink/${MEDIA_SYNC_YEAR}"
-MountTestFile[7]=${TGT_ROOT}"data/doNotDelete"
-AllowDelete[7]=true
+# Directories[7]="local/data/${CORRECTHOST}/FamilienVideos/Videos Familie Zink/${MEDIA_SYNC_YEAR}"
+# TargetDir[7]="data/Not4Backup/shared/Videos Familie Zink/${MEDIA_SYNC_YEAR}"
+# MountTestFile[7]=${TGT_ROOT}"data/doNotDelete"
+# AllowDelete[7]=true
 Directories[8]="local/ssd-data/FamilienVideos/unsorted"
 TargetDir[8]="data/${CORRECTHOST}/ssd-data/FamilienVideos/unsorted"
 MountTestFile[8]=${TGT_ROOT}"data/doNotDelete"
