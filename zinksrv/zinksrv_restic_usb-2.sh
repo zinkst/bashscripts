@@ -10,17 +10,18 @@ LOGFILENAME=$(basename "${0}" .sh)
 export LOG_ROOT="/links/Not4Backup/BackupLogs/${LOGFILENAME}/"
 mkdir -p ${LOG_ROOT}
 CORRECTHOST="zinksrv"
-CURENT_YEAR=$(date +'%Y')
-PREVIOUS_YEAR="$(($CURENT_YEAR-1))" 
-echo "CURENT_YEAR=$CURENT_YEAR, PREVIOUS_YEAR=$PREVIOUS_YEAR"
+export CURRENT_YEAR=$(date +'%Y')
+export PREVIOUS_YEAR="$(($CURRENT_YEAR-1))" 
+echo "CURRENT_YEAR=$CURRENT_YEAR, PREVIOUS_YEAR=$PREVIOUS_YEAR"
 
 index="1 2 3 4"
 Directories[1]="local/data/zinksrv/Photos"
 Directories[2]="local/data/zinksrv/persdata"
-Directories[3]="local/data/zinksrv/FamilienVideos/${CURRENT_YEAR}"
-Directories[4]="local/data/zinksrv/FamilienVideos/${PREVIOUS_YEAR}"
+Directories[3]="local/data/zinksrv/FamilienVideos/Videos Familie Zink/${CURRENT_YEAR}"
+Directories[4]="local/data/zinksrv/FamilienVideos/Videos Familie Zink/${PREVIOUS_YEAR}"
 Directories[5]="local/data/zinksrv/Musik"
 
+source /links/bin/lib/bkp_functions.sh
 source /links/bin/lib/resticFunctions.sh
 
 #main
