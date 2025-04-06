@@ -2,7 +2,9 @@
 
 TGT_ROOT="/remote/zinksrv/nfs4/"
 CORRECTHOST="zink-e595"
-MEDIA_SYNC_YEAR=2025
+CURRENT_YEAR=$(date +'%Y')
+PREVIOUS_YEAR="$(($CURRENT_YEAR-1))" 
+echo "CURRENT_YEAR=$CURRENT_YEAR, PREVIOUS_YEAR=$PREVIOUS_YEAR"
 index="1 2 3 4 5 6 8 9 10"
 
 
@@ -19,16 +21,16 @@ Directories[4]="local/data/${CORRECTHOST}/Musik"
 TargetDir[4]="data/zinksrv/Musik"
 MountTestFile[4]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[4]=false
-Directories[5]="local/data/${CORRECTHOST}/FamilienVideos/Familie-Zink-Videos/${MEDIA_SYNC_YEAR}"
-TargetDir[5]="data/zinksrv/FamilienVideos/Familie-Zink-Videos/${MEDIA_SYNC_YEAR}"
+Directories[5]="local/data/${CORRECTHOST}/FamilienVideos/Familie-Zink-Videos/${CURRENT_YEAR}"
+TargetDir[5]="data/zinksrv/FamilienVideos/Familie-Zink-Videos/${CURRENT_YEAR}"
 MountTestFile[5]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[5]=true
-Directories[6]="local/ssd-data/Photos/${MEDIA_SYNC_YEAR}"
-TargetDir[6]="data/zinksrv/Photos/Sammlung/${MEDIA_SYNC_YEAR}"
+Directories[6]="local/ssd-data/Photos/${CURRENT_YEAR}"
+TargetDir[6]="data/zinksrv/Photos/Sammlung/${CURRENT_YEAR}"
 MountTestFile[6]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[6]=true
-# Directories[7]="local/data/${CORRECTHOST}/FamilienVideos/Videos Familie Zink/${MEDIA_SYNC_YEAR}"
-# TargetDir[7]="data/Not4Backup/shared/Videos Familie Zink/${MEDIA_SYNC_YEAR}"
+# Directories[7]="local/data/${CORRECTHOST}/FamilienVideos/Videos Familie Zink/${CURRENT_YEAR}"
+# TargetDir[7]="data/Not4Backup/shared/Videos Familie Zink/${CURRENT_YEAR}"
 # MountTestFile[7]=${TGT_ROOT}"data/doNotDelete"
 # AllowDelete[7]=true
 Directories[8]="local/ssd-data/FamilienVideos/unsorted"
@@ -39,8 +41,8 @@ Directories[9]="local/data/${CORRECTHOST}/Photos/Favoriten"
 TargetDir[9]="data/zinksrv/Photos/Favoriten"
 MountTestFile[9]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[9]=true
-Directories[10]="local/data/${CORRECTHOST}/FamilienVideos/Favoriten-Familie-Zink-Videos/${MEDIA_SYNC_YEAR}"
-TargetDir[10]="data/zinksrv/FamilienVideos/Favoriten-Familie-Zink-Videos/${MEDIA_SYNC_YEAR}"
+Directories[10]="local/data/${CORRECTHOST}/FamilienVideos/Favoriten-Familie-Zink-Videos/${CURRENT_YEAR}"
+TargetDir[10]="data/zinksrv/FamilienVideos/Favoriten-Familie-Zink-Videos/${CURRENT_YEAR}"
 MountTestFile[10]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[10]=true
 
