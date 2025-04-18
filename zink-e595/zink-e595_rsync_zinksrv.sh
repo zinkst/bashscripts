@@ -5,7 +5,7 @@ CORRECTHOST="zink-e595"
 CURRENT_YEAR=$(date +'%Y')
 PREVIOUS_YEAR="$(($CURRENT_YEAR-1))" 
 echo "CURRENT_YEAR=$CURRENT_YEAR, PREVIOUS_YEAR=$PREVIOUS_YEAR"
-index="1 2 3 4 5 6 8 9 10"
+index="1 2 3 4 5 6 7 8 9"
 
 
 Directories[1]="local/data/${CORRECTHOST}/lokal"
@@ -29,10 +29,10 @@ Directories[6]="local/ssd-data/Photos/${CURRENT_YEAR}"
 TargetDir[6]="data/zinksrv/Photos/Sammlung/${CURRENT_YEAR}"
 MountTestFile[6]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[6]=true
-# Directories[7]="local/data/${CORRECTHOST}/FamilienVideos/Videos Familie Zink/${CURRENT_YEAR}"
-# TargetDir[7]="data/Not4Backup/shared/Videos Familie Zink/${CURRENT_YEAR}"
-# MountTestFile[7]=${TGT_ROOT}"data/doNotDelete"
-# AllowDelete[7]=true
+Directories[7]="local/data/${CORRECTHOST}/FamilienVideos/Favoriten-Familie-Zink-Videos/${CURRENT_YEAR}"
+TargetDir[7]="data/zinksrv/FamilienVideos/Favoriten-Familie-Zink-Videos/${CURRENT_YEAR}"
+MountTestFile[7]=${TGT_ROOT}"data/doNotDelete"
+AllowDelete[7]=true
 Directories[8]="local/ssd-data/FamilienVideos/unsorted"
 TargetDir[8]="data/${CORRECTHOST}/ssd-data/FamilienVideos/unsorted"
 MountTestFile[8]=${TGT_ROOT}"data/doNotDelete"
@@ -41,10 +41,11 @@ Directories[9]="local/data/${CORRECTHOST}/Photos/Favoriten"
 TargetDir[9]="data/zinksrv/Photos/Favoriten"
 MountTestFile[9]=${TGT_ROOT}"data/doNotDelete"
 AllowDelete[9]=true
-Directories[10]="local/data/${CORRECTHOST}/FamilienVideos/Favoriten-Familie-Zink-Videos/${CURRENT_YEAR}"
-TargetDir[10]="data/zinksrv/FamilienVideos/Favoriten-Familie-Zink-Videos/${CURRENT_YEAR}"
-MountTestFile[10]=${TGT_ROOT}"data/doNotDelete"
-AllowDelete[10]=true
+# now done via nextcloud
+# Directories[10]="local/data/${CORRECTHOST}/FamilienVideos/Videos Familie Zink/${CURRENT_YEAR}"
+# TargetDir[10]="data/Not4Backup/shared/Videos Familie Zink/${CURRENT_YEAR}"
+# MountTestFile[10]=${TGT_ROOT}"data/doNotDelete"
+# AllowDelete[10]=true
 
 
 . /links/bin/lib/bkp_functions.sh
