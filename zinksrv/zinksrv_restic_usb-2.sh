@@ -14,12 +14,10 @@ export CURRENT_YEAR=$(date +'%Y')
 export PREVIOUS_YEAR="$(($CURRENT_YEAR-1))" 
 echo "CURRENT_YEAR=$CURRENT_YEAR, PREVIOUS_YEAR=$PREVIOUS_YEAR"
 
-index="1 2 3 4"
+index="1 2 3"
 Directories[1]="local/data/zinksrv/Photos"
 Directories[2]="local/data/zinksrv/persdata"
-Directories[3]="local/data/zinksrv/FamilienVideos/Videos Familie Zink/${CURRENT_YEAR}"
-Directories[4]="local/data/zinksrv/FamilienVideos/Videos Familie Zink/${PREVIOUS_YEAR}"
-Directories[5]="local/data/zinksrv/Musik"
+Directories[3]="local/data/zinksrv/Musik"
 
 source /links/bin/lib/bkp_functions.sh
 source /links/bin/lib/resticFunctions.sh
@@ -40,6 +38,10 @@ echo "mounting ${TGT_DEVICE}"
 udisksctl mount -b ${TGT_DEVICE}
 echo "waiting 10 seconds" && sleep 10
 # echo "initializing Backup store" && initializeBackupStore
+
+echo "starting backup of FamilienVideos"
+doResticFamilienVideos "local/data/zinksrv/FamilienVideos" 6 2
+
 echo "starting  backup" && doResticWithTgtDirAndMountTest
 doResticForgetKeepOnlyLastNSnapshots 2
 ShowResticSnapshots

@@ -65,6 +65,31 @@ function doResticWithTgtDirAndMountTest ()
   fi
 }
 
+function doResticFamilienVideos ()
+{
+  export FAMILIENVIDEOS_ROOT_PATH="${1:-local/data/zinksrv/FamilienVideos}"
+  export NUMBER_OF_YEARS_TO_BACKUP="${2:-10}"
+  export numOfSnapshotsToKeep="${3:-2}"
+  echo NUMBER_OF_YEARS_TO_BACKUP=${NUMBER_OF_YEARS_TO_BACKUP}
+  export THIS_YEAR=$(date +'%Y')
+  export FIRST_YEAR="$(($THIS_YEAR-$NUMBER_OF_YEARS_TO_BACKUP+1))" 
+  echo THIS_YEAR=${THIS_YEAR} FIRST_YEAR=${FIRST_YEAR}
+  SUBFOLDERS=("Familie-Zink-Videos" "Favoriten-Familie-Zink-Videos" )
+  for subFolder in "${SUBFOLDERS[@]}"; do
+    for (( curYear = ${FIRST_YEAR}; curYear <= ${THIS_YEAR}; curYear++ )); do
+	  BACKUP_PATH="${SRC_ROOT}${FAMILIENVIDEOS_ROOT_PATH}/${subFolder}/${curYear}"
+	  printf 'Backing up %s\n' "${BACKUP_PATH}"
+	  tag="${curYear}_${subFolder}"
+	  cmd="restic backup --exclude-caches --no-cache --verbose=1 --tag $tag \"${BACKUP_PATH}\""
+	  # echo "$cmd"
+	  eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
+	  cmd="restic forget --keep-last ${numOfSnapshotsToKeep} --prune --verbose=2 --tag $tag"  
+	  # echo "$cmd"
+	  eval "$cmd" | tee -a ${LOG_ROOT}${LOGFILENAME}
+	done
+  done	
+}
+
 
 # function restoreRestic () {
 # 	RESTORE_PATH="${1}"
