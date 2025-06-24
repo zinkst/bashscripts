@@ -18,7 +18,7 @@ function installLegalyamlTools() {
 
 function installGinkgo() {
 	pushd ${HOME}/go
-	GINKGO2_VERSION="2.20.2"
+	GINKGO2_VERSION="2.23.0"
   go install github.com/onsi/ginkgo/v2/ginkgo@v${GINKGO2_VERSION}
   mkdir -p ${TARGET_DIR}/ginkgo-versions/
 	mv ~/go/bin/ginkgo ${TARGET_DIR}/ginkgo-versions/ginkgo-${GINKGO2_VERSION}
@@ -74,7 +74,7 @@ function installWebExRPM() {
 # main
 export TARGET_DIR=${HOME}/.local/bin
 #hashMap
-#installGinkgo
+installGinkgo
 #installDetectSecrets
 #installLegalyamlTools
 #installGolangFromTGZ
