@@ -10,7 +10,11 @@ function run-cmd () {
 }
 
 function CreatePodmanNetwork() {
-  podman network create ${NETWORK_NAME} --ignore
+  if [[ $(id -u) -eq 0 ]] ; then 
+    podman network create ${NETWORK_NAME} --ignore
+  else
+    podman network create ${NETWORK_NAME} --ignore
+  fi  
 }
 
 function postInstall() {
@@ -25,9 +29,9 @@ function remove() {
 }
 
 function showStatus() {
-  SERVICES=(
-    ${SERVICE_NAME}
-  )
+  if [ -z ${SERVICES+x} ]; then 
+    SERVICES=( ${SERVICE_NAME} )
+  fi  
   for  i in ${!SERVICES[@]}; do
         echo "### status for service ${SERVICES[$i]}:" $(${SYSTEMCTL_CMD} --no-pager is-active  ${SERVICES[$i]})
   done
@@ -73,7 +77,7 @@ function updateComponent() {
 function usage() {
   echo "##################"
   echo "Parameters available"
-  echo "-c <path-to-config-file> (required) "
+  echo "-c <path-to-config-file> "
   echo "-i to install ${SERVICE_NAME}"
   echo "-u to update ${SERVICE_NAME}"
   echo "-r to remove/uninstall ${SERVICE_NAME}"
@@ -226,7 +230,7 @@ function checkpCLIParams() {
         ;;
     esac
   done
-  if [ $OPTIND -eq 1 ]; then 
+  if [ $OPTIND -le 1 ]; then 
     echo "[ERROR] No options were passed"; 
     usage
     exit 1

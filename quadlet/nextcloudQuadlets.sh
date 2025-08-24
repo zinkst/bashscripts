@@ -383,15 +383,17 @@ function setEnvVars() {
     nextcloud-redis.container
     nextcloud.pod
   )
-}
-
-
-function showStatus() {
   SERVICES=(
+    nextcloud
     nextcloud-app
     nextcloud-db
     nextcloud-redis
   )
+  
+}
+
+
+function showStatus() {
   if [ ${INSTALL_CADDY} == "true" ]; then
     SERVICES+=("caddy")
   fi  
