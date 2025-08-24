@@ -19,7 +19,7 @@ function update() {
 
 # main
 export TARGET_DIR="/home/share"
-export VERSION=5.3.0
+export VERSION=5.3.1
 export PROGRAM=pdfsam
 
 #main

@@ -25,7 +25,7 @@ function update() {
 
 # main
 export TARGET_DIR="/home/share"
-export VERSION=2.10.4
+export VERSION=2.10.5
 export PROGRAM=jameica
 
 #main

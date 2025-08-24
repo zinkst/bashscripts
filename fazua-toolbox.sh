@@ -9,7 +9,7 @@ function update() {
     mkdir -p ${TARGET_DIR}/${PROGRAM}-${VERSION}
     echo "updating ${PROGRAM}"
     if [ ! -f ${HOME}/Downloads/${PROGRAM}-${VERSION}.tar.gz ]; then
-       wget -O "${HOME}/Downloads/${PROGRAM}-${VERSION}.tar.gz" https://fazua.com/documents/1523/FAZUA_Toolbox_basic-linux-x86_64-${VERSION}.tar.gz
+       wget -O "${HOME}/Downloads/${PROGRAM}-${VERSION}.tar.gz" https://fazua.com/documents/1590/FAZUA_Toolbox_basic-linux-x86_64-${VERSION}.tar.gz
     fi  
     tar -xzf ${HOME}/Downloads/${PROGRAM}-${VERSION}.tar.gz -C ${TARGET_DIR}/${PROGRAM}-${VERSION}
     cd ${TARGET_DIR}/${PROGRAM}-${VERSION}
@@ -20,7 +20,7 @@ function update() {
 
 # main
 export TARGET_DIR="/home/share"
-export VERSION=2.21
+export VERSION=2.23.2
 export PROGRAM=fazua-toolbox
 
 #main

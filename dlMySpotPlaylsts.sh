@@ -37,9 +37,11 @@ PLName[15]="Synthpop"
 PLUrl[15]="https://open.spotify.com/playlist/5mQj9waMjVXB5pPJSKUzK7?si=8c2cde8be37a47b8"
 PLName[16]="NeueAlben"
 PLUrl[16]="https://open.spotify.com/playlist/3iEhEguPYewxmRlXoUT0rQ?si=74309203adc04a22"
+PLName[17]="Nightwish Favorites"
+PLUrl[17]="https://open.spotify.com/playlist/1AdE5JyzHHfcMafgPjMhkz?si=04138be1fd1c494c"
 
 #pushd ${WRKDIR}
-index="2 4 5 6 7 8 9 10 11 12 13 14 15"
+index="2 4 5 6 7 8 9 10 11 12 13 14 15 16 17"
 index="8"
 for ind in $index
 do
@@ -59,7 +61,7 @@ do
   cmd="spotdl sync ${PLUrl[ind]} --save-file \"${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl\" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg"
   echo "$cmd"
   #spotdl sync ${PLUrl[ind]} --save-file "${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg
-  #spotdl ${PLUrl[ind]} --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg
+  spotdl ${PLUrl[ind]} --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg
   popd
 done
 
