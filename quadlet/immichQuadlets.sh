@@ -38,7 +38,7 @@ Requires=immich-redis.service
 
 [Container]
 ContainerName=immich-postgres
-# Network=${NETWORK_NAME}
+# Network=${NETWORK_NAME} # when using a pod do not specify network}
 Pod=immich.pod
 Image=${PG_CONTAINER_IMAGE}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
@@ -62,7 +62,7 @@ function CreateQuadletImmichRedis() {
   cat <<EOF > ${QUADLET_DIR}/immich-redis.container
 [Container]
 ContainerName=immich-redis
-# Network=${NETWORK_NAME}
+# Network=${NETWORK_NAME} # when using a pod do not specify network}
 Pod=immich.pod
 Image=${REDIS_IMAGE}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
@@ -86,7 +86,7 @@ Requires=immich-redis.service immich-postgres.service
 
 [Container]
 ContainerName=immich-machine-learning
-# Network=${NETWORK_NAME}
+# Network=${NETWORK_NAME} # when using a pod do not specify network}
 Pod=immich.pod
 Image=${MACHINE_LEARNING_IMAGE}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
@@ -109,7 +109,7 @@ Requires=immich-redis.service immich-postgres.service
 
 [Container]
 ContainerName=immich-server
-# Network=${NETWORK_NAME}
+# Network=${NETWORK_NAME} # when using a pod do not specify network
 Pod=immich.pod
 Image=${CONTAINER_IMAGE}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
@@ -204,11 +204,7 @@ function postInstall() {
 }
 
 function remove() {
-  set +e
-  for  i in ${!SERVICES[@]}; do
-    ${SYSTEMCTL_CMD} stop  ${SERVICES[$i]}
-  done
-  # ${SYSTEMCTL_CMD} stop immich-pod.service
+  ${SYSTEMCTL_CMD} stop immich-pod.service
   for  i in ${!QUADLETS[@]}; do
     echo "removing quadlet ${QUADLETS[$i]}"
     cmd="rm ${QUADLET_DIR}/${QUADLETS[$i]}"
@@ -216,6 +212,21 @@ function remove() {
     eval "${cmd}"
   done
 }
+
+function update() {
+  cmd="${SYSTEMCTL_CMD} stop immich-pod.service"
+  run-cmd "${cmd}"
+  updateComponent "${CONTAINER_IMAGE}" "immich-server" "false"
+  updateComponent "${REDIS_IMAGE}" "immich-redis" "false"
+  updateComponent "${MACHINE_LEARNING_IMAGE}" "immich-machine-learning" "false"
+  updateComponent "${PG_CONTAINER_IMAGE}" "immich-postgres" "false"
+  cmd="${SYSTEMCTL_CMD} daemon-reload"
+  run-cmd "${cmd}"
+  cmd="${SYSTEMCTL_CMD} start immich-pod.service"
+  run-cmd "${cmd}"
+  showStatus
+}
+
 
 # main start here
 main "$@"
