@@ -29,6 +29,7 @@ Volume=${JF_DATA_DIR}:/config:Z
 Volume=${JF_CONFIG_DIR}:/cache:Z
 Volume=${VIDEOS_DIR}:/FamilienVideos:ro,Z
 Volume=${PHOTOS_DIR}:/Photos:ro,Z
+Volume=${MEDIA_DIR}:/Media:ro,Z
 Volume=/etc/localtime:/etc/localtime:ro
 Environment=TZ=Europe/Amsterdam
 
