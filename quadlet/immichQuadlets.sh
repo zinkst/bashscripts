@@ -38,8 +38,8 @@ Requires=immich-redis.service
 
 [Container]
 ContainerName=immich-postgres
-# Network=${NETWORK_NAME} # when using a pod do not specify network}
-Pod=immich.pod
+Network=${NETWORK_NAME}
+# Pod=immich.pod
 Image=${PG_CONTAINER_IMAGE}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 Volume=${DATA_DIR}/postgres:/var/lib/postgresql/data
@@ -62,8 +62,8 @@ function CreateQuadletImmichRedis() {
   cat <<EOF > ${QUADLET_DIR}/immich-redis.container
 [Container]
 ContainerName=immich-redis
-# Network=${NETWORK_NAME} # when using a pod do not specify network}
-Pod=immich.pod
+Network=${NETWORK_NAME}
+# Pod=immich.pod
 Image=${REDIS_IMAGE}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 HealthCmd=redis-cli ping || exit 1
@@ -86,8 +86,8 @@ Requires=immich-redis.service immich-postgres.service
 
 [Container]
 ContainerName=immich-machine-learning
-# Network=${NETWORK_NAME} # when using a pod do not specify network}
-Pod=immich.pod
+Network=${NETWORK_NAME}
+# Pod=immich.pod
 Image=${MACHINE_LEARNING_IMAGE}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 Volume=${DATA_DIR}/ml-model:/cache
@@ -109,8 +109,8 @@ Requires=immich-redis.service immich-postgres.service
 
 [Container]
 ContainerName=immich-server
-# Network=${NETWORK_NAME} # when using a pod do not specify network
-Pod=immich.pod
+Network=${NETWORK_NAME}
+# Pod=immich.pod
 Image=${CONTAINER_IMAGE}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 Volume=${DATA_DIR}/immich-server:/usr/src/app/upload
@@ -123,6 +123,7 @@ Environment=DB_DATABASE_NAME=immich
 Environment=DB_HOSTNAME=immich-postgres
 Environment=REDIS_HOSTNAME=immich-redis
 Environment=IMMICH_PORT=${HTTP_PORT}
+PublishPort=${HTTP_PORT}:${HTTP_PORT}
 # Environment=IMMICH_LOG_LEVEL=debug
 
 [Service]
@@ -155,14 +156,12 @@ function setEnvVars() {
     immich-redis.container
     immich-machine-learning.container
     immich-server.container
-    immich.pod
   )
   SERVICES=(
-    immich-postgres
     immich-redis
+    immich-postgres
     immich-machine-learning
     immich-server
-    immich-pod
   )
 }
 
@@ -183,7 +182,7 @@ function install() {
   createDirs
   createPrereqs
   CreatePodmanNetwork
-  CreateQuadletImmichPod
+  # CreateQuadletImmichPod
   CreateQuadletImmichPostgres
   CreateQuadletImmichRedis
   CreateQuadletImmichMachineLearning
@@ -194,17 +193,20 @@ function install() {
 
 function postInstall() { 
   ${SYSTEMCTL_CMD} daemon-reload
-  ${SYSTEMCTL_CMD} start immich-pod.service
-  # for  i in ${!SERVICES[@]}; do
-  #    ${SYSTEMCTL_CMD} start ${SERVICES[$i]}
-  # done 
+  # ${SYSTEMCTL_CMD} start immich-pod.service
+  for  i in ${!SERVICES[@]}; do
+     ${SYSTEMCTL_CMD} start ${SERVICES[$i]}
+  done 
   for  i in ${!SERVICES[@]}; do
      ${SYSTEMCTL_CMD} status --no-pager ${SERVICES[$i]}
   done 
 }
 
 function remove() {
-  ${SYSTEMCTL_CMD} stop immich-pod.service
+  for  i in ${!SERVICES[@]}; do
+    cmd="${SYSTEMCTL_CMD} stop ${SERVICES[$i]}"
+    run-cmd "${cmd}"
+  done 
   for  i in ${!QUADLETS[@]}; do
     echo "removing quadlet ${QUADLETS[$i]}"
     cmd="rm ${QUADLET_DIR}/${QUADLETS[$i]}"
@@ -214,16 +216,20 @@ function remove() {
 }
 
 function update() {
-  cmd="${SYSTEMCTL_CMD} stop immich-pod.service"
-  run-cmd "${cmd}"
+  for  i in ${!SERVICES[@]}; do
+    cmd="${SYSTEMCTL_CMD} start ${SERVICES[$i]}"
+    run-cmd "${cmd}"
+  done 
   updateComponent "${CONTAINER_IMAGE}" "immich-server" "false"
   updateComponent "${REDIS_IMAGE}" "immich-redis" "false"
   updateComponent "${MACHINE_LEARNING_IMAGE}" "immich-machine-learning" "false"
   updateComponent "${PG_CONTAINER_IMAGE}" "immich-postgres" "false"
   cmd="${SYSTEMCTL_CMD} daemon-reload"
   run-cmd "${cmd}"
-  cmd="${SYSTEMCTL_CMD} start immich-pod.service"
-  run-cmd "${cmd}"
+  for  i in ${!SERVICES[@]}; do
+    cmd="${SYSTEMCTL_CMD} start ${SERVICES[$i]}"
+    run-cmd "${cmd}"
+  done 
   showStatus
 }
 
