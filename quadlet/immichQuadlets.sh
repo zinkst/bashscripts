@@ -175,6 +175,7 @@ function printEnvVars() {
   echo REDIS_IMAGE=${REDIS_IMAGE}
   echo MACHINE_LEARNING_IMAGE=${MACHINE_LEARNING_IMAGE}
   echo CONTAINER_IMAGE=${CONTAINER_IMAGE}
+  echo TEST_MODE=${TEST_MODE}
 }
 
 
@@ -217,7 +218,7 @@ function remove() {
 
 function update() {
   for  i in ${!SERVICES[@]}; do
-    cmd="${SYSTEMCTL_CMD} start ${SERVICES[$i]}"
+    cmd="${SYSTEMCTL_CMD} stop ${SERVICES[$i]}"
     run-cmd "${cmd}"
   done 
   updateComponent "${CONTAINER_IMAGE}" "immich-server" "false"
