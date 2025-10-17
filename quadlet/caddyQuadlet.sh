@@ -81,6 +81,7 @@ function CreateQuadlet() {
 Description=${SERVICE_NAME}
 Wants=network-online.target
 After=network-online.target
+Requires=nexcloud-app.service,immich-server.service,vaultwarden.service
 
 [Container]
 Label=app=${SERVICE_NAME}
