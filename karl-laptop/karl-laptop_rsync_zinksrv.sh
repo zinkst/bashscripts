@@ -3,12 +3,13 @@
 SRC_ROOT="/"
 SSH_HOST="zinksrv"
 TGT_ROOT="/remote/zinksrv/nfs4/"
-LOG_ROOT="/local/backup/BackupLogs/rsync/"
+LOGFILENAME=$(basename "${0}" .sh).log
+LOG_ROOT="/local/backup/BackupLogs/$(basename "${0}" .sh)/"
+
 mkdir -p ${LOG_ROOT}
-RSYNC_PARAMS="-av --one-file-system --exclude-from /links/sysbkp/rsync/rsync_exclude.txt"
+RSYNC_PARAMS="-av --one-file-system --exclude-from /links/etc/my-etc/rsync/rsync_exclude.txt"
 # RSYNC_PARAMS="-av --one-file-system"
 CORRECTHOST="karl-laptop"
-# LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
 MINS_SINCE_LASTRUN=-1500
 USE_SSH=false
@@ -29,15 +30,9 @@ MountTestFile[2]=${TGT_ROOT}"data/doNotDelete"
 . /links/bin/lib/bkp_functions.sh
 
 # main routine
-setLogfileName ${LOGFILENAME}
 checkCorrectHost
 rsyncBkpParamCheck $@
+logrotate -f /links/etc/logrotate.d/karl-laptop_rsync_zinksrv_logs
 doRsyncWithTgtDirAndMountTestFile
-#cmd="rsync -av /local/vhds/vhds/win10.vhd ${TGT_ROOT}data/Other-Systems/Karl-Laptop/sysbkp/$(hostname)_$(date +'%Y%m%d')_win10.vhd"
-#echo $cmd
-#eval $cmd
-#cmd="rsync -av /links/sysbkp/karl-laptop_Fedora-$(lsb_release -s -r)*.tgz ${TGT_ROOT}data/Other-Systems/Karl-Laptop/sysbkp/"
-#echo $cmd
-#eval $cmd
 
 umount ${REMOTEMOUNTPOINT}
