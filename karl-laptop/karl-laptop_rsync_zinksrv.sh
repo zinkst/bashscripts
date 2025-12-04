@@ -3,7 +3,8 @@
 SRC_ROOT="/"
 SSH_HOST="zinksrv"
 TGT_ROOT="/remote/zinksrv/nfs4/"
-LOG_ROOT="/links/sysbkp/rsync/"
+LOG_ROOT="/local/backup/BackupLogs/rsync/"
+mkdir -p ${LOG_ROOT}
 RSYNC_PARAMS="-av --one-file-system --exclude-from /links/sysbkp/rsync/rsync_exclude.txt"
 # RSYNC_PARAMS="-av --one-file-system"
 CORRECTHOST="karl-laptop"

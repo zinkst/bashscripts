@@ -453,7 +453,7 @@ function processRsyncBackup() {
   export SRC_ROOT=${SRC_ROOT:-"/"}
   export TGT_ROOT=${TGT_ROOT:-"/remote/zinksrv/nfs4/"}
   LOGFILENAME=$(basename "${0}" .sh)
-  export LOG_ROOT="/links/Not4Backup/BackupLogs/${LOGFILENAME}/"
+  export LOG_ROOT=${LOG_ROOT:-"/links/Not4Backup/BackupLogs/${LOGFILENAME}/"}
   export RSYNC_PARAMS=${RSYNC_PARAMS:-"-av -A --one-file-system --exclude-from /links/etc/my-etc/rsync/rsync_exclude.txt"}
   LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
   export MINS_SINCE_LASTRUN=${MINS_SINCE_LASTRUN:-"-1500"}
