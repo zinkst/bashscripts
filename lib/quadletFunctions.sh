@@ -63,13 +63,13 @@ function updateComponent() {
   # podman auto-update will update all registered containers so will not use it
   if [ "${TOGGLE_SERVICE}" == "true"  ]; then
     echo "[INFO] stopping ${SERVICE}"
-    cmd="systemctl stop ${SERVICE}"
+    cmd="${SYSTEMCTL_CMD} stop ${SERVICE}"
     run-cmd "${cmd}"
     echo "[INFO] sleeping 30 secs"
     cmd="sleep 30"
     run-cmd "${cmd}"
     echo "[INFO] starting ${SERVICE}"
-    cmd="systemctl start ${SERVICE}"
+    cmd="${SYSTEMCTL_CMD} start ${SERVICE}"
     run-cmd "${cmd}"
   fi  
 }

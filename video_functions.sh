@@ -156,6 +156,10 @@ function getCamera() {
               CAMERA_MANUFACTURER="Fuji"
               CAMERA_MODEL_NAME="FinePix E500"
               ;;
+          g86 )
+              CAMERA_MANUFACTURER="Motorola"
+              CAMERA_MODEL_NAME="G86"
+              ;;
       esac
     fi  
   fi 
