@@ -19,7 +19,8 @@ Label=app=${SERVICE_NAME}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=${SERVICE_NAME}
 Image=${CONTAINER_IMAGE}
-Network=${NETWORK_NAME}
+# Network=${NETWORK_NAME}
+Network=host # required for local-tuya
 PublishPort=${HOME_ASSISTANT_HTTP_PORT}:${HOME_ASSISTANT_HTTP_PORT}
 Volume=${DATA_DIR}:/config:Z
 Volume=/etc/localtime:/etc/localtime:ro

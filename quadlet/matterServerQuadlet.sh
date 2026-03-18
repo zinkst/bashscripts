@@ -21,7 +21,8 @@ Label=app=${SERVICE_NAME}
 AutoUpdate=${PODMAN_AUTO_UPDATE_STRATEGY}
 ContainerName=${SERVICE_NAME}
 Image=${CONTAINER_IMAGE}
-Network=${NETWORK_NAME}
+# Network=${NETWORK_NAME}
+Network=host
 PublishPort=${MATTER_SERVER_HTTP_PORT}:${MATTER_SERVER_HTTP_PORT}
 Volume=${MATTER_SERVER_DATA_DIR}:/data
 Volume=/etc/localtime:/etc/localtime:ro
