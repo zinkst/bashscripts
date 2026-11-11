@@ -6,7 +6,7 @@ SSH_HOST="zinksrv"
 SSH_TGT_ROOT="root@${SSH_HOST}:/local/data/zink-ry4650g/"
 TGT_ROOT="/remote/zinksrv/"
 LOG_ROOT="/links/${SRC_HOST}/rsync/"
-RSYNC_PARAMS="-av -A --one-file-system --exclude-from /links/${SRC_HOST}/rsync/rsync_exclude.txt"
+RSYNC_PARAMS="-av -A --one-file-system --exclude-from /links/sysbkp/rsync_exclude.txt"
 CORRECTHOST="zinks-p1gen7"
 LOGFILENAME=$(basename "${0}" .sh)
 LASTRUN_FILENAME="${LOGFILENAME}.lastrun"
@@ -15,12 +15,19 @@ USE_SSH=false
 CHECK_LASTRUN=false
 REMOTEMOUNTPOINT=${TGT_ROOT}
 TRY_MOUNT_TGT="true"
-index="1"
+index="1 2 3"
 
 
 Directories[1]="local/data/${SRC_HOST}/sysbkp"
 TargetDir[1]="data/${SRC_HOST}/sysbkp"
 MountTestFile[1]=${TGT_ROOT}"data/doNotDelete"
+Directories[2]="local/data/workdata"
+TargetDir[2]="data/${SRC_HOST}/workdata"
+MountTestFile[2]="${TGT_ROOT}data/doNotDelete"
+Directories[3]="home"
+TargetDir[3]="data/${SRC_HOST}/home"
+MountTestFile[3]="${TGT_ROOT}data/doNotDelete"
+
 
 . /links/bin/lib/bkp_functions.sh
 
