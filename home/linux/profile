@@ -7,6 +7,7 @@ export GO111MODULE=on
 alias ic="ibmcloud"
 #alias kc="kubectl"
 alias git='LANG=en_US.UTF-8 git'
+alias gte=gnome-text-editor
 export CLICOLOR=1
 export LSCOLORS=gxfxcxdxbxegedabagaced
 export GH_ZINKST="${HOME}/workspace/src/github.com/zinkst"

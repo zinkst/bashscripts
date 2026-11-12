@@ -33,6 +33,7 @@ function setup_gnome {
   gsettings set org.gnome.desktop.lockdown disable-lock-screen 'true'
   gsettings set org.gnome.mutter attach-modal-dialogs false
   gsettings set org.gnome.desktop.interface overlay-scrolling false
+  gsettings set org.gnome.desktop.interface gtk-enable-primary-paste true
   if [ $(hostname -s) != "zinks-p1gen7" ]; then
     gsettings set org.gnome.desktop.screensaver lock-enabled false
   fi

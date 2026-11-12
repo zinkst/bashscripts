@@ -42,7 +42,7 @@ PLUrl[17]="https://open.spotify.com/playlist/1AdE5JyzHHfcMafgPjMhkz?si=04138be1f
 
 #pushd ${WRKDIR}
 index="2 4 5 6 7 8 9 10 11 12 13 14 15 16 17"
-index="8"
+index="17"
 for ind in $index
 do
   if [ ! -d "${WRKDIR}/${PLName[ind]}" ]; then
@@ -58,7 +58,7 @@ do
   ###
   pushd "${WRKDIR}/${PLName[ind]}"
   echo "Extracting to dir: $(pwd)"
-  cmd="spotdl sync ${PLUrl[ind]} --save-file \"${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl\" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg"
+  cmd="spotdl sync ${PLUrl[ind]} --log-level DEBUG --save-file \"${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl\" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg"
   echo "$cmd"
   #spotdl sync ${PLUrl[ind]} --save-file "${WRKDIR}/${PLName[ind]}/${PLName[ind]}.spotdl" --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg
   spotdl ${PLUrl[ind]} --output '{artist}_{title}' --format mp3 --threads 8 --ffmpeg /home/zinks/.spotdl/ffmpeg

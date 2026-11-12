@@ -14,7 +14,7 @@ getTimestamps()
     TIMESTAMP=$(date -d@"${TIMESTAMP_UNIX}" +'%Y-%m-%d %H:%M:%S')
   fi 
   # uncomment and adapt the following to overwrite timestamp
-  # TIMESTAMP="UTC 2025-06-01 17:19:00"
+  # TIMESTAMP="UTC 2025-05-26 21:45:00"
   setTimestampVariables  
 }
 
@@ -159,6 +159,10 @@ function getCamera() {
           g86 )
               CAMERA_MANUFACTURER="Motorola"
               CAMERA_MODEL_NAME="G86"
+              ;;
+          p10a )
+              CAMERA_MANUFACTURER="Google"
+              CAMERA_MODEL_NAME="Pixel 10a"
               ;;
       esac
     fi  
