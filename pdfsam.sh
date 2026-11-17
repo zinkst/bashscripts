@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function run() {
-  cmd="java -jar ${TARGET_DIR}/${PROGRAM}-${VERSION}-linux/lib/${PROGRAM}-basic-${VERSION}.jar"
+  cmd="java -Dglass.gtk.uiScale=1.5 -jar ${TARGET_DIR}/${PROGRAM}-${VERSION}-linux/lib/${PROGRAM}-basic-${VERSION}.jar"
   cmd=${TARGET_DIR}/${PROGRAM}-basic-${VERSION}-linux-x64/bin/${PROGRAM}.sh
   echo $cmd
   eval $cmd
@@ -19,7 +19,7 @@ function update() {
 
 # main
 export TARGET_DIR="/home/share"
-export VERSION=5.3.1
+export VERSION=6.0.10
 export PROGRAM=pdfsam
 
 #main
